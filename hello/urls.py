@@ -1,5 +1,6 @@
 from django.urls import re_path,path
 from .import views
+from .views import generate_description_api
 urlpatterns = [
     #register and login page
       path("register",views.index,name='register'),
@@ -25,6 +26,7 @@ urlpatterns = [
       path("remove-cart/<int:cart_id>/",views.remove_from_cart, name="remove_cart"),
       path("increase/<int:cart_id>/",views.increase_quantity, name="inreases"),
       path('decrease/<int:cart_id>/',views.decrease_quantity, name="decrease"),
+      path('order-success/', views.order_success, name='order_success'),
 
     #wishlist
       path("wishlist/",views.wishlist_view, name="wishlist"),
@@ -51,6 +53,8 @@ urlpatterns = [
       path('artisan_dashboard',views.artisan_dashboard,name="artisan_dashboard"),
       path("artisan_products/", views.artisan_products, name="artisan_products"),
       path("add_product/", views.add_product, name="add_product"),
+      path('generate-description/',generate_description_api),
+
       path("edit_product/<int:id>/", views.edit_product, name="edit_product"),
       path("delete_product/<int:id>/", views.delete_product, name="delete_product"),
       path("artisan/orders/", views.artisan_orders, name="artisan_orders"),
@@ -65,4 +69,4 @@ path('products/<int:subcategory_id>/', views.product_list, name='product_list'),
 
 
 
- ]
+ ] 

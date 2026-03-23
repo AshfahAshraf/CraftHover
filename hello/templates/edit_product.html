@@ -5,38 +5,82 @@
 <h3>Edit Product</h3>
 
 <form method="POST" enctype="multipart/form-data">
-
 {% csrf_token %}
 
+<!-- 🔹 Product Name -->
 <div class="mb-3">
-<label>Product Name</label>
-<input type="text" name="product_name" value="{{ product.Product_name }}" class="form-control">
+    <label>Product Name</label>
+    <input type="text" name="product_name" value="{{ product.Product_name }}" class="form-control">
+</div>
+
+<!-- 🔹 Prices -->
+<div class="mb-3">
+    <label>Actual Price</label>
+    <input type="number" name="actual_price" value="{{ product.Actual_price }}" class="form-control">
 </div>
 
 <div class="mb-3">
-<label>Actual Price</label>
-<input type="number" name="actual_price" value="{{ product.Actual_price }}" class="form-control">
+    <label>Offer Price</label>
+    <input type="number" name="offer_price" value="{{ product.Offer_price }}" class="form-control">
 </div>
 
+<!-- 🔹 Quantity -->
 <div class="mb-3">
-<label>Offer Price</label>
-<input type="number" name="offer_price" value="{{ product.Offer_price }}" class="form-control">
+    <label>Quantity</label>
+    <input type="number" name="quantity" value="{{ product.Quantity }}" class="form-control">
 </div>
 
+<!-- 🔹 Description -->
 <div class="mb-3">
-<label>Quantity</label>
-<input type="number" name="quantity" value="{{ product.Quantity }}" class="form-control">
+    <label>Description</label>
+    <textarea name="description" class="form-control">{{ product.description }}</textarea>
 </div>
 
-<div class="mb-3">
-<label>Description</label>
-<textarea name="description" class="form-control">{{ product.Description }}</textarea>
+<hr>
+
+<h5>Update Images</h5>
+
+<div class="row">
+
+    <!-- 🔹 Front Image -->
+    <div class="col-md-3 mb-3">
+        <label>Front</label><br>
+        {% if product.front_image %}
+            <img src="{{ product.front_image.url }}" width="100" class="mb-2"><br>
+        {% endif %}
+        <input type="file" name="front_image" class="form-control">
+    </div>
+
+    <!-- 🔹 Left Image -->
+    <div class="col-md-3 mb-3">
+        <label>Left</label><br>
+        {% if product.left_image %}
+            <img src="{{ product.left_image.url }}" width="100" class="mb-2"><br>
+        {% endif %}
+        <input type="file" name="left_image" class="form-control">
+    </div>
+
+    <!-- 🔹 Right Image -->
+    <div class="col-md-3 mb-3">
+        <label>Right</label><br>
+        {% if product.right_image %}
+            <img src="{{ product.right_image.url }}" width="100" class="mb-2"><br>
+        {% endif %}
+        <input type="file" name="right_image" class="form-control">
+    </div>
+
+    <!-- 🔹 Back Image -->
+    <div class="col-md-3 mb-3">
+        <label>Back</label><br>
+        {% if product.back_image %}
+            <img src="{{ product.back_image.url }}" width="100" class="mb-2"><br>
+        {% endif %}
+        <input type="file" name="back_image" class="form-control">
+    </div>
+
 </div>
 
-<div class="mb-3">
-<label>Product Image</label>
-<input type="file" name="product_image" class="form-control">
-</div>
+<hr>
 
 <button class="btn btn-primary">Update Product</button>
 

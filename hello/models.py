@@ -73,16 +73,17 @@ class Product(models.Model):
      
      # artisan = models.ForeignKey(User, on_delete=models.CASCADE)
 
+ # ✅ IMAGES (MAIN FIX)
+     front_image = models.ImageField(upload_to='products/', null=True, blank=True)
+     left_image = models.ImageField(upload_to='products/', null=True, blank=True)
+     right_image = models.ImageField(upload_to='products/', null=True, blank=True)
+     back_image = models.ImageField(upload_to='products/', null=True, blank=True)
 
      def __str__(self):
           return self.Product_name
 
-class ProductImage(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="images")
-    image = models.ImageField(upload_to="products/")
+# 📌 models.py
 
-    def __str__(self):
-        return self.product.product_name
 #----- cart -----#
 
 class Cart(models.Model):

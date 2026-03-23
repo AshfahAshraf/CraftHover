@@ -1,15 +1,6 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // --- PRELOADER REMOVAL ---
-    const preloader = document.getElementById('preloader');
-    if (preloader) {
-        window.addEventListener('load', () => {
-            // Add a small delay for the animation to feel intentional and premium
-            setTimeout(() => {
-                preloader.classList.add('fade-out');
-                document.body.classList.remove('loading-locked');
-            }, 2000);
-        });
-    }
+   
+   
+   document.addEventListener('DOMContentLoaded', () => {
 
     const contentArea = document.querySelector('.contentArea');
     const jewelryImage = document.querySelector('.jewelry-image');
@@ -188,20 +179,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     animateMarquee();
 
-    // --- VIDEO REELS SCROLL ---
+    // --- VIDEO REELS CONTINUOUS MARQUEE ---
     const reelsTrack = document.getElementById('reelsTrack');
-    const scrollLeftBtn = document.getElementById('scrollLeftBtn');
-    const scrollRightBtn = document.getElementById('scrollRightBtn');
+    if (reelsTrack) {
+        let reelsPos = 0;
+        let reelsSpeed = 0.8; // High-end cinematic speed
+        let reelsPaused = false;
+        let reelsRafId;
 
-    if (reelsTrack && scrollLeftBtn && scrollRightBtn) {
-        // Calculate scroll amount based on card width + gap
-        const scrollAmount = 320;
-        scrollLeftBtn.addEventListener('click', () => {
-            reelsTrack.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-        });
-        scrollRightBtn.addEventListener('click', () => {
-            reelsTrack.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-        });
+        const animateReels = () => {
+            if (!reelsPaused) {
+                reelsPos -= reelsSpeed;
+                
+                // We calculate the threshold based on the actual content width 
+                // Since we duplicated the items in HTML, we reset when the first half passes.
+                const halfWidth = reelsTrack.scrollWidth / 2;
+                if (Math.abs(reelsPos) >= halfWidth) {
+                    reelsPos = 0;
+                }
+                reelsTrack.style.transform = `translateX(${reelsPos}px)`;
+            }
+            reelsRafId = requestAnimationFrame(animateReels);
+        };
+
+        animateReels();
+
+        // Pause on Hover for better viewing experience
+        reelsTrack.addEventListener('mouseenter', () => reelsPaused = true);
+        reelsTrack.addEventListener('mouseleave', () => reelsPaused = false);
     }
 
 
@@ -295,3 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
         animate();
     }
 });
+
+
+
+

@@ -5,7 +5,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Cart | CraftHover</title>
+    <link rel="icon" href="{% static 'images/logo.png' %}" type="image/png">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
@@ -19,14 +21,14 @@
 
             <!--Left side-->
 
-            <div class="col-lg-8 p-5 rounded-start-5" style="background-color: #e6dac8;">
+            <div class="col-lg-8 p-5 rounded-start-5" style="background-color: #e8e1d6;">
                 <div class="d-flex justify-content-between align-items-center w-100">
-                <h2 class="fw-bold">Shopping Cart</h2>
-                <span class="text-muted">{{ total_items }} items</span>
+                    <h2 class="fw-bold">Shopping Cart</h2>
+                    <span class="text-muted">{{ total_items }} items</span>
                 </div>
                 <hr>
 
-            {% for item in cart_items %}
+                {% for item in cart_items %}
 
                 <div class="row align-items-center mb-4">
 
@@ -43,14 +45,12 @@
                     <div class="col-md-3">
                         <div class="input-group">
 
-                        <a href="{% url 'decrease' item.id %}" class="btn btn-outline-secondary">-</a>
+                            <a href="{% url 'decrease' item.id %}" class="btn btn-outline-secondary">-</a>
 
-                        <input type="text"
-                        class="form-control text-center fw-bold"
-                        value="{{ item.quantity }}"
-                        readonly>
+                            <input type="text" class="form-control text-center fw-bold" value="{{ item.quantity }}"
+                                readonly>
 
-                        <a href="{% url 'inrcease' item.id %}" class="btn btn-outline-secondary">+</a>
+                            <a href="{% url 'inrcease' item.id %}" class="btn btn-outline-secondary">+</a>
 
                         </div>
                     </div>
@@ -67,51 +67,52 @@
                 </div>
 
                 <hr>
+                {% endfor %}
                 <a href="{% url 'home' %}" class="text-decoration-none"> ← back to shop</a>
             </div>
 
-            {% endfor %}
+
             <!---Summary-->
 
-            
-                <div class="col-lg-4 border-0 p-5  rounded-end-5 "style="background-color: #f4eee6;">
-                    <h5>Summary</h5>
 
-                    <hr>
+            <div class="col-lg-4 border-0 p-5  rounded-end-5 " style="background-color: #f4eee6;">
+                <h5>Summary</h5>
 
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>{{ total_items }} items</span>
-                        <span>{{ total_price }}</span>
-                    </div>
+                <hr>
 
-                    <div class="mb-3">
-                        <label for="" class="form-label">shipping</label>
-                        <select class="form-select" name="" id="shipping">
-
-                            <option value="0" disabled selected>Choose delivery option</option>
-                            <option value="100">Standard Delivery - ₹100</option>
-                            <option value="200">Express delivery - ₹200</option>
-                        </select>
-                    </div>
-
-                    <hr>
-
-                    <div class="d-flex justify-content-between mb-3">
-                        <strong>Total Price</strong>
-                        <strong id="final_price">₹{{ total_price}}</strong>
-                    </div>
-
-                    <button class="btn btn-dark w-100 rounded-3">
-                        CHECKOUT
-                    </button>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>{{ total_items }} items</span>
+                    <span>{{ total_price }}</span>
                 </div>
+
+                <div class="mb-3">
+                    <label for="" class="form-label">shipping</label>
+                    <select class="form-select" name="" id="shipping">
+
+                        <option value="0" disabled selected>Choose delivery option</option>
+                        <option value="100">Standard Delivery - ₹100</option>
+                        <option value="200">Express delivery - ₹200</option>
+                    </select>
+                </div>
+
+                <hr>
+
+                <div class="d-flex justify-content-between mb-3">
+                    <strong>Total Price</strong>
+                    <strong id="final_price">₹{{ total_price}}</strong>
+                </div>
+
+                <a href="{% url 'order_success' %}" class="btn btn-dark w-100 rounded-3">
+                    CHECKOUT
+                </a>
             </div>
+        </div>
 
 
-        
+
 
     </div>
-    
+
 
 
 </body>

@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 
@@ -143,7 +144,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'ashfahashraf@gmail.com'
-EMAIL_HOST_PASSWORD = 'bxsj rlan ikze ewkm'
+EMAIL_HOST_PASSWORD = 'cczr snds epqh bzvp'
 
 
 
@@ -153,4 +154,15 @@ LOGIN_URL = '/?next=/'
 # my account media
 
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+#chatgpt
+
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+

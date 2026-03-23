@@ -16,51 +16,52 @@
     <div class="col-md-4">
 
 
-        <a href="{% url 'product_detail' product.id %}" style="text-decoration:none; color:black;">
+      <a href="{% url 'product_detail' product.id %}" style="text-decoration:none; color:black;">
 
-          
-      <div class="card shadow-sm border-0 position-relative h-100">
 
-        <!-- Discount Badge -->
-        <span class="badge bg-dark position-absolute m-2">
-          {{ product.save_amount|floatformat:0 }} OFF
-        </span>
+        <div class="card shadow-sm border-0 position-relative h-100">
 
-        <!-- Wishlist Icon -->
-        <div class="position-absolute end-0 m-2">🤍</div>
+          <!-- Discount Badge -->
+          <span class="badge bg-dark position-absolute m-2">
+            {{ product.save_amount|floatformat:0 }} OFF
+          </span>
 
-        <!-- Product Image -->
-        <img src="{{ product.product_image.url }}"
-             class="card-img-top p-3"
-             style="height:220px; object-fit:contain;">
+          <!-- Wishlist Icon -->
+          <div class="position-absolute end-0 m-2">🤍</div>
 
-        <!-- Card Body -->
-        <div class="card-body">
+          <!-- Product Image -->
+          {% if product.front_image %}
+          <img src="{{ product.front_image.url }}">
+          {% else %}
+          <span>No Image</span>
+          {% endif %}
+          <!-- Card Body -->
+          <div class="card-body">
 
-          <h6 class="fw-bold">
-            {{ product.Product_name }}
-          </h6>
+            <h6 class="fw-bold">
+              {{ product.Product_name }}
+            </h6>
 
-          <small class="text-muted">
-            {{ product.subcategory.name }}
-          </small>
-
-          <div class="mt-2">
-            <b class="text-success">₹{{ product.Offer_price }}</b>
-
-            <small class="text-decoration-line-through text-muted">
-              ₹{{ product.Actual_price }}
+            <small class="text-muted">
+              {{ product.subcategory.name }}
             </small>
+
+            <div class="mt-2">
+              <b class="text-success">₹{{ product.Offer_price }}</b>
+
+              <small class="text-decoration-line-through text-muted">
+                ₹{{ product.Actual_price }}
+              </small>
+            </div>
+
+            <!-- ✅ FIXED SAVE -->
+            <small class="text-success">
+              Save ₹{{ product.save_amount }}
+            </small>
+
           </div>
 
-          <!-- ✅ FIXED SAVE -->
-          <small class="text-success">
-            Save ₹{{ product.save_amount }}
-          </small>
-
         </div>
-
-      </div>
 
     </div>
 

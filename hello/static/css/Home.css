@@ -20,91 +20,13 @@
 
 /* --- HERO SECTION --- */
 /* --- PRELOADER --- */
-body.loading-locked {
-    overflow: hidden;
-}
-
-#preloader {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: #050505;
-    z-index: 99999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: opacity 1s cubic-bezier(0.77, 0, 0.175, 1), visibility 1s;
-}
-
-.loader-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.loader-text {
-    font-size: 1.2rem;
-    font-family: 'Outfit', sans-serif;
-    font-weight: 300;
-    color: #fff;
-    letter-spacing: 12px;
-    margin-bottom: 25px;
-    margin-right: -12px;
-    /* compensate for tracking */
-    animation: trackingIn 2s cubic-bezier(0.215, 0.610, 0.355, 1.000) both;
-}
-
-.loader-line {
-    width: 0;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.5);
-    animation: extendLine 1.5s cubic-bezier(0.645, 0.045, 0.355, 1.000) 0.5s forwards;
-}
-
-@keyframes trackingIn {
-    0% {
-        letter-spacing: -0.5em;
-        opacity: 0;
-        filter: blur(10px);
-    }
-
-    40% {
-        opacity: 0.8;
-        filter: blur(0);
-    }
-
-    100% {
-        opacity: 1;
-        letter-spacing: 12px;
-    }
-}
-
-@keyframes extendLine {
-    0% {
-        width: 0;
-        opacity: 0;
-    }
-
-    100% {
-        width: 120px;
-        opacity: 1;
-    }
-}
-
-#preloader.fade-out {
-    opacity: 0;
-    visibility: hidden;
-}
 
 /* --- GLOBAL STYLES --- */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    cursor: none !important;
-    /* Premium custom cursor only */
+  
 }
 
 .grain-overlay {
@@ -119,25 +41,6 @@ body.loading-locked {
     z-index: 100000;
 }
 
-/* --- CUSTOM CURSOR --- */
-.custom-cursor {
-    position: fixed;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    z-index: 999999;
-}
-
-.cursor-dot {
-    width: 8px;
-    height: 8px;
-    background-color: #fff;
-    border-radius: 50%;
-    position: fixed;
-    transform: translate(-50%, -50%);
-    mix-blend-mode: difference;
-    z-index: 1000001;
-}
 
 
 body {
@@ -763,6 +666,7 @@ body {
     margin: 0 auto;
     display: flex;
     align-items: center;
+    overflow: hidden; /* Mask the track */
 }
 
 .scroll-btn {
@@ -791,6 +695,10 @@ body {
     background: var(--primary-color);
 }
 
+.scroll-btn {
+    display: none; /* Hide buttons for continuous marquee */
+}
+
 .scroll-btn.left {
     left: -20px;
 }
@@ -802,11 +710,9 @@ body {
 .reels-track {
     display: flex;
     gap: 20px;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    scroll-snap-type: x mandatory;
     padding: 20px 0;
-    width: 100%;
+    width: max-content;
+    will-change: transform;
 }
 
 /* Hide scrollbar */

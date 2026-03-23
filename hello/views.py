@@ -15,6 +15,11 @@ from django.core.mail import send_mail
 # contact
 from django.contrib import messages
 
+#description
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .utils.ai_description import generate_description
 
 
 #cart
@@ -299,7 +304,8 @@ def decrease_quantity(request, cart_id):
 
 
 ################
-
+def order_success(request):
+    return render(request, "order_success.html")
 
 # wishlist
 
@@ -447,9 +453,7 @@ def cancel_order(request, order_id):
 def seller_home(request):
     return render(request,"seller_home.html")
 
-from django.conf import settings
-import random
-from django.core.mail import send_mail
+
 
 def artisan_register(request):
 
@@ -593,89 +597,99 @@ def artisan_products(request):
     return render(request, "artisan_products.html", {"products": products,  "categories": categories,
         "product_types": product_types})
 
-# def add_product(request):
-
-#     if request.method == "POST":
-
-#         product_name = request.POST.get("product_name")
-#         actual_price = request.POST.get("actual_price")
-#         offer_price = request.POST.get("offer_price")
-#         quantity = request.POST.get("quantity")
-#         description = request.POST.get("description")
-#         product_image = request.FILES.get("product_image")
-
-#         category_id = request.POST.get("category")
-#         subcategory_id = request.POST.get("product_type")
-
-#         artisan_id = request.session.get("artisan_id")
-
-#         artisan = Artisan.objects.get(id=artisan_id)
-
-#         Product.objects.create(
-#             artisan=artisan,
-#             category_id=category_id,
-#             subcategory_id=subcategory_id,
-#             Product_name=product_name,
-#             Actual_price=actual_price,
-#             Offer_price=offer_price,
-#             Quantity=quantity,
-#             Description=description,
-#             product_image=product_image
-
-#             )
-#           
-
-#                  # ✅ Handle multiple images
-#             images = request.FILES.getlist('product_images')
-
-#             for img in images:
-#                 ProductImage.objects.create(
-#                     product=product,
-#                     image=img
-            
-#         )
-
-#         return redirect("artisan_products")
-
 
 def add_product(request):
-
     if request.method == "POST":
 
-        product_name = request.POST.get("product_name")
-        actual_price = request.POST.get("actual_price")
-        offer_price = request.POST.get("offer_price")
-        quantity = request.POST.get("quantity")
-        description = request.POST.get("description")
-
-        category_id = request.POST.get("category")
-        subcategory_id = request.POST.get("product_type")
-
-        artisan_id = request.session.get("artisan_id")
-        artisan = Artisan.objects.get(id=artisan_id)
-
-        # ✅ Create product
         product = Product.objects.create(
-            artisan=artisan,
-            category_id=category_id,
-            subcategory_id=subcategory_id,
-            Product_name=product_name,
-            Actual_price=actual_price,
-            Offer_price=offer_price,
-            Quantity=quantity,
-            Description=description
+            artisan=Artisan.objects.get(id=request.session.get("artisan_id")),
+            category_id=request.POST.get("category"),
+            subcategory_id=request.POST.get("product_type"),
+            Product_name=request.POST.get("product_name"),
+            Actual_price=request.POST.get("actual_price"),
+            Offer_price=request.POST.get("offer_price"),
+            Quantity=request.POST.get("quantity"),
+            Description=request.POST.get("description"),
         )
 
-        # ✅ Multiple images
-        images = request.FILES.getlist('product_images')
+        # ✅ SAVE IMAGES CORRECTLY
+        if request.FILES.get("front_image"):
+            product.front_image = request.FILES.get("front_image")
 
-        for img in images:
-            ProductImage.objects.create(
-                product=product,
-                image=img
-            )
+        if request.FILES.get("left_image"):
+            product.left_image = request.FILES.get("left_image")
+
+        if request.FILES.get("right_image"):
+            product.right_image = request.FILES.get("right_image")
+
+        if request.FILES.get("back_image"):
+            product.back_image = request.FILES.get("back_image")
+
+        product.save()
 
         return redirect("artisan_products")
+    
+
+
+from transformers import pipeline
+
+generator = pipeline("text-generation", model="distilgpt2")
+
+def generate_description(name, category):
+
+    prompt = f"{name} is a handmade {category} product. It is"
+
+    result = generator(
+        prompt,
+        max_length=80,
+        num_return_sequences=1,
+        do_sample=True,
+        temperature=0.7
+    )
+
+    text = result[0]['generated_text']
+
+    # ✅ remove prompt part
+    cleaned = text.replace(prompt, "").strip()
+
+    # ✅ final clean format
+    return f"""
+{name} is a handcrafted {category} product made by skilled artisans.
+
+Material: Natural {category}  
+Usage: Home décor / daily use  
+Care: Keep in dry conditions  
+
+{cleaned}
+"""
+
+# @csrf_exempt
+# def generate_description_api(request):
+#     try:
+#         if request.method == "POST":
+#             data = json.loads(request.body)
+
+#             name = data.get("name")
+#             category = data.get("category")
+
+#             # safety check
+#             if not name or not category:
+#                 return JsonResponse({"error": "Missing data"}, status=400)
+
+#             description = generate_description(name, category)
+
+#             return JsonResponse({
+#                 "description": description
+#             })
+
+#         return JsonResponse({"error": "Invalid request"}, status=400)
+
+#     except Exception as e:
+#         print("ERROR:", e)   # debug in terminal
+#         return JsonResponse({"error": str(e)}, status=500)
+
+
+
 def edit_product(request, id):
 
     artisan_id = request.session.get("artisan_id")
@@ -690,14 +704,23 @@ def edit_product(request, id):
         product.Quantity = request.POST.get("quantity")
         product.Description = request.POST.get("description")
 
-        if request.FILES.get("product_image"):
-            product.product_image = request.FILES.get("product_image")
+        if request.FILES.get("front_image"):
+            product.front_image = request.FILES.get("front_image")
 
+        if request.FILES.get("left_image"):
+            product.left_image = request.FILES.get("left_image")
+
+        if request.FILES.get("right_image"):
+            product.right_image = request.FILES.get("right_image")
+
+        if request.FILES.get("back_image"):
+            product.back_image = request.FILES.get("back_image")
         product.save()
 
         return redirect("artisan_products")
 
     return render(request, "edit_product.html", {"product": product})
+
 
 
 def delete_product(request, id):
@@ -728,7 +751,7 @@ def product_list(request, subcategory_id):
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
-    product.save_amount = product.Actual_price - product.Offer_price
+    product.savings = product.Actual_price - product.Offer_price
 
     return render(request, "product_detail.html", {
         "product": product
