@@ -1,0 +1,132 @@
+{% extends "artisan_base.html" %}
+
+
+{% block title %}
+Artisan dashboard | CraftHover
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <div class="container py-4">
+
+
+
+
+
+        <h3 class="mb-4 text-center  text-md-start">Artisan Dashboard</h3>
+
+        <!-- SUMMARY CARDS-->
+
+        <div class="row g-3">
+
+            <div class="col-lg-3 col-md-6 col-sm-12">
+
+                <div class="card shadow-sm p-3 text-center">
+
+                    <h6>Total Order</h6>
+
+                    <h3>{{ total_orders }}</h3>
+                </div>
+            </div>
+
+
+            <div class="col-lg-3 col-md-6 col-sm-12">
+
+                <div class="card shadow-sm p-3 text-center">
+
+                    <h6>Total Revenue</h6>
+
+                    <h3>₹ {{ total_revenue }}</h3>
+                </div>
+            </div>
+
+
+
+            <div class="col-lg-3 col-md-6 col-sm-12">
+
+                <div class="card shadow-sm p-3 text-center">
+
+                    <h6>Total Products</h6>
+
+                    <h3>{{ total_products }}</h3>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-12">
+                <div class="card shadow-sm p-3 text-center">
+                    <h6>Pending Orders</h6>
+                    <h3>{{ pending_orders }}</h3>
+                </div>
+            </div>
+        </div>
+        <!-- SALES OVERREVIEW CHART -->
+
+        <div class="card mt-4 shadow-sm p-4">
+
+            <h5 class="mb-3">Dashboard Overview</h5>
+
+            <canvas id="dashboardChart"></canvas>
+        </div>
+
+
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+        <script>const labels = [
+                "Total Orders",
+                "Pending Orders",
+                "Total Revenue",
+                "Total Products"
+            ];
+
+            const values = [
+                {{ total_orders }},
+            {{ pending_orders }},
+            {{ total_revenue }},
+            {{ total_products }}
+            ];
+
+
+            const ctx = document.getElementById('dashboardChart');
+
+            new Chart(ctx, {
+
+                type: 'bar',
+
+                data: {
+
+                    labels: labels,
+
+                    datasets: [{
+                        label: 'Dashboard Statistics',
+
+                        data: values,
+
+                        backgroundColor: [
+                            "#D2691E", // terracotta
+                            "#C9A227", // gold
+                            "#6B8E23", // olive green
+                            "#8B5E3C"  // brown
+                        ]
+
+                    }]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+
+                }
+
+            });
+        </script>
+
+{% endblock %}

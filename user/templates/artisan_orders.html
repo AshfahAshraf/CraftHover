@@ -1,0 +1,132 @@
+{% extends "artisan_base.html" %}
+{% block title %}
+Artisan order | CraftHover
+{% endblock %}
+{% block content %}
+{% load static %}
+
+<div class="container-fluid py-4">
+
+    <h2 class="mb-4">Orders</h2>
+
+
+    <!-- ✅ SUCCESS MESSAGES -->
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-success alert-dismissible fade show">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover align-middle text-center">
+
+                    <thead class="table-dark">
+
+                        <tr>
+                            <th>Product</th>
+                            <th>Customer</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for order in orders %}
+
+                        <tr>
+
+                            <td>{{ order.product.Product_name }}</td>
+                            <td>{{ order.user.Username }}</td>
+
+                            <td>{{ order.quantity }}</td>
+
+                            <td>₹{{ order.total_price }}</td>
+
+                            <td>
+
+                                {% if order.status == "Pending" %}
+                                <span class="badge bg-warning text-dark">Pending</span>
+
+                                {% elif order.status == "Shipped" %}
+                                <span class="badge bg-info">Shipped</span>
+
+                                {% elif order.status == "Delivered" %}
+                                <span class="badge bg-success">Delivered</span>
+
+                                {% else %}
+                                <span class="badge bg-danger">Cancelled</span>
+                                {% endif %}
+
+                            </td>
+
+                            <!-- ✅ FIXED ACTION COLUMN -->
+                            <td>
+
+                                <form method="POST" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="order_id" value="{{ order.id }}">
+
+                                    {% if order.status == "Pending" %}
+
+                                    <button name="action" value="ship" class="btn btn-info btn-sm">
+                                        Ship
+                                    </button>
+
+                                    <button name="action" value="cancel" class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Are you sure to cancel this order?')">
+                                        Cancel
+                                    </button>
+
+                                    {% elif order.status == "Shipped" %}
+
+                                    <button name="action" value="deliver" class="btn btn-success btn-sm">
+                                        Deliver
+                                    </button>
+
+                                    {% elif order.status == "Delivered" %}
+
+                                    <span class="text-success">Completed</span>
+
+                                    {% else %}
+
+                                    <span class="text-muted">Cancelled</span>
+
+                                    {% endif %}
+
+                                </form>
+
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+                            <td colspan="6" class="text-center">No Orders Found</td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

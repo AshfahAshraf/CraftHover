@@ -1,0 +1,309 @@
+{% extends "artisan_base.html" %}
+
+{% block title %}
+Artisan products | CraftHover
+{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<div class="d-flex justify-content-between mb-3">
+    <h3>Products</h3>
+
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
+        Add Product
+    </button>
+</div>
+
+<!-- 🔥 TABLE -->
+<div class="table-responsive">
+    <table class="table table-bordered table-striped align-middle">
+
+        <thead class="table-dark text-center">
+            <tr>
+                <th>Images</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Product Type</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody class="text-center">
+
+            {% for product in products %}
+
+            <tr>
+
+                <!-- 🔥 MULTIPLE IMAGES -->
+                <td>
+                    <div class="d-flex justify-content-center gap-2">
+
+                        {% if product.front_image %}
+                        <img src="{{ product.front_image.url }}" class="img-thumbnail"
+                            style="width:50px; height:50px; object-fit:cover;">
+                        {% endif %}
+
+                        {% if product.left_image %}
+                        <img src="{{ product.left_image.url }}" class="img-thumbnail"
+                            style="width:50px; height:50px; object-fit:cover;">
+                        {% endif %}
+
+                        {% if product.right_image %}
+                        <img src="{{ product.right_image.url }}" class="img-thumbnail"
+                            style="width:50px; height:50px; object-fit:cover;">
+                        {% endif %}
+
+                        {% if not product.front_image and not product.left_image and not product.right_image %}
+                        <span class="text-muted">No Image</span>
+                        {% endif %}
+
+                    </div>
+                </td>
+
+                <!-- NAME -->
+                <td class="fw-bold">{{ product.Product_name }}</td>
+
+                <!-- CATEGORY -->
+                <td>{{ product.category.name }}</td>
+
+                <td>{{ product.subcategory.name }}</td>
+                <!-- PRICE -->
+                <td>
+                    <span class="text-success fw-bold">₹ {{ product.Offer_price }}</span><br>
+                    <small class="text-muted text-decoration-line-through">
+                        ₹ {{ product.Actual_price }}
+                    </small>
+                </td>
+
+                <!-- STOCK -->
+                <td>
+                    {% if product.Quantity > 0 %}
+                    <span class="badge bg-success">{{ product.Quantity }}</span>
+                    {% else %}
+                    <span class="badge bg-danger">Out</span>
+                    {% endif %}
+                </td>
+
+                <!-- ACTION -->
+                <td>
+                    <div class="d-flex justify-content-center gap-2">
+                        <a href="{% url 'edit_product' product.id %}" class="btn btn-warning btn-sm">
+                            Edit
+                        </a>
+
+                        <a href="{% url 'delete_product' product.id %}" class="btn btn-danger btn-sm"
+                            onclick="return confirm('Are you sure you want to delete this product?')">
+                            Delete
+                        </a>
+                    </div>
+                </td>
+
+            </tr>
+
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center text-muted py-4">
+                    No products available
+                </td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+</div>
+
+<!-- 🔥 ADD PRODUCT MODAL -->
+
+<div class="modal fade" id="addProductModal" tabindex="-1">
+
+    <div class="modal-dialog modal-lg">
+
+        <div class="modal-content">
+
+            <form method="POST" action="{% url 'add_product' %}" enctype="multipart/form-data">
+
+                {% csrf_token %}
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+                            <label>Product Name</label>
+                            <input type="text" name="product_name" class="form-control" required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Category</label>
+                            <select name="category" id="category" class="form-control">
+                                <option value="">Select Category</option>
+                                {% for c in categories %}
+                                <option value="{{ c.id }}">{{ c.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Product Type</label>
+                            <select name="product_type" id="productType" class="form-control">
+                                <option value="">Select Product Type</option>
+                                {% for t in product_types %}
+                                <option value="{{ t.id }}" data-category="{{ t.category.id }}">
+                                    {{ t.name }}
+                                </option>
+                                 {% endfor %}
+                            </select>
+                               
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Actual Price</label>
+                            <input type="number" name="actual_price" class="form-control">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Offer Price</label>
+                            <input type="number" name="offer_price" class="form-control">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Quantity</label>
+                            <input type="number" name="quantity" class="form-control">
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <textarea id="description" name="description" class="form-control"></textarea>
+
+                            <button type="button" onclick="generateDescription()" class="btn btn-dark mt-2">
+                                Generate with AI
+                            </button>
+                        </div>
+
+                        <!-- 🔥 IMAGE UPLOAD -->
+                        <div class="col-md-6 mb-3">
+                            <label>Front Image</label>
+                            <input type="file" name="front_image" class="form-control">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Left Image</label>
+                            <input type="file" name="left_image" class="form-control">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Right Image</label>
+                            <input type="file" name="right_image" class="form-control">
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Product</button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- 🔥 OPTIONAL CSS -->
+<style>
+    .img-thumbnail {
+        padding: 2px;
+        border-radius: 6px;
+    }
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const category = document.getElementById("category");
+    const productType = document.getElementById("productType");
+
+    category.addEventListener("change", function () {
+
+        let selectedCategory = this.value;
+
+        for (let option of productType.options) {
+
+            if (option.value === "") continue;
+
+            if (option.getAttribute("data-category") === selectedCategory) {
+                option.style.display = "block";
+            } else {
+                option.style.display = "none";
+            }
+        }
+
+        productType.value = "";
+    });
+
+});
+
+
+function generateDescription() {
+
+    let name = document.querySelector('[name="product_name"]').value;
+
+    let category = document.getElementById("category");
+    let categoryText = category.options[category.selectedIndex].text;
+
+    let productType = document.getElementById("productType");
+    let productTypeText = productType.options[productType.selectedIndex].text;
+
+    // ✅ VALIDATION
+    if (!name || categoryText === "Select Category") {
+        alert("Enter product name and category!");
+        return;
+    }
+
+    if (!productTypeText || productTypeText === "Select Product Type") {
+        alert("Select product type!");
+        return;
+    }
+
+    // 🔥 Loading message
+    document.getElementById("description").value = "Generating description...";
+
+    fetch("/generate-description/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCSRFToken()
+        },
+        body: JSON.stringify({
+            name: name,
+            category: categoryText,
+            product_type: productTypeText   // ✅ FIXED
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("description").value = data.description;
+    })
+    .catch(err => {
+        console.log(err);
+        alert("Error generating description");
+    });
+}
+
+function getCSRFToken() {
+    return document.cookie.split('; ')
+        .find(row => row.startsWith('csrftoken'))
+        ?.split('=')[1];
+}
+</script>
+{% endblock %}

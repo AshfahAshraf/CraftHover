@@ -1,0 +1,211 @@
+{% extends 'navbar.html' %}
+{% load static %}
+
+{% block title %}
+{{ product.Product_name }} - {{ product.category.name }} | CraftHover
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+  <div class="row align-items-start">
+
+    <!-- 🔹 LEFT THUMBNAILS -->
+
+
+    <!-- 🔹 MAIN IMAGE -->
+
+    <div class="col-md-7">
+      <div class="row align-items-center">
+
+        <!-- 🔥 LEFT SIDE (2 images together) -->
+        <div class="col-4 text-center ">
+
+          {% if product.left_image %}
+          <img src="{{ product.left_image.url }}" class="side-img mb-5" onclick="changeImage(this)">
+          {% endif %}
+
+          {% if product.right_image %}
+          <img src="{{ product.right_image.url }}" class="side-img" onclick="changeImage(this)">
+          {% endif %}
+
+        </div>
+
+        <!-- ✅ MAIN IMAGE (RIGHT SIDE) -->
+        <div class="col-8 text-center mb-5">
+          {% if product.front_image %}
+          <img id="mainImage" src="{{ product.front_image.url }}" class="main-img">
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 🔹 RIGHT SIDE DETAILS -->
+    <div class="col-md-5">
+
+      <h3>{{ product.Product_name }}</h3>
+
+      <h4 class="text-success mt-2">
+        ₹{{ product.Offer_price }}
+      </h4>
+
+      <p>
+        <span class="text-decoration-line-through text-muted">
+          ₹{{ product.Actual_price }}
+        </span>
+
+        <!-- ✅ SAVINGS -->
+        <span class="text-success ms-2">
+          Save ₹{{ product.savings }}
+        </span>
+      </p>
+
+      <hr>
+
+     
+
+      <!-- Stock -->
+      <p><b>Stock:</b> {{ product.Quantity }}</p>
+
+      <hr>
+      <div class="accordion mt-3" id="detailsAccordion">
+
+        <!-- 🔽 Description -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#descBox">
+              <strong>Product Description</strong>
+            </button>
+          </h2>
+
+          <div id="descBox" class="accordion-collapse collapse" data-bs-parent="#detailsAccordion">
+            <div class="accordion-body">
+
+              <p>
+
+                {{ product.Description|default:"No description available"|linebreaksbr }}
+
+              </p>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- 🔽 Manufacturer -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#manufacturerBox">
+              <strong>Manufacturer Details</strong>
+            </button>
+          </h2>
+
+          <div id="manufacturerBox" class="accordion-collapse collapse" data-bs-parent="#detailsAccordion">
+            <div class="accordion-body">
+
+              <p><strong>Name:</strong> {{ product.artisan.name }}</p>
+              <p><strong>Email:</strong> {{ product.artisan.email }}</p>
+              <p><strong>Phone:</strong> {{ product.artisan.phone|default:"Not available" }}</p>
+              <p><strong>Address:</strong> {{ product.artisan.address|default:"Not available" }}</p>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- 🔽 Returns -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#returnsBox">
+              <strong>Returns & Exchange Information</strong>
+            </button>
+          </h2>
+
+          <div id="returnsBox" class="accordion-collapse collapse" data-bs-parent="#detailsAccordion">
+            <div class="accordion-body">
+
+              <ul>
+                <li>Return within 30 days</li>
+                <li>COD refund as store credit</li>
+                <li>₹99 shipping + 3% fee</li>
+                <li>Report damage within 48 hours</li>
+              </ul>
+
+            </div>
+          </div>
+        </div>
+
+      </div> <!-- Add to Cart -->
+      <a href="{% url 'add_to_cart' product.id %}" class="btn btn-dark w-100">
+        ADD TO CART
+      </a>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- 🔥 CSS -->
+<style>
+  .main-img {
+    max-height: 400px;
+    width: 100%;
+    object-fit: contain;
+    transition: 0.3s;
+    cursor: zoom-in;
+  }
+
+  .side-img {
+    width: 100%;
+    max-height: 120px;
+    object-fit: cover;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  .side-img:hover {
+    transform: scale(1.1);
+  }
+
+  /* ✅ simple zoom */
+  .main-img:hover {
+    transform: scale(1.5);
+  }
+</style>
+
+<!-- 🔥 JS -->
+<script>
+
+  // ✅ GLOBAL FUNCTION (IMPORTANT)
+  function changeImage(el) {
+    const mainImage = document.getElementById("mainImage");
+    if (mainImage) {
+      mainImage.src = el.src;
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+
+    // 🔹 Zoom effect
+    const mainImg = document.getElementById("mainImage");
+
+    if (mainImg) {
+      mainImg.addEventListener("mousemove", function (e) {
+        const rect = mainImg.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width * 100;
+        const y = (e.clientY - rect.top) / rect.height * 100;
+
+        mainImg.style.transformOrigin = x + "% " + y + "%";
+        mainImg.style.transform = "scale(1.2)";
+      });
+
+      mainImg.addEventListener("mouseleave", function () {
+        mainImg.style.transform = "scale(1)";
+      });
+    }
+
+  });
+</script>
+
+{% endblock %}

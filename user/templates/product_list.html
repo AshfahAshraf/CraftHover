@@ -1,0 +1,150 @@
+{% extends 'navbar.html' %}
+{% load static %}
+{% block title %}
+{{ product.Product_name }} - {{ product.category.name }} | CraftHover
+{% endblock %}
+{% block content %}
+<style>
+  .product-img {
+    height: 250px;
+    width: 100%;
+    object-fit: cover;
+  }
+
+
+  .wishlist-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  .wishlist-btn i {
+    color: #555;
+    font-size: 16px;
+  }
+
+  .wishlist-btn:hover {
+    transform: scale(1.1);
+  }
+
+  .wishlist-btn.active i {
+    color: red;
+  }
+</style>
+
+<div class="container py-5">
+
+  <!-- Page Title -->
+  <h3 class="mb-4 text-center">
+    {{ subcategory.name }} Products
+  </h3>
+
+  <div class="row g-4">
+
+    {% for product in products %}
+    <div class="col-lg-4 col-md-6 col-12">
+
+
+
+
+      <div class="card shadow-sm border-0 position-relative h-100">
+
+        <!-- Discount Badge -->
+        <span class="badge bg-dark position-absolute m-2">
+          {{ product.save_amount|floatformat:0 }} OFF
+        </span>
+
+        <!-- Wishlist Icon -->
+        <a href="{% url 'add_to_wishlist' product.id %}"
+          class="wishlist-btn {% if product.id in wishlist_products %}active{% endif %}"
+          onclick="toggleWishlist(event, this)">
+
+          <i class="fa-solid fa-heart"></i>
+
+        </a>
+        <a href="{% url 'product_detail' product.id %}" style="text-decoration:none; color:black;">
+
+          <!-- Product Image -->
+          {% if product.front_image %}
+          <img src="{{ product.front_image.url }}" class="card-img-top product-img"
+            style="height:200px; object-fit:cover;">
+          {% else %}
+          <div class="text-center p-4">No Image</div>
+          {% endif %}
+
+          <!-- Card Body -->
+          <div class="card-body">
+
+            <!-- Product Name -->
+            <h6 class="fw-bold mb-1">
+              {{ product.Product_name }}
+            </h6>
+
+            <!-- Subcategory -->
+            <small class="text-muted">
+              {{ product.subcategory.name }}
+            </small>
+
+            <!-- ✅ PRICE SECTION (FIXED SAME LINE) -->
+<div class="mt-2 d-flex flex-column gap-1">
+              <!-- Offer Price -->
+              <span class="text-success fw-bold fs-5">
+                ₹{{ product.Offer_price }}
+              </span>
+
+              <!-- Actual Price -->
+              <span class="text-decoration-line-through text-muted">
+                ₹{{ product.Actual_price }}
+              </span>
+
+              <!-- Save Amount -->
+              <span class="text-success">
+                Save ₹{{ product.save_amount }}
+              </span>
+
+            </div>
+
+          </div>
+        </a>
+      </div>
+
+    </div>
+
+    {% empty %}
+    <div class="text-center">
+      <h5>No products found 😔</h5>
+    </div>
+    {% endfor %}
+
+  </div>
+
+</div>
+<script>
+  function toggleWishlist(event, el) {
+    event.preventDefault();
+
+    let url = el.getAttribute("href");
+
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "added") {
+          el.classList.add("active");
+        } else {
+          el.classList.remove("active");
+        }
+      })
+      .catch(error => console.log(error));
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,602 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Seller_home | CraftHover </title>
+    <link rel="icon" href="{% static 'images/logo.png' %}" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="{% static 'css/seller_home.css' %}">
+<style>
+.icon-color {
+    color: #626859;
+    transition: 0.3s;
+}
+
+.icon-color:hover {
+    color: #a0522d;
+    transform: scale(1.2);
+}
+</style>
+</head>
+
+<body>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>
+                <span class="line line1">Sell Online With</span>
+                <span class="line line2 highlight">Artisan Hub</span>
+            </h1>
+
+            <p>
+                <span class="line line3">Reach crores of customers across India.</span>
+                <span class="line line4">List your handmade products.</span>
+                <span class="line line5">Receive secure payments.</span>
+                <span class="line line6">Grow your craft business with complete support.</span>
+            </p>
+
+            <a href="{% url 'artisan_register' %}" class="hero-btn">Get Started</a>
+        </div>
+    </section>
+
+
+    <!-- Showcase Section: Shrinking Masterpiece & Glass Cards -->
+    <section class="showcase">
+        <div class="showcase-sticky">
+            <div class="showcase-content">
+                <div class="features-wrapper">
+                    <h2 class="text-center text-white mt-5">
+                        Why Sell With Artisan Hub
+                    </h2>
+                    <!-- Top Left -->
+                    <div class="feature-card item-tl">
+                        <div class="card-text">
+                            <strong>Easy Seller Dashboard</strong>
+                            <span>Manage your products, orders, and payments in one simple place.</span>
+                        </div>
+                    </div>
+                    <!-- Top Right -->
+                    <div class="feature-card item-tr">
+                        <div class="card-text">
+                            <strong>Seller Support Team</strong>
+                            <span>Get help anytime from our friendly support team.</span>
+                        </div>
+                    </div>
+                    <!-- Bottom Left -->
+                    <div class="feature-card item-bl">
+                        <div class="card-text">
+                            <strong>Handmade & Unique</strong>
+                            <span>Sell your handmade products to customers who love original crafts.</span>
+                        </div>
+                    </div>
+                    <!-- Bottom Right -->
+                    <div class="feature-card item-br">
+                        <div class="card-text">
+                            <strong>Safe & Fast Payments</strong>
+                            <span>Receive secure payments directly to your bank account on time.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="center-image-wrapper">
+                    <img src="{% static 'images/showcase.jpg' %}" class="shrinking-image">
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <section class="horizontal-section">
+
+        <div class="center-text">
+            <h1>Start Selling With Artisan Hub</h1>
+            <div class="scroll-arrow">→</div>
+        </div>
+
+        <div class="horizontal-wrapper">
+            <div class="horizontal-cards" id="scrollContainer">
+
+                <!-- CARD 1 -->
+                <div class="card">
+
+                    <div class="card-left">
+
+
+                        <video autoplay muted loop playsinline>
+                            <source src="{% static 'videos/video1.mp4' %}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+
+
+
+
+                    </div>
+
+
+                    <div class="card-right">
+
+                        <div class="icon-circle">👤</div>
+
+                        <h2>Create Your Seller Account</h2>
+
+                        <p>
+                            Start your journey on Artisan Hub by creating a free seller account.
+                            Register with your email, phone number, and basic business details.
+                            This will give you access to your personal seller dashboard where
+                            you can manage products, orders, and payments easily.
+                        </p>
+
+                        <ul>
+                            <li>Quick online registration</li>
+                            <li>Simple seller dashboard</li>
+                            <li>Secure account verification</li>
+                            <li>Access to seller tools</li>
+                        </ul>
+
+                    </div>
+                </div>
+
+
+                <!-- CARD 2 -->
+                <div class="card">
+
+                    <div class="card-left">
+
+
+
+                        <video autoplay muted loop playsinline>
+                            <source src="{% static 'videos/video2.mp4' %}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+
+                    </div>
+
+                    <div class="card-right">
+
+
+
+                        <div class="icon-circle">🛍️</div>
+
+                        <h2>List Your Handmade Products</h2>
+
+                        <p>
+                            Upload your handmade products and showcase them to thousands of
+                            customers on Artisan Hub. Add clear images, product descriptions,
+                            and prices so buyers can easily understand and purchase your crafts.
+                        </p>
+
+                        <ul>
+                            <li>Add product photos and details</li>
+                            <li>Set your own pricing</li>
+                            <li>Manage inventory easily</li>
+                            <li>Reach customers across India</li>
+                        </ul>
+                    </div>
+
+                </div>
+                <!-- CARD 3 -->
+                <div class="card">
+
+                    <div class="card-left">
+
+                        <video autoplay muted loop playsinline>
+                            <source src="{% static 'videos/video3.mp4' %}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+
+                    <div class="card-right">
+
+
+
+
+                        <div class="icon-circle">💳</div>
+
+                        <h2>Deliver Orders & Get Paid</h2>
+
+                        <p>
+                            Once customers place orders, prepare and ship the products safely.
+                            Artisan Hub ensures secure payments and transfers the amount directly
+                            to your bank account within the payment cycle.
+                        </p>
+
+                        <ul>
+                            <li>Receive order notifications</li>
+                            <li>Track shipments easily</li>
+                            <li>Secure payment system</li>
+                            <li>Direct bank transfer</li>
+                        </ul>
+
+                    </div>
+
+                </div>
+
+
+
+            </div>
+        </div>
+    </section>
+
+    <section class="approach-section">
+
+        <div class="container">
+            <h1 class="fw-bold p-5 text-center mb-5">
+                How we Support Artisans
+            </h1>
+            <div class="row g-4">
+                <div class=" col-lg-6 col-md-6 col-12">
+                    <div class="artisan-card">
+                        <img src="{% static 'images/seller_home_img1.jpg' %}" class="artisan-img" alt="">
+                        <div class="artisan-overlay text-center">
+                            <div class="fs-2 mb-2">🛠️</div>
+                            <h5 class="card-title">True Craftsmanship</h5>
+                            <p class="card-text">Every product is handmade by skilled artisans using traditional
+                                techniques.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class=" col-lg-6 col-md-6 col-12">
+                    <div class="artisan-card">
+                        <img src="{% static 'images/seller_home_img2.jpg' %}" class="artisan-img" alt="">
+                        <div class="artisan-overlay text-center">
+                            <div class="fs-2 mb-2">🎨</div>
+                            <h5 class="card-title">Creative Designs</h5>
+                            <p class="card-text">We encourage artisans to bring creativity and new ideas into their
+                                crafts.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-md-6 col-12">
+                    <div class="artisan-card">
+                        <img src="{% static 'images/seller_home_img3.jpg' %}" class="artisan-img">
+                        <div class="artisan-overlay text-center">
+                            <div class="fs-2 mb-2">🎯</div>
+                            <h5 class="card-title">Quality Products</h5>
+                            <p class="card-text">Our focus is to provide high-quality handmade products customers love.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="col-lg-6 col-md-6 col-12">
+                    <div class="artisan-card">
+                        <img src="{% static 'images/seller_home_img4.jpg' %}" class="artisan-img">
+                        <div class="artisan-overlay text-center">
+                            <div class="fs-2 mb-2">🤝</div>
+                            <h5 class="card-title">Supporting Communities</h5>
+                            <p class="card-text">We help artisans grow their business and support their communities.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+    </section>
+
+   <section class="seller-benefits py-5 bg-light">
+
+    <div class="container-fluid">
+
+        <h2 class="text-center mb-5 fw-semibold">
+            Sell Your Crafts with Crafttover
+        </h2>
+
+       <div class="row text-center justify-content-center">
+
+    <div class="col-lg-2 col-md-4 col-6 mb-4">
+        <i class="fa-solid fa-users fs-1 mb-2 icon-color"></i>
+        <p>45+ Lakh Customers</p>
+    </div>
+
+    <div class="col-lg-2 col-md-4 col-6 mb-4">
+        <i class="fa-solid fa-wallet fs-1 mb-2 icon-color"></i>
+        <p>Secure 7 Day Payments</p>
+    </div>
+
+    <div class="col-lg-2 col-md-4 col-6 mb-4">
+        <i class="fa-solid fa-hand-holding-dollar fs-1 mb-2 icon-color"></i>
+        <p>Low Selling Fees</p>
+    </div>
+
+    <div class="col-lg-2 col-md-4 col-6 mb-4">
+        <i class="fa-solid fa-headset fs-1 mb-2 icon-color"></i>
+        <p>24/7 Seller Support</p>
+    </div>
+
+    <div class="col-lg-2 col-md-4 col-6 mb-4">
+        <i class="fa-solid fa-store fs-1 mb-2 icon-color"></i>
+        <p>Grow Your Craft Business</p>
+    </div>
+
+</div>
+
+    </div>
+</section>
+
+            <h2 class="text-center fw-bold mb-4 mt-3">Artisan Success Stories</h2>
+
+            <div id="carouselExampleFade" class="carousel slide carousel-fade mt-5" data-bs-ride="carousel"
+                data-bs-interval="4000">
+                <div class="carousel-inner p-5 rounded-5 mb-5" style="background-color: rgb(210, 220, 220);">
+
+                    <div class="carousel-item active">
+                        <div class="success-story mx-auto">
+                            <i class="fa-solid fa-quote-left  fs-2 mb-3" style="color: #626859;"></i>
+
+                            <h3 class="fw-semibold">Anjali Nair, Handmade Clay Crafts</h3>
+                            <p>
+                                When Anjali joined Crafttover, she was selling clay pots only in her local market.
+                                Today she sells more than 250 items every month and reaches customers across India.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="carousel-item">
+                        <div class="success-story mx-auto ">
+                            <i class="fa-solid fa-quote-left fs-2 mb-3" style="color: #626859;"></i>
+
+                            <h3 class="fw-semibold">Ramesh Kumar, Bamboo Handicrafts</h3>
+                            <p>
+                                Ramesh started selling bamboo baskets and lamps from his small workshop.
+                                After joining Crafttover, his products reached many online buyers and his business grew.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="carousel-item">
+                        <div class="success-story mx-auto ">
+                            <i class="fa-solid fa-quote-left fs-2 mb-3" style="color: #626859;"></i>
+
+                            <h3 class="fw-semibold">Meera Joshi, Handwoven Shawls</h3>
+                            <p>
+                                Meera creates traditional handwoven shawls. Earlier she sold only in local exhibitions.
+                                With CraftHover, her products now reach customers across the country and her monthly
+                                sales have increased.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="carousel-item">
+                        <div class="success-story mx-auto ">
+                            <i class="fa-solid fa-quote-left fs-2 mb-3" style="color: #626859;"></i>
+
+                            <h3 class="fw-semibold">Abdul Rahman, Wooden Crafts</h3>
+                            <p>
+                                Abdul Rahman makes wooden decorative items. Before CraftHover, most of his customers
+                                were local tourists. Now his products are sold online and he receives orders from
+                                different states.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="carousel-item">
+                        <div class="success-story mx-auto ">
+                            <i class="fa-solid fa-quote-left fs-2 mb-3" style="color: #626859;"></i>
+
+                            <h3 class="fw-semibold">Kavita Sharma, Handmade Jewelry</h3>
+                            <p>
+                                Kavita designs handmade jewelry with beads and stones. She started selling as a small
+                                hobby. Through CraftHover, her products now reach many customers and she has built a
+                                successful small business.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade"
+                    data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade"
+                    data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+
+            </div>
+        </div>
+    </section>
+
+
+    <section class="sellyou">
+
+        <div class="container sellyou-content">
+
+            <h2 class="sellyou-title">
+                Sell Your Handmade Crafts <br> with CraftHover
+            </h2>
+
+            <p class="sellyou-text">
+                Join thousands of artisans selling <strong>handmade products</strong> online.
+                Create your seller account and start reaching customers across India.
+            </p>
+
+            <a href="{% url 'artisan_register' %}" class="sellyou-btn">Start Selling</a>
+
+        </div>
+
+    </section>
+
+    <script>
+        const showcase = document.querySelector('.showcase');
+        const shrinkingImage = document.querySelector('.shrinking-image');
+        const featureCards = document.querySelectorAll('.feature-card');
+
+        function handleScroll() {
+
+            const sectionTop = showcase.offsetTop;
+            const sectionHeight = showcase.offsetHeight;
+            const scrollY = window.scrollY;
+            const scrollDistance = sectionHeight - window.innerHeight;
+
+            let progress = (scrollY - sectionTop) / scrollDistance;
+            progress = Math.max(0, Math.min(1, progress));
+
+            let startScale;
+            let endScale;
+
+            // Desktop
+            if (window.innerWidth > 900) {
+                startScale = 1.6;
+                endScale = 0.8;
+            }
+            // Tablet
+            else if (window.innerWidth > 600) {
+                startScale = 1.3;
+                endScale = 0.9;
+            }
+            // Mobile
+            else {
+                startScale = 1.2;
+                endScale = 0.8;
+            }
+
+            let shrinkProgress = Math.min(progress / 0.6, 1);
+            let scale = startScale - (shrinkProgress * (startScale - endScale));
+
+            shrinkingImage.style.transform = `scale(${scale})`;
+            if (progress > 0.85) {
+                featureCards.forEach(card => card.classList.add('visible'));
+            } else {
+                featureCards.forEach(card => card.classList.remove('visible'));
+            }
+        }
+
+        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('resize', handleScroll);
+
+        handleScroll();
+
+
+        const section = document.querySelector(".horizontal-section");
+        const cards = document.querySelector("#scrollContainer");
+        const text = document.querySelector(".center-text h1");
+        const arrow = document.querySelector(".scroll-arrow");
+
+        window.addEventListener("scroll", () => {
+
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.offsetHeight;
+            const scrollY = window.scrollY;
+
+            let progress = (scrollY - sectionTop) / (sectionHeight - window.innerHeight);
+            progress = Math.max(0, Math.min(1, progress));
+
+            /* TEXT + ARROW FADE OUT */
+            if (progress < 0.2) {
+                text.style.opacity = 1;
+                arrow.style.opacity = 1;
+            } else {
+                text.style.opacity = 0;
+                arrow.style.opacity = 0;
+            }
+
+            /* HORIZONTAL SLIDE */
+            const maxMove = cards.scrollWidth - section.offsetWidth;
+            const moveX = progress * maxMove;
+
+            cards.style.transform = `translate(${-moveX}px, -50%)`
+        });
+
+        // Diagnostic & Force Play script
+        document.querySelectorAll('video').forEach(vid => {
+            // Force play on first scroll if autoplay was blocked
+            window.addEventListener('scroll', () => {
+                if (vid.paused) vid.play().catch(() => { });
+            }, { once: true });
+
+            vid.play().catch(error => {
+                console.warn("Autoplay blocked, waiting for interaction", error);
+            });
+
+            vid.addEventListener('error', (e) => {
+                console.error("Video error:", e);
+                // Fallback to a color or image if video fails
+                vid.parentElement.style.background = '#0a2322';
+            });
+        });
+        const cardsList = document.querySelectorAll(".card");
+
+        function revealCards() {
+
+            const triggerBottom = window.innerHeight * 0.85;
+
+            cardsList.forEach(card => {
+
+                const cardTop = card.getBoundingClientRect().top;
+
+                if (cardTop < triggerBottom) {
+                    card.classList.add("active");
+                }
+
+            });
+
+        }
+
+        window.addEventListener("scroll", revealCards);
+        revealCards();
+
+
+        /* How we Support Artisans */
+
+
+
+        const artisanCards = document.querySelectorAll(".artisan-card");
+
+        function revealArtisanCards() {
+
+            const trigger = window.innerHeight * 0.85;
+
+            artisanCards.forEach(card => {
+
+                const top = card.getBoundingClientRect().top;
+
+                if (top < trigger) {
+                    card.classList.add("show");
+                }
+
+            });
+
+        }
+
+        window.addEventListener("scroll", revealArtisanCards);
+        revealArtisanCards();
+
+
+        const heading = document.querySelector(".approach-heading");
+
+        function revealHeading() {
+
+            const trigger = window.innerHeight * 0.9;
+            const top = heading.getBoundingClientRect().top;
+
+            if (top < trigger) {
+                heading.classList.add("show");
+            }
+
+        }
+
+        window.addEventListener("scroll", revealHeading);
+        revealHeading();
+    </script>
+
+</body>
+
+</html>

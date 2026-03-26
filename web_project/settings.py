@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'hello',
+    'user',
+    'rest_framework'
     
 ]
 
@@ -81,7 +82,7 @@ WSGI_APPLICATION = 'web_project.wsgi.application'
 
 
 DATABASES = { 'default':{ 'ENGINE': 'django.db.backends.mysql',
- 'NAME': 'crafthover',
+ 'NAME': 'craftoria',
  'USER': 'root',
  'PASSWORD':'ashfah',
  'HOST': 'localhost',
@@ -144,7 +145,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'ashfahashraf@gmail.com'
-EMAIL_HOST_PASSWORD = 'cczr snds epqh bzvp'
+EMAIL_HOST_PASSWORD = 'ypoz gvqk nvhf uoqe'
 
 
 

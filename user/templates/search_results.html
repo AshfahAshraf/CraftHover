@@ -1,0 +1,81 @@
+{% extends "navbar.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h4>Search Results for "{{ query }}"</h4>
+
+    <!-- CATEGORY RESULTS -->
+    {% if categories_result %}
+        <h5 class="mt-4">Categories</h5>
+        <ul>
+            {% for cat in categories_result %}
+                <li>{{ cat.name }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <!-- PRODUCT RESULTS -->
+    {% if products %}
+        <h5 class="mt-4">Products</h5>
+
+        <div class="row">
+            {% for product in products %}
+                <div class="col-md-3 mb-3">
+
+                    <!-- ✅ CLICKABLE CARD -->
+                    <a href="{% url 'product_detail' product.id %}" 
+                       style="text-decoration:none; color:inherit;">
+
+                        <div class="card shadow-sm h-100">
+
+                            <!-- PRODUCT IMAGE -->
+                            <img src="{{ product.front_image.url }}" 
+                                 class="card-img-top"
+                                 style="height:200px; object-fit:cover;">
+
+                            <div class="p-2">
+
+                                <!-- PRODUCT NAME -->
+                                <h6 class="mb-1">{{ product.Product_name }}</h6>
+
+                                <!-- ✅ PRICE SECTION (FIXED) -->
+<div class="mt-2 d-flex flex-column gap-1">
+                                    <!-- Offer Price -->
+                                    <span class="text-success fw-bold fs-5">
+                                        ₹{{ product.Offer_price }} 
+                                    </span>
+
+                                    <!-- Actual Price -->
+                                    <span class="text-muted text-decoration-line-through">
+                                        ₹{{ product.Actual_price }} 
+                                    </span>
+
+                                    <!-- Savings -->
+                                    <span class="text-success">
+                                         Save ₹{{ product.save_amount }}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </a>
+
+                </div>
+            {% endfor %}
+        </div>
+
+    {% endif %}
+
+    <!-- NO RESULTS -->
+    {% if not categories_result and not products %}
+        <p class="text-muted mt-3">No results found.</p>
+    {% endif %}
+
+</div>
+
+{% endblock %}

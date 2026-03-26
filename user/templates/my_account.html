@@ -1,0 +1,382 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account | CraftHover</title>
+    <link rel="icon" href="{% static 'images/logo.png' %}" type="image/png"> <!-- CraftHover Logo-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        .profile-img {
+            width: 100%;
+            max-width: 250px;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+
+        }
+
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .sidebar {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .sidebar a {
+            text-decoration: none;
+            color: #333;
+            display: block;
+            padding: 10px 0;
+            transition: 1s;
+
+        }
+
+        .sidebar a:hover {
+            color: #0d6efd;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="container my-5">
+        <div class="row g-4">
+
+            <!-- sidebar-->
+
+            <div class="col-lg-3 col-md-4 col-12">
+                <div class="sidebar shadow-sm">
+
+                    <div class="text-center mb-4">
+
+                        <button class="border-0 bg-transparent" data-bs-toggle="modal"
+                            data-bs-target="#profileImageModal">
+
+                            {% if user.profile_image %}
+                            <img src="{{ user.profile_image.url }}" class="rounded-circle img-fluid profile-img"
+                                width="120">
+                            {% else %}
+                            <img src="{% static 'images/user.png' %}" class="rounded-circle img-fluid profile-img"
+                                width="120">
+                            {% endif %}
+
+                        </button>
+
+                        <h5 class="mb-0">{{ user.username }}</h5>
+                        <small class="text-muted">{{ user.email }}</small>
+
+                    </div>
+
+                    <div class="modal fade" id="profileImageModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Profile Image</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <form method="POST" enctype="multipart/form-data">
+                                    {% csrf_token %}
+
+                                    <div class="modal-body text-center">
+
+                                        {% if user.profile_image %}
+                                        <img src="{{ user.profile_image.url }}" class="rounded-circle mb-3" width="120">
+                                        {% endif %}
+
+                                        <input type="file" name="profile_image" class="form-control mb-3">
+
+                                    </div>
+
+                                    <div class="modal-footer">
+
+                                        <button type="submit" name="upload_image" class="btn btn-success">
+                                            Upload / Update
+                                        </button>
+
+                                        <button type="submit" name="remove_image" class="btn btn-danger">
+                                            Remove
+                                        </button>
+
+                                    </div>
+
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'order' %}"><i class="fa-solid fa-box me-2"></i> Orders</a>
+
+                    <a href="{% url 'wishlist' %}"><i class="fa-solid fa-heart me-2"></i> Wishlist</a>
+                    <a href="{% url 'change_password' %}"><i class="fa-solid fa-lock me-2"></i> Change Password</a>
+                    <a href="{% url 'logout' %}"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign out</a>
+                </div>
+            </div>
+
+            <!--Main Content-->
+            <div class="col-lg-9 col-md-8 col-12">
+                <!--profile info-->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">Profile Information</h5>
+
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#profileModal">
+                                Edit Profile
+                            </button>
+                        </div>
+
+                        <p><strong>Name:</strong> {{ user.Username }}</p>
+                        <p><strong>Email:</strong> {{ user.Email }}</p>
+                        <p><strong>Phone:</strong> {{ user.Phone_Number }}</p>
+
+                    </div>
+                </div>
+
+                <!-- EDIT PROFILE MODAL -->
+
+                <div class="modal fade" id="profileModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit Profile</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+
+                            <form method="POST">
+                                {% csrf_token %}
+
+                                <div class="modal-body">
+
+                                    <label>Name</label>
+                                    <input type="text" name="username" value="{{ user.Username }}"
+                                        class="form-control mb-3">
+
+                                    <label>Email</label>
+                                    <input type="email" name="email" value="{{ user.Email }}" class="form-control mb-3">
+
+                                    <label>Phone</label>
+                                    <input type="text" name="phone_number" value="{{ user.Phone_Number }}"
+                                        class="form-control mb-3">
+
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-success">Save Changes</button>
+                                </div>
+
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+                <!-- Recent Order-->
+                <div class="card shadow-sm mb-4">
+
+                    <div class="card-body">
+                        <h5 class="mb-3">Recent orders</h5>
+
+                        {% for order in orders %}
+
+<div class="d-flex justify-content-between align-items-center border-bottom py-3">                            <div>
+                                <img src="{{ order.product.front_image.url }}"
+                                    style="width:70px; height:70px; object-fit:cover; border-radius:8px;">
+                            </div>
+                            <div>
+                                <strong class="d-block">{{ order.product.Product_name }}</strong>
+                                <small class="text-muted">Order #{{ order.id }}</small><br>
+                                <small>Qty: {{ order.quantity }}</small><br>
+                                <small>₹{{ order.total_price }}</small>
+                            </div>
+                            {% if order.status == "Delivered" %}
+
+                            <span class="btn btn-success btn-sm">{{ order.status }}</span>
+                            {% elif order.status == "Pending" %}
+
+                            <span class="btn btn-warning btn-sm">{{ order.status }}</span>
+
+                            {% elif order.status == "Cancelled" %}
+                            <span class="btn btn-danger btn-sm">{{ order.status }}</span>
+
+                            {% else %}
+
+                            <span class="btn btn-secondary btn-sm">{{ order.status }}</span>
+
+                            {% endif %}
+                        </div>
+
+                        {% empty %}
+                        <p>No recent orders</p>
+
+                        {% endfor %}
+
+
+                        <div class="text-end py-2 mt-2">
+                            <a href="{% url 'order' %}" class="btn btn-primary">View All orders</a>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+                <!--Address-->
+                <!-- Add Address Modal -->
+                <div class="modal fade" id="addressModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add Address</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <form method="POST">
+                                {% csrf_token %}
+
+                                <div class="modal-body">
+
+                                    <input type="text" name="full_name" class="form-control mb-2"
+                                        placeholder="Full Name" required>
+
+                                    <input type="text" name="street" class="form-control mb-2" placeholder="Street"
+                                        required>
+
+                                    <input type="text" name="city" class="form-control mb-2" placeholder="City"
+                                        required>
+
+                                    <input type="text" name="state" class="form-control mb-2" placeholder="State"
+                                        required>
+
+                                    <input type="text" name="pincode" class="form-control mb-2" placeholder="Pincode"
+                                        required>
+
+                                    <input type="text" name="phone" class="form-control mb-2" placeholder="Phone"
+                                        required>
+
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-success">Save Address</button>
+                                </div>
+
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- Address Card -->
+                <div class="card shadow-sm mb-4 p-4">
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5>Saved Address</h5>
+
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addressModal">
+                                + Add New Address
+                            </button>
+                        </div>
+
+                        {% for address in addresses %}
+
+                        <div class="border p-3 mb-3 rounded">
+
+                            <p class="fw-bold">{{ address.full_name }}</p>
+                            <p>{{ address.street }}</p>
+                            <p>{{ address.city }}, {{ address.state }}</p>
+                            <p>Pin: {{ address.pincode }}</p>
+                            <p>Phone: {{ address.phone }}</p>
+
+                            <div class="d-flex gap-2 justify-content-end">
+
+                                <!-- EDIT -->
+                                <button class="btn btn-outline-primary" data-bs-toggle="modal"
+                                    data-bs-target="#editAddressModal{{ address.id }}">
+                                    Edit
+                                </button>
+
+                                <!-- DELETE -->
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="delete_address_id" value="{{ address.id }}">
+                                    <button type="submit" class="btn btn-outline-danger">
+                                        Delete
+                                    </button>
+                                </form>
+
+                            </div>
+                        </div>
+
+                        <!-- EDIT MODAL -->
+                        <div class="modal fade" id="editAddressModal{{ address.id }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+
+                                    <div class="modal-header">
+                                        <h5>Edit Address</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+
+                                    <form method="POST">
+                                        {% csrf_token %}
+
+                                        <input type="hidden" name="address_id" value="{{ address.id }}">
+                                        <input type="hidden" name="update_address" value="1">
+
+                                        <div class="modal-body">
+
+                                            <input type="text" name="full_name" value="{{ address.full_name }}"
+                                                class="form-control mb-2">
+                                            <input type="text" name="street" value="{{ address.street }}"
+                                                class="form-control mb-2">
+                                            <input type="text" name="city" value="{{ address.city }}"
+                                                class="form-control mb-2">
+                                            <input type="text" name="state" value="{{ address.state }}"
+                                                class="form-control mb-2">
+                                            <input type="text" name="pincode" value="{{ address.pincode }}"
+                                                class="form-control mb-2">
+                                            <input type="text" name="phone" value="{{ address.phone }}"
+                                                class="form-control mb-2">
+
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-success">Update</button>
+                                        </div>
+
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        {% empty %}
+                        <p>No address saved</p>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
