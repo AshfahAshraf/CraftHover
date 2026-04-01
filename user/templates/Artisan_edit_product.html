@@ -11,13 +11,13 @@ Artisan edit products | CraftHover
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
 
-    <!-- 🔹 Product Name -->
+    <!--  Product Name -->
     <div class="mb-3">
         <label>Product Name</label>
         <input type="text" name="product_name" value="{{ product.Product_name }}" class="form-control">
     </div>
 
-    <!-- 🔹 Prices -->
+    <!--  Prices -->
     <div class="mb-3">
         <label>Actual Price</label>
         <input type="number" name="actual_price" value="{{ product.Actual_price }}" class="form-control">
@@ -28,18 +28,18 @@ Artisan edit products | CraftHover
         <input type="number" name="offer_price" value="{{ product.Offer_price }}" class="form-control">
     </div>
 
-    <!-- 🔹 Quantity -->
+    <!--  Quantity -->
     <div class="mb-3">
         <label>Quantity</label>
         <input type="number" name="quantity" value="{{ product.Quantity }}" class="form-control">
     </div>
 
-    <!-- ✅ Hidden category (VERY IMPORTANT) -->
+    <!-- Hidden category -->
     <input type="hidden" id="category" value="{{ product.category.name }}">
     <input type="hidden" id="productType" value="{{ product.subcategory.name }}">
 
 
-    <!-- 🔹 Description -->
+    <!--  Description -->
     <div class="mb-3">
         <label>Description</label>
 
@@ -56,7 +56,7 @@ Artisan edit products | CraftHover
 
     <div class="row">
 
-        <!-- 🔹 Front Image -->
+        <!--  Front Image -->
         <div class="col-md-4 mb-3">
             <label>Front</label><br>
             {% if product.front_image %}
@@ -65,7 +65,7 @@ Artisan edit products | CraftHover
             <input type="file" name="front_image" class="form-control">
         </div>
 
-        <!-- 🔹 Left Image -->
+        <!--  Left Image -->
         <div class="col-md-4 mb-3">
             <label>Left</label><br>
             {% if product.left_image %}
@@ -74,7 +74,7 @@ Artisan edit products | CraftHover
             <input type="file" name="left_image" class="form-control">
         </div>
 
-        <!-- 🔹 Right Image -->
+        <!--  Right Image -->
         <div class="col-md-4 mb-3">
             <label>Right</label><br>
             {% if product.right_image %}
@@ -91,7 +91,7 @@ Artisan edit products | CraftHover
 
 </form>
 
-<!-- 🔥 AI SCRIPT -->
+<!--  AI SCRIPT -->
 <script>
 function generateDescription() {
 
@@ -104,7 +104,7 @@ function generateDescription() {
         return;
     }
 
-    // 🔥 Loading message
+    //  Loading message
     document.getElementById("description").value = "Generating description...";
 
     fetch("/generate-description/", {

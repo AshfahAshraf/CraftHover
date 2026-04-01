@@ -1,3 +1,4 @@
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -5,9 +6,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>
-    {% block title %}CraftHover{% endblock %}
-</title>
+  <title>Navbar  | CraftHover</title>
 <link rel="icon" href="{% static 'images/logo.png' %}" type="image/png">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
@@ -44,23 +43,13 @@
       </a>
 
       <!-- Center : Search-->
-<form class="d-flex flex-grow-1 justify-content-center mx-3"
-      method="GET"
-      action="{% url 'search' %}">
 
-  <div class="d-flex" style="max-width:500px; width:100%;">
-    <input class="form-control me-2"
-           type="search"
-           name="q"
-           placeholder="Search category..."
-           required>
-
-    <button class="btn btn-outline-success" type="submit">
-      Search
-    </button>
-  </div>
-
-</form>
+      <form class="d-flex flex-grow-1 justify-content-center mx-3" role="search">
+        <div class="d-flex" style="max-width:500px; width:100%;">
+          <input class="form-control me-2" type="search" placeholder="Search">
+          <button class="btn btn-outline-success">Search</button>
+        </div>
+      </form>
 
 
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
@@ -103,7 +92,6 @@
           
 
             <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="{% url 'my_account' %}">My Account</a></li>
               <li><a class="dropdown-item" href="{% url 'order' %}">Order</a></li>
               <li><a class="dropdown-item" href="{% url 'wishlist' %}">Wishlist</a></li>
               <li><a class="dropdown-item" href="{% url 'about_Us' %}">About Us</a></li>
@@ -134,124 +122,10 @@
     </div>
   </nav>
 
-
-
-
-  <!-- <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container">
-
-
-
-
-
-
-      <ul class="navbar-nav ms-auto">
-
-
-
-
-
-        <li class="nav-item dropdown ">
-          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-            Pottery & Clay Items
-          </a>
-
-          <div class="dropdown-menu border-0 shadow-lg">
-            <a class="dropdown-item" href="{% url 'product_list' 1 %}">Clay pots</a>
-            <a class="dropdown-item" href="{% url 'product_list' 2 %}">Ceramic mugs</a>
-            <a class="dropdown-item">Handmade plates</a>
-            <a class="dropdown-item">Decorative vases</a>
-          </div>
-        </li>
-
-
-        <li class="nav-item dropdown mx-3">
-          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-            Handloom & Textile
-          </a>
-
-          <div class="dropdown-menu border-0 shadow-lg">
-            <a class="dropdown-item">Handloom sarees</a>
-            <a class="dropdown-item">Shawls</a>
-            <a class="dropdown-item">Scarves</a>
-            <a class="dropdown-item">Cushion cover</a>
-          </div>
-        </li>
-
-        <li class="nav-item dropdown mx-3">
-          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-            Wooden Crafts
-          </a>
-
-          <div class="dropdown-menu border-0 shadow-lg">
-            <a class="dropdown-item">Wooden toys</a>
-            <a class="dropdown-item">Wall decor</a>
-            <a class="dropdown-item">Jewelry boxes</a>
-            <a class="dropdown-item">Key holders</a>
-          </div>
-        </li>
-
-        <li class="nav-item dropdown mx-3">
-          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-            Handmade Jewelry
-          </a>
-
-          <div class="dropdown-menu border-0 shadow-lg">
-            <a class="dropdown-item">Beaded necklaces</a>
-            <a class="dropdown-item">Earrings</a>
-            <a class="dropdown-item">Bangles</a>
-            <a class="dropdown-item">Anklets</a>
-          </div>
-        </li>
-
-        <li class="nav-item dropdown mx-3">
-          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-            Painting & Artwork
-          </a>
-
-          <div class="dropdown-menu border-0 shadow-lg">
-            <a class="dropdown-item">Canvas paintings</a>
-            <a class="dropdown-item">Wall art</a>
-            <a class="dropdown-item">Traditional paintings</a>
-            <a class="dropdown-item">Greeting cards</a>
-          </div>
-        </li>
-
-        <li class="nav-item dropdown mx-3">
-          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-            Bamboo & Natural Fiber
-          </a>
-
-          <div class="dropdown-menu border-0 shadow-lg">
-            <a class="dropdown-item">Bamboo baskets</a>
-            <a class="dropdown-item">Cane chairs</a>
-            <a class="dropdown-item">Mats</a>
-            <a class="dropdown-item">Eco decor</a>
-          </div>
-        </li>
-
-        <li class="nav-item dropdown mx-3">
-          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-            Home & Lifestyle
-          </a>
-
-          <div class="dropdown-menu border-0 shadow-lg">
-            <a class="dropdown-item">Scented candles</a>
-            <a class="dropdown-item">Handmade soaps</a>
-            <a class="dropdown-item">Photo frames</a>
-            <a class="dropdown-item">Macrame wall</a>
-          </div>
-        </li>
-
-      </ul>
-
-    </div>
-    </div>
-  </nav> -->
-
 <!-- CATEGORY NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <div class="container">
+<nav class="navbar navbar-expand-lg navbar-light bg-light category-navbar">
+
+<div class="container-fluid">
 
     <ul class="navbar-nav mx-auto">
 

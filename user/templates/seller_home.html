@@ -5,8 +5,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Seller_home | CraftHover </title>
-    <link rel="icon" href="{% static 'images/logo.png' %}" type="image/png">
+    <link rel="icon" href="{% static 'images/logo.png' %}" type="image/png">  <!-- CraftHover logo-->
+    <!-- Fontawesome-->
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <!-- Bootstrap-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
@@ -15,8 +18,8 @@
 
     <link rel="stylesheet" href="{% static 'css/seller_home.css' %}">
 <style>
-.icon-color {
-    color: #626859;
+    .icon-color {
+    color: #0e0f0d;
     transition: 0.3s;
 }
 
@@ -34,7 +37,7 @@
         <div class="hero-content">
             <h1>
                 <span class="line line1">Sell Online With</span>
-                <span class="line line2 highlight">Artisan Hub</span>
+                <span class="line line2 highlight">CraftHover</span>
             </h1>
 
             <p>
@@ -55,7 +58,7 @@
             <div class="showcase-content">
                 <div class="features-wrapper">
                     <h2 class="text-center text-white mt-5">
-                        Why Sell With Artisan Hub
+                        Why Sell With CraftHover
                     </h2>
                     <!-- Top Left -->
                     <div class="feature-card item-tl">
@@ -99,7 +102,7 @@
     <section class="horizontal-section">
 
         <div class="center-text">
-            <h1>Start Selling With Artisan Hub</h1>
+            <h1>Start Selling With CraftHover</h1>
             <div class="scroll-arrow">→</div>
         </div>
 
@@ -111,17 +114,10 @@
 
                     <div class="card-left">
 
-
                         <video autoplay muted loop playsinline>
                             <source src="{% static 'videos/video1.mp4' %}" type="video/mp4">
-                            Your browser does not support the video tag.
                         </video>
-
-
-
-
                     </div>
-
 
                     <div class="card-right">
 
@@ -130,7 +126,7 @@
                         <h2>Create Your Seller Account</h2>
 
                         <p>
-                            Start your journey on Artisan Hub by creating a free seller account.
+                            Start your journey on CraftHover by creating a free seller account.
                             Register with your email, phone number, and basic business details.
                             This will give you access to your personal seller dashboard where
                             you can manage products, orders, and payments easily.
@@ -152,18 +148,12 @@
 
                     <div class="card-left">
 
-
-
                         <video autoplay muted loop playsinline>
                             <source src="{% static 'videos/video2.mp4' %}" type="video/mp4">
-                            Your browser does not support the video tag.
                         </video>
-
                     </div>
 
                     <div class="card-right">
-
-
 
                         <div class="icon-circle">🛍️</div>
 
@@ -171,7 +161,7 @@
 
                         <p>
                             Upload your handmade products and showcase them to thousands of
-                            customers on Artisan Hub. Add clear images, product descriptions,
+                            customers on CraftHover. Add clear images, product descriptions,
                             and prices so buyers can easily understand and purchase your crafts.
                         </p>
 
@@ -184,6 +174,7 @@
                     </div>
 
                 </div>
+
                 <!-- CARD 3 -->
                 <div class="card">
 
@@ -197,16 +188,13 @@
 
                     <div class="card-right">
 
-
-
-
                         <div class="icon-circle">💳</div>
 
                         <h2>Deliver Orders & Get Paid</h2>
 
                         <p>
                             Once customers place orders, prepare and ship the products safely.
-                            Artisan Hub ensures secure payments and transfers the amount directly
+                            CraftHover ensures secure payments and transfers the amount directly
                             to your bank account within the payment cycle.
                         </p>
 
@@ -286,15 +274,14 @@
             </div>
         </div>
 
+</section>
 
-    </section>
-
-   <section class="seller-benefits py-5 bg-light">
+   <section class="seller-benefits py-5 bg-light mt-5">
 
     <div class="container-fluid">
 
         <h2 class="text-center mb-5 fw-semibold">
-            Sell Your Crafts with Crafttover
+            Sell Your Crafts with CraftHover
         </h2>
 
        <div class="row text-center justify-content-center">
@@ -435,15 +422,21 @@
     </section>
 
     <script>
+        // When user scrolls:
+        //     Image shrinks
+        //     Feature cards appear
         const showcase = document.querySelector('.showcase');
         const shrinkingImage = document.querySelector('.shrinking-image');
         const featureCards = document.querySelectorAll('.feature-card');
 
         function handleScroll() {
-
+// distance from the top of the page to the element
+// full height (with padding + border)
             const sectionTop = showcase.offsetTop;
             const sectionHeight = showcase.offsetHeight;
             const scrollY = window.scrollY;
+            // Calculate scroll distance inside section , sectionHeight → full height of the section
+            // window.innerHeight → visible part of screen
             const scrollDistance = sectionHeight - window.innerHeight;
 
             let progress = (scrollY - sectionTop) / scrollDistance;
@@ -467,10 +460,11 @@
                 startScale = 1.2;
                 endScale = 0.8;
             }
-
+// Finish the shrinking animation within 60% of the scroll
             let shrinkProgress = Math.min(progress / 0.6, 1);
             let scale = startScale - (shrinkProgress * (startScale - endScale));
-
+// When scroll reaches 85%
+// → show cards
             shrinkingImage.style.transform = `scale(${scale})`;
             if (progress > 0.85) {
                 featureCards.forEach(card => card.classList.add('visible'));
@@ -485,6 +479,11 @@
         handleScroll();
 
 
+        // Horizontal scrolling cards (on vertical scroll)
+        // Text fades out
+        // Cards animate in when visible
+        // Videos autoplay safely
+
         const section = document.querySelector(".horizontal-section");
         const cards = document.querySelector("#scrollContainer");
         const text = document.querySelector(".center-text h1");
@@ -495,6 +494,11 @@
             const sectionTop = section.offsetTop;
             const sectionHeight = section.offsetHeight;
             const scrollY = window.scrollY;
+
+            // scrollY - How much page is scrolled
+            // sectionTop - Where your section starts
+            // sectionHeight - Total height of section
+            // window.innerHeight - visible screen height
 
             let progress = (scrollY - sectionTop) / (sectionHeight - window.innerHeight);
             progress = Math.max(0, Math.min(1, progress));
@@ -509,6 +513,9 @@
             }
 
             /* HORIZONTAL SLIDE */
+            // cards.scrollWidth - Total width of all cards (including hidden overflow)
+            // section.offsetWidth - Visible width of container
+
             const maxMove = cards.scrollWidth - section.offsetWidth;
             const moveX = progress * maxMove;
 
@@ -532,6 +539,8 @@
                 vid.parentElement.style.background = '#0a2322';
             });
         });
+            //         If some cards are already visible
+            // → they become active instantly
         const cardsList = document.querySelectorAll(".card");
 
         function revealCards() {
@@ -578,25 +587,7 @@
 
         window.addEventListener("scroll", revealArtisanCards);
         revealArtisanCards();
-
-
-        const heading = document.querySelector(".approach-heading");
-
-        function revealHeading() {
-
-            const trigger = window.innerHeight * 0.9;
-            const top = heading.getBoundingClientRect().top;
-
-            if (top < trigger) {
-                heading.classList.add("show");
-            }
-
-        }
-
-        window.addEventListener("scroll", revealHeading);
-        revealHeading();
     </script>
 
 </body>
-
 </html>

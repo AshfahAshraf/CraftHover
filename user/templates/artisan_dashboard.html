@@ -1,132 +1,171 @@
 {% extends "artisan_base.html" %}
 
-
 {% block title %}
 Artisan dashboard | CraftHover
 {% endblock %}
 
 {% block content %}
+<style>
+    .chart-container {
+    position: relative;
+    width: 100%;
+    height: 250px;  /* smaller for mobile */
+}
+
+@media (min-width: 576px) {
+    .chart-container {
+        height: 300px;
+    }
+}
+
+@media (min-width: 768px) {
+    .chart-container {
+        height: 350px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .chart-container {
+        height: 400px;
+    }
+}
+</style>
 <div class="main-content">
-    <div class="container py-4">
-
-
-
-
-
-        <h3 class="mb-4 text-center  text-md-start">Artisan Dashboard</h3>
+    <div class="container py-3 px-2 px-sm-3 px-md-4">
+        <h3 class="mb-4 text-center  text-md-start fs-5 fs-md-4 fs-lg-3">
+            Artisan Dashboard
+        </h3>
 
         <!-- SUMMARY CARDS-->
 
-        <div class="row g-3">
+        <div class="row g-3 g-md-3">
 
-            <div class="col-lg-3 col-md-6 col-sm-12">
+            <div class="col-lg-3 col-md-6 col-12">
 
-                <div class="card shadow-sm p-3 text-center">
-
+                <div class="card shadow-sm p-3 text-center h-100">
                     <h6>Total Order</h6>
-
-                    <h3>{{ total_orders }}</h3>
+                    <h3 class="fw-bold">{{ total_orders }}</h3>
                 </div>
             </div>
 
+            <div class="col-lg-3 col-md-6 col-12">
 
-            <div class="col-lg-3 col-md-6 col-sm-12">
-
-                <div class="card shadow-sm p-3 text-center">
-
+                <div class="card shadow-sm p-3 text-center h-100">
                     <h6>Total Revenue</h6>
-
-                    <h3>₹ {{ total_revenue }}</h3>
+                    <h3 class="fw-bold">₹ {{ total_revenue }}</h3>
                 </div>
             </div>
 
-
-
-            <div class="col-lg-3 col-md-6 col-sm-12">
-
-                <div class="card shadow-sm p-3 text-center">
-
+            <div class="col-lg-3 col-md-6 col-12">
+                <div class="card shadow-sm p-3 text-center h-100">
                     <h6>Total Products</h6>
-
-                    <h3>{{ total_products }}</h3>
+                    <h3  class="fw-bold">{{ total_products }}</h3>
                 </div>
             </div>
 
-            <div class="col-lg-3 col-md-6 col-sm-12">
-                <div class="card shadow-sm p-3 text-center">
+            <div class="col-lg-3 col-md-6 col-12">
+                <div class="card shadow-sm p-3 text-center h-100">
                     <h6>Pending Orders</h6>
-                    <h3>{{ pending_orders }}</h3>
+                    <h3 class="fw-bold">{{ pending_orders }}</h3>
                 </div>
             </div>
         </div>
+
+
         <!-- SALES OVERREVIEW CHART -->
 
         <div class="card mt-4 shadow-sm p-4">
 
-            <h5 class="mb-3">Dashboard Overview</h5>
+            <h5 class="mb-3 text-md-start">
+                Dashboard Overview
+            </h5>
 
-            <canvas id="dashboardChart"></canvas>
+             <!-- Responsive Chart -->
+            <div class="chart-container">
+                <!-- empty space where JavaScript draws charts or graphics -->
+                <canvas id="dashboardChart"></canvas>
+            </div>
         </div>
+    </div>
+<!-- Chart.js-->
+<!--js library-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
+<script>
 
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        // Labels for X-axis
+        // Each bar corresponds to one label
 
+    const labels = [
+            "Total Orders",
+            "Pending Orders",
+            "Total Revenue",
+            "Total Products"
+        ];
 
-        <script>const labels = [
-                "Total Orders",
-                "Pending Orders",
-                "Total Revenue",
-                "Total Products"
-            ];
+        // Data values for each label
+        // Coming from Django backend
 
-            const values = [
-                {{ total_orders }},
-            {{ pending_orders }},
-            {{ total_revenue }},
-            {{ total_products }}
-            ];
+      const values = [
+            {{ total_orders|default:0 }},
+            {{ pending_orders|default:0 }},
+            {{ total_revenue|default:0 }},
+            {{ total_products|default:0 }}
+        ];
 
+        const ctx = document.getElementById('dashboardChart');
 
-            const ctx = document.getElementById('dashboardChart');
+        new Chart(ctx, {
 
-            new Chart(ctx, {
+            // bar chart
+            type: 'bar', 
 
-                type: 'bar',
+            data: {
+                // x-axis
 
-                data: {
+                labels: labels,
+                datasets: [{
+                label: 'Dashboard Statistics',
+                data: values,
 
-                    labels: labels,
-
-                    datasets: [{
-                        label: 'Dashboard Statistics',
-
-                        data: values,
-
-                        backgroundColor: [
-                            "#D2691E", // terracotta
-                            "#C9A227", // gold
-                            "#6B8E23", // olive green
-                            "#8B5E3C"  // brown
+                backgroundColor: [
+                    "#D2691E", // terracotta
+                    "#C9A227", // gold
+                    "#6B8E23", // olive green
+                    "#8B5E3C"  // brown
                         ]
 
-                    }]
+                }]
 
                 },
-
+                // this controls how your chart behaves & looks
                 options: {
-
-                    responsive: true,
-
+                    // Makes chart automatically adjust to screen size
+                    responsive: true,  
+                    // Allows chart to fill custom height/width
+                    maintainAspectRatio: false,
                     scales: {
-                        y: {
-                            beginAtZero: true
+                          x: {
+                                ticks: {
+                                    maxRotation: 0,   // Do NOT tilt the labels. Keep them straight.
+                                    minRotation: 0
+                                }
+                        },
+                       y: {
+                            beginAtZero: true,
+                            ticks: {
+                                autoSkip: true,
+                                font: {
+                                    size: 10
+                                }
+                            }
                         }
                     }
 
                 }
 
             });
-        </script>
+</script>
 
 {% endblock %}

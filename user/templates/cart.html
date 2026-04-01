@@ -1,14 +1,12 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <title>Cart | CraftHover</title>
     <link rel="icon" href="{% static 'images/logo.png' %}" type="image/png"> <!-- CraftHover Logo-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-
 <body>
 
     <div class="container my-5 p-4 shadow rounded-4">
@@ -36,17 +34,17 @@
                     </div>
 
                    <div class="col-md-4">
-    <h6>{{ item.product.Product_name }}</h6>
-    <small class="text-muted">{{ item.product.subcategory.name }}</small><br>
-    <strong class="text-success">₹{{ item.product.Offer_price }}</strong>
-</div>
+                            <h6>{{ item.product.Product_name }}</h6>
+                            <small class="text-muted">{{ item.product.subcategory.name }}</small><br>
+                            <strong class="text-success">₹{{ item.product.Offer_price }}</strong>
+                        </div>
 
                     <div class="col-md-3">
                         <div class="input-group">
 
                             <a href="{% url 'decreases' item.id %}" class="btn btn-outline-secondary">-</a>
 
-                            <input type="text" value="{{ item.quantity }}" class="form-control text-center" readonly>
+                            <input type="number" value="{{ item.quantity }}" class="form-control text-center" readonly>
 
                             <a href="{% url 'increases' item.id %}" class="btn btn-outline-secondary">+</a>
 
@@ -66,7 +64,7 @@
                 {% endfor %}
 
                 {% else %}
-                <p>Your cart is empty 😢</p>
+                <p class="text-center">Your cart is empty 😢</p>
                 {% endif %}
 
                 <a href="{% url 'home' %}">← Back to shop</a>
@@ -113,7 +111,7 @@
     </div>
 
     <!-- JS -->
-
+    <!-- It updates the final price when user selects shipping option -->
     <script>
         const shipping = document.getElementById("shipping");
         const finalPrice = document.getElementById("final_price");
@@ -121,7 +119,7 @@
 
         let basePrice = {{ total_price }};
 
-        // ✅ SET DEFAULT VALUE
+        //  SET DEFAULT VALUE
         shippingInput.value = shipping.value;
 
         shipping.addEventListener("change", function () {

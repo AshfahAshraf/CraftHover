@@ -1,0 +1,111 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Category Management{% endblock %}
+
+{% block header %}
+    {% if edit_category %}
+        Edit Category
+    {% elif edit_sub %}
+        Edit SubCategory
+    {% else %}
+        Category Management
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <h3 class="mb-4">
+        {% if edit_category %}
+            Edit Category
+        {% elif edit_sub %}
+            Edit SubCategory
+        {% else %}
+            Add Category & SubCategory
+        {% endif %}
+    </h3>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- CATEGORY -->
+        <div class="mb-3">
+            <label>Category Name</label>
+            <input type="text" name="category_name" class="form-control"
+                value="{% if edit_category %}{{ edit_category.name }}{% endif %}"
+                placeholder="Enter category">
+        </div>
+
+        <!-- SUBCATEGORY -->
+        <div class="mb-3">
+            <label>SubCategory Name</label>
+            <input type="text" name="subcategory_name" class="form-control"
+                value="{% if edit_sub %}{{ edit_sub.name }}{% endif %}"
+                placeholder="Enter subcategory">
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            {% if edit_category or edit_sub %}
+                Update
+            {% else %}
+                Save
+            {% endif %}
+        </button>
+
+        {% if edit_category or edit_sub %}
+            <a href="{% url 'add_category' %}" class="btn btn-secondary">Cancel</a>
+        {% endif %}
+    </form>
+
+    <hr>
+
+    <!-- CATEGORY TABLE -->
+    <h4>Categories</h4>
+    <table class="table table-bordered">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Actions</th>
+        </tr>
+
+        {% for cat in categories %}
+        <tr>
+            <td>{{ cat.id }}</td>
+            <td>{{ cat.name }}</td>
+            <td>
+                <a href="{% url 'edit_category' cat.id %}" class="btn btn-warning btn-sm">Edit</a>
+                <a href="{% url 'delete_category' cat.id %}" class="btn btn-danger btn-sm">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <hr>
+
+    <!-- SUBCATEGORY TABLE -->
+    <h4>SubCategories</h4>
+    <table class="table table-bordered">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Actions</th>
+        </tr>
+
+        {% for sub in subcategories %}
+        <tr>
+            <td>{{ sub.id }}</td>
+            <td>{{ sub.name }}</td>
+            <td>{{ sub.category.name }}</td>
+            <td>
+                <a href="{% url 'edit_subcategory' sub.id %}" class="btn btn-warning btn-sm">Edit</a>
+                <a href="{% url 'delete_subcategory' sub.id %}" class="btn btn-danger btn-sm">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</div>
+
+{% endblock %}

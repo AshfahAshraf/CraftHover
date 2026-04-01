@@ -1,0 +1,114 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Edit Product{% endblock %}
+
+{% block header %}Edit Product{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+
+            <div class="card shadow">
+                <div class="card-body">
+
+                    <h4 class="text-center mb-4">Edit Product</h4>
+
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <!-- NAME -->
+                        <div class="mb-3">
+                            <label>Product Name</label>
+                            <input type="text" name="product_name" class="form-control"
+                                   value="{{ product.Product_name }}" required>
+                        </div>
+
+                        <!-- CATEGORY -->
+                        <div class="mb-3">
+                            <label>Category</label>
+                            <select name="category" class="form-control">
+                                {% for c in categories %}
+                                <option value="{{ c.id }}"
+                                    {% if product.category.id == c.id %}selected{% endif %}>
+                                    {{ c.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- PRODUCT TYPE -->
+                        <div class="mb-3">
+                            <label>Product Type</label>
+                            <select name="product_type" class="form-control">
+                                {% for t in product_types %}
+                                <option value="{{ t.id }}"
+                                    {% if product.subcategory.id == t.id %}selected{% endif %}>
+                                    {{ t.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- PRICES -->
+                        <div class="mb-3">
+                            <label>Actual Price</label>
+                            <input type="number" name="actual_price" class="form-control"
+                                   value="{{ product.Actual_price }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Offer Price</label>
+                            <input type="number" name="offer_price" class="form-control"
+                                   value="{{ product.Offer_price }}">
+                        </div>
+
+                        <!-- STOCK -->
+                        <div class="mb-3">
+                            <label>Quantity</label>
+                            <input type="number" name="quantity" class="form-control"
+                                   value="{{ product.Quantity }}">
+                        </div>
+
+                        <!-- DESCRIPTION -->
+                        <div class="mb-3">
+                            <label>Description</label>
+                            <textarea name="description" class="form-control">{{ product.description }}</textarea>
+                        </div>
+
+                        <!-- IMAGES -->
+                        <div class="mb-3">
+                            <label>Front Image</label>
+                            <input type="file" name="front_image" class="form-control">
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Left Image</label>
+                            <input type="file" name="left_image" class="form-control">
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Right Image</label>
+                            <input type="file" name="right_image" class="form-control">
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">
+                            Update Product
+                        </button>
+                    </form>
+
+                    <a href="{% url 'admin_products' %}" class="btn btn-secondary w-100 mt-3">
+                        Back
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

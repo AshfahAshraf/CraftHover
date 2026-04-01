@@ -18,41 +18,44 @@
 
 <body class="loading-locked">
     <div class="grain-overlay"></div>
-  
+
 
 
 
     <div class="hero-scroll-container">
         <section class="hero-section">
-        <!-- Background elements -->
-        <div class="sky-gradient"></div>
-        <div class="lighting-overlay"></div>
+            <!-- Background elements -->
+            <div class="sky-gradient"></div>
+            <div class="lighting-overlay"></div>
 
-        <!-- Main Content -->
-        <div class="contentArea">
-            <h1 class="headline">Find What Moves You</h1>
-            <p class="subtitle">Discover our exclusive collection of handcrafted artisan pieces, designed to elevate your everyday elegance with a touch of magic.</p>
-            <a href="#collections" class="cta-button">Explore Collections</a>
-        </div>
+            <!-- Main Content -->
+            <div class="contentArea">
+                <h1 class="headline">Find What Moves You</h1>
+                <p class="subtitle">Discover our exclusive collection of handcrafted artisan pieces, designed to elevate
+                    your everyday elegance with a touch of magic.</p>
+                <!-- <a href="#collections" class="cta-button">Explore Collections</a> -->
+            </div>
 
-        <!-- Artisan Display with Fog -->
-        <div class="product-showcase">
-            <img src="{% static 'images/woman_necklace.png' %}"  alt="Beautiful artisan crafted piece" class="jewelry-image">
-        </div>
-        
-        <!-- Scrolling Outline Text -->
-        <svg class="scroll-text-svg" width="100%" height="100%">
-            <!-- Position perfectly centered -->
-            <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" class="scroll-text">CRAFTHOVER</text>
-        </svg>
+            <!-- Artisan Display with Fog -->
+            <div class="product-showcase">
+                <img src="{% static 'images/woman_necklace.png' %}" alt="Beautiful artisan crafted piece"
+                    class="jewelry-image">
+            </div>
 
-        <!-- The Mist/Fog Layer that overlaps the bottom -->
-        <div class="fog-layer"></div>
-        <!-- New Cloud Background (Fades in after CRAFTHOVER) -->
-        <div class="new-cloud-background">
-            <canvas id="cloudCanvas"></canvas>
-        </div>
-    </section>
+            <!-- Scrolling Outline Text -->
+            <svg class="scroll-text-svg" width="100%" height="100%">
+                <!-- Position perfectly centered -->
+                <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle"
+                    class="scroll-text">CRAFTHOVER</text>
+            </svg>
+
+            <!-- The Mist/Fog Layer that overlaps the bottom -->
+            <div class="fog-layer"></div>
+            <!-- New Cloud Background (Fades in after CRAFTHOVER) -->
+            <div class="new-cloud-background">
+                <canvas id="cloudCanvas"></canvas>
+            </div>
+        </section>
     </div>
 
     <!-- FULL CATEGORIES SHOWCASE -->
@@ -67,33 +70,63 @@
             <div class="cat-text scroll-reveal reveal-left">
                 <span class="cat-number">01</span>
                 <h3 class="cat-title">Pottery & Clay Crafts</h3>
-                <p class="cat-desc">Mold earth into timeless elegance. Our masterful ceramics bring the heart of the earth directly to your sanctuary.</p>
-                <ul class="subcats">
+                <p class="cat-desc">Mold earth into timeless elegance. Our masterful ceramics bring the heart of the
+                    earth directly to your sanctuary.</p>
+                <!-- <ul class="subcats">
                     <li>Clay Pots</li>
                     <li>Ceramic Mugs</li>
                     <li>Decorative Vases</li>
                     <li>Diyas</li>
+                </ul> -->
+                <ul class="subcats">
+                    {% for sub in categories.0.subcategory_set.all %}
+                    <li>
+                        <a href="{% url 'product_list' sub.id %}" style="text-decoration:none; color:inherit;">
+                            {{ sub.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
                 </ul>
-                <a href="#" class="explore-btn">Explore Ceramic Art</a>
+                <!-- <a href="#" class="explore-btn">Explore Ceramic Art</a> -->
+                <a href="{% url 'category_products' 1 %}" class="explore-btn">
+                    Explore Ceramic Art
+                </a>
             </div>
             <div class="cat-image scroll-reveal reveal-right">
                 <img src="{% static 'images/pottery_Clay_Crafts_box.jpg' %}" alt="Pottery & Clay Crafts">
             </div>
         </div>
 
+
+
+
+
         <!-- 2. Handloom (Alternate side) -->
         <div class="cat-row reverse">
             <div class="cat-text scroll-reveal reveal-right">
                 <span class="cat-number">02</span>
                 <h3 class="cat-title">Handloom & Textile</h3>
-                <p class="cat-desc">Woven with tradition, our textiles tell stories of heritage, featuring rich textures and intricate block prints.</p>
-                <ul class="subcats">
+                <p class="cat-desc">Woven with tradition, our textiles tell stories of heritage, featuring rich textures
+                    and intricate block prints.</p>
+                <!-- <ul class="subcats">
                     <li>Sarees</li>
                     <li>Shawls</li>
                     <li>Block Printed Fabrics</li>
                     <li>Cushion Covers</li>
+                </ul> -->
+                <ul class="subcats">
+                    {% for sub in categories.1.subcategory_set.all %}
+                    <li>
+                        <a href="{% url 'product_list' sub.id %}" style="text-decoration:none; color:inherit;">
+                            {{ sub.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
                 </ul>
-                <a href="#" class="explore-btn">Explore Textiles</a>
+                <!-- <a href="#" class="explore-btn">Explore Textiles</a> -->
+                <a href="{% url 'category_products' 2 %}" class="explore-btn">
+                    Explore Textiles
+                </a>
             </div>
             <div class="cat-image scroll-reveal reveal-left">
                 <img src="{% static 'images/handloom_box.jpg' %}" alt="Handloom & Textile">
@@ -105,14 +138,27 @@
             <div class="cat-text scroll-reveal reveal-left">
                 <span class="cat-number">03</span>
                 <h3 class="cat-title">Wooden Crafts</h3>
-                <p class="cat-desc">Carved with precision and care. Explore our selection of majestic woodwork bringing the vitality of the forest home.</p>
-                <ul class="subcats">
+                <p class="cat-desc">Carved with precision and care. Explore our selection of majestic woodwork bringing
+                    the vitality of the forest home.</p>
+                <!-- <ul class="subcats">
                     <li>Wooden Toys</li>
                     <li>Wall Décor</li>
                     <li>Jewelry Boxes</li>
                     <li>Kitchen Items</li>
+                </ul> -->
+                <ul class="subcats">
+                    {% for sub in categories.2.subcategory_set.all %}
+                    <li>
+                        <a href="{% url 'product_list' sub.id %}" style="text-decoration:none; color:inherit;">
+                            {{ sub.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
                 </ul>
-                <a href="#" class="explore-btn">Explore Woodwork</a>
+                <!-- <a href="#" class="explore-btn">Explore Woodwork</a> -->
+                <a href="{% url 'category_products' 3 %}" class="explore-btn">
+                    Explore Woodwork
+                </a>
             </div>
             <div class="cat-image scroll-reveal reveal-right">
                 <img src="{% static 'images/wooden_Craft_box.jpg' %}" alt="Wooden Crafts">
@@ -124,14 +170,27 @@
             <div class="cat-text scroll-reveal reveal-right">
                 <span class="cat-number">04</span>
                 <h3 class="cat-title">Handmade Jewelry</h3>
-                <p class="cat-desc">Adorn yourself with breathtaking, handcrafted jewelry reflecting true artisanal elegance and beauty.</p>
-                <ul class="subcats">
+                <p class="cat-desc">Adorn yourself with breathtaking, handcrafted jewelry reflecting true artisanal
+                    elegance and beauty.</p>
+                <!-- <ul class="subcats">
                     <li>Necklaces</li>
                     <li>Earrings</li>
                     <li>Bangles</li>
                     <li>Anklets</li>
+                </ul> -->
+                <ul class="subcats">
+                    {% for sub in categories.3.subcategory_set.all %}
+                    <li>
+                        <a href="{% url 'product_list' sub.id %}" style="text-decoration:none; color:inherit;">
+                            {{ sub.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
                 </ul>
-                <a href="#" class="explore-btn">Explore Jewelry</a>
+                <!-- <a href="#" class="explore-btn">Explore Jewelry</a> -->
+                <a href="{% url 'category_products' 4 %}" class="explore-btn">
+                    Explore Jewelry
+                </a>
             </div>
             <div class="cat-image scroll-reveal reveal-left">
                 <img src="{% static 'images/jewelry_box.jpg' %}" alt="Handmade Jewelry">
@@ -143,14 +202,27 @@
             <div class="cat-text scroll-reveal reveal-left">
                 <span class="cat-number">05</span>
                 <h3 class="cat-title">Paintings & Artwork</h3>
-                <p class="cat-desc">A stroke of genius capturing culture onto canvas. Indulge in traditional and modern handcrafted masterpieces.</p>
-                <ul class="subcats">
+                <p class="cat-desc">A stroke of genius capturing culture onto canvas. Indulge in traditional and modern
+                    handcrafted masterpieces.</p>
+                <!-- <ul class="subcats">
                     <li>Canvas Paintings</li>
                     <li>Wall Art</li>
                     <li>Traditional Paintings</li>
                     <li>Greeting Cards</li>
+                </ul> -->
+                <ul class="subcats">
+                    {% for sub in categories.4.subcategory_set.all %}
+                    <li>
+                        <a href="{% url 'product_list' sub.id %}" style="text-decoration:none; color:inherit;">
+                            {{ sub.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
                 </ul>
-                <a href="#" class="explore-btn">Explore Artwork</a>
+                <!-- <a href="#" class="explore-btn">Explore Artwork</a> -->
+                <a href="{% url 'category_products' 5 %}" class="explore-btn">
+                    Explore Artwork
+                </a>
             </div>
             <div class="cat-image scroll-reveal reveal-right">
                 <img src="{% static 'images/art_work_box.jpg' %}" alt="Paintings & Artwork">
@@ -162,14 +234,28 @@
             <div class="cat-text scroll-reveal reveal-right">
                 <span class="cat-number">06</span>
                 <h3 class="cat-title">Bamboo & Natural Fiber</h3>
-                <p class="cat-desc">Sustainable, stunning, and sturdy. Our natural fiber crafts breathe tranquility into any living space.</p>
-                <ul class="subcats">
+                <p class="cat-desc">Sustainable, stunning, and sturdy. Our natural fiber crafts breathe tranquility into
+                    any living space.</p>
+                <!-- <ul class="subcats">
                     <li>Bamboo Baskets</li>
                     <li>Cane Furniture</li>
                     <li>Jute Bags</li>
                     <li>Mats</li>
+                </ul> -->
+                <ul class="subcats">
+                    {% for sub in categories.5.subcategory_set.all %}
+                    <li>
+                        <a href="{% url 'product_list' sub.id %}" style="text-decoration:none; color:inherit;">
+                            {{ sub.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
                 </ul>
-                <a href="#" class="explore-btn">Explore Bamboo Details</a>
+                <!-- <a href="#" class="explore-btn">Explore Bamboo Details</a> -->
+
+                <a href="{% url 'category_products' 6 %}" class="explore-btn">
+                    Explore Bamboo Details
+                </a>
             </div>
             <div class="cat-image scroll-reveal reveal-left">
                 <img src="{% static 'images/bamboo_box.jpg' %}" alt="Bamboo & Natural Fiber">
@@ -181,14 +267,27 @@
             <div class="cat-text scroll-reveal reveal-left">
                 <span class="cat-number">07</span>
                 <h3 class="cat-title">Leather & Accessories</h3>
-                <p class="cat-desc">Premium quality leather shaped by skilled hands. Discover genuine durability styled for the modern aesthete.</p>
-                <ul class="subcats">
+                <p class="cat-desc">Premium quality leather shaped by skilled hands. Discover genuine durability styled
+                    for the modern aesthete.</p>
+                <!-- <ul class="subcats">
                     <li>Wallets</li>
                     <li>Bags</li>
                     <li>Belts</li>
                     <li>Keychains</li>
+                </ul> -->
+                <ul class="subcats">
+                    {% for sub in categories.6.subcategory_set.all %}
+                    <li>
+                        <a href="{% url 'product_list' sub.id %}" style="text-decoration:none; color:inherit;">
+                            {{ sub.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
                 </ul>
-                <a href="#" class="explore-btn">Explore Leather Goods</a>
+                <!-- <a href="#" class="explore-btn">Explore Leather Goods</a> -->
+                <a href="{% url 'category_products' 7 %}" class="explore-btn">
+                    Explore Leather Goods
+                </a>
             </div>
             <div class="cat-image scroll-reveal reveal-right">
                 <img src="{% static 'images/leather_box.jpg' %}" alt="Leather & Accessories">
@@ -202,12 +301,13 @@
             <h2 class="section-title split-reveal">Trending Pieces</h2>
             <p class="section-subtitle">Exquisite masterworks currently capturing the hearts of collectors.</p>
         </div>
-        
+
         <div class="trending-grid">
             <!-- Product 1 -->
             <div class="product-card scroll-reveal reveal-fade">
                 <div class="product-image">
-                    <img src="https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=600&auto=format&fit=crop" alt="The Obsidian Vessel">
+                    <img src="https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=600&auto=format&fit=crop"
+                        alt="The Obsidian Vessel">
                     <div class="product-overlay">
                         <button class="quick-view-btn">Quick View</button>
                     </div>
@@ -222,7 +322,8 @@
             <!-- Product 2 -->
             <div class="product-card scroll-reveal reveal-fade" style="transition-delay: 0.1s;">
                 <div class="product-image">
-                    <img src="https://images.unsplash.com/photo-1599643477873-1efeed81d119?q=80&w=600&auto=format&fit=crop" alt="Gold Crescent Necklace">
+                    <img src="https://images.unsplash.com/photo-1599643477873-1efeed81d119?q=80&w=600&auto=format&fit=crop"
+                        alt="Gold Crescent Necklace">
                     <div class="product-overlay">
                         <button class="quick-view-btn">Quick View</button>
                     </div>
@@ -237,7 +338,8 @@
             <!-- Product 3 -->
             <div class="product-card scroll-reveal reveal-fade" style="transition-delay: 0.2s;">
                 <div class="product-image">
-                    <img src="https://images.unsplash.com/photo-1605370288673-9da57d903932?q=80&w=600&auto=format&fit=crop" alt="Woven Throw">
+                    <img src="https://images.unsplash.com/photo-1605370288673-9da57d903932?q=80&w=600&auto=format&fit=crop"
+                        alt="Woven Throw">
                     <div class="product-overlay">
                         <button class="quick-view-btn">Quick View</button>
                     </div>
@@ -252,7 +354,8 @@
             <!-- Product 4 -->
             <div class="product-card scroll-reveal reveal-fade" style="transition-delay: 0.3s;">
                 <div class="product-image">
-                    <img src="https://images.unsplash.com/photo-1610555356070-d0efb6505f81?q=80&w=600&auto=format&fit=crop" alt="Carved Wooden Bowl">
+                    <img src="https://images.unsplash.com/photo-1610555356070-d0efb6505f81?q=80&w=600&auto=format&fit=crop"
+                        alt="Carved Wooden Bowl">
                     <div class="product-overlay">
                         <button class="quick-view-btn">Quick View</button>
                     </div>
@@ -264,7 +367,7 @@
                 </div>
             </div>
         </div>
-        
+
     </section>
 
 
@@ -274,7 +377,8 @@
         <div class="studio-sticky">
             <div class="video-clipper" id="videoClipper">
                 <!-- Using a high-res still image as a placeholder for a cinematic silent video -->
-                <img src="https://images.unsplash.com/photo-1544974127-d0df6eeeb5af?q=80&w=2000&auto=format&fit=crop" alt="Artisan at work" class="studio-video">
+                <img src="https://images.unsplash.com/photo-1544974127-d0df6eeeb5af?q=80&w=2000&auto=format&fit=crop"
+                    alt="Artisan at work" class="studio-video">
                 <div class="studio-text-overlay">
                     <h2>Forged in Silence</h2>
                     <p>Witness the meticulous dedication behind every curve.</p>
@@ -287,17 +391,27 @@
     <section class="product-marquee-section">
         <div class="marquee-wrapper">
             <div class="pm-track" id="pmTrack">
-                <img src="https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=500&auto=format&fit=crop" alt="Product">
-                <img src="https://images.unsplash.com/photo-1610555356070-d0efb6505f81?q=80&w=500&auto=format&fit=crop" alt="Product">
-                <img src="https://images.unsplash.com/photo-1605370288673-9da57d903932?q=80&w=500&auto=format&fit=crop" alt="Product">
-                <img src="https://images.unsplash.com/photo-1599643477873-1efeed81d119?q=80&w=500&auto=format&fit=crop" alt="Product">
-                <img src="https://images.unsplash.com/photo-1590874103328-eac38a683ce7?q=80&w=500&auto=format&fit=crop" alt="Product">
-                <img src="https://images.unsplash.com/photo-1528698827591-e19ccd700a5d?q=80&w=500&auto=format&fit=crop" alt="Product">
+                <img src="https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=500&auto=format&fit=crop"
+                    alt="Product">
+                <img src="https://images.unsplash.com/photo-1610555356070-d0efb6505f81?q=80&w=500&auto=format&fit=crop"
+                    alt="Product">
+                <img src="https://images.unsplash.com/photo-1605370288673-9da57d903932?q=80&w=500&auto=format&fit=crop"
+                    alt="Product">
+                <img src="https://images.unsplash.com/photo-1599643477873-1efeed81d119?q=80&w=500&auto=format&fit=crop"
+                    alt="Product">
+                <img src="https://images.unsplash.com/photo-1590874103328-eac38a683ce7?q=80&w=500&auto=format&fit=crop"
+                    alt="Product">
+                <img src="https://images.unsplash.com/photo-1528698827591-e19ccd700a5d?q=80&w=500&auto=format&fit=crop"
+                    alt="Product">
                 <!-- Duplicates to fill the loop seamlessly -->
-                <img src="https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=500&auto=format&fit=crop" alt="Product">
-                <img src="https://images.unsplash.com/photo-1610555356070-d0efb6505f81?q=80&w=500&auto=format&fit=crop" alt="Product">
-                <img src="https://images.unsplash.com/photo-1605370288673-9da57d903932?q=80&w=500&auto=format&fit=crop" alt="Product">
-                <img src="https://images.unsplash.com/photo-1599643477873-1efeed81d119?q=80&w=500&auto=format&fit=crop" alt="Product">
+                <img src="https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=500&auto=format&fit=crop"
+                    alt="Product">
+                <img src="https://images.unsplash.com/photo-1610555356070-d0efb6505f81?q=80&w=500&auto=format&fit=crop"
+                    alt="Product">
+                <img src="https://images.unsplash.com/photo-1605370288673-9da57d903932?q=80&w=500&auto=format&fit=crop"
+                    alt="Product">
+                <img src="https://images.unsplash.com/photo-1599643477873-1efeed81d119?q=80&w=500&auto=format&fit=crop"
+                    alt="Product">
             </div>
         </div>
     </section>
@@ -312,10 +426,10 @@
             <h2 class="split-reveal">Artisan In Motion</h2>
             <p>Experience the texture, movement, and life of our creations.</p>
         </div>
-        
+
         <div class="reels-container">
             <button class="scroll-btn left" id="scrollLeftBtn">&lt;</button>
-            
+
             <div class="reels-track" id="reelsTrack">
                 <div class="video-card">
                     <video autoplay loop muted playsinline>
@@ -353,6 +467,8 @@
         </div>
     </section>
 
-<script src="{% static 'js/Home.js' %}"></script></body>
+    <script src="{% static 'js/Home.js' %}"></script>
+</body>
 {% endblock %}
+
 </html>

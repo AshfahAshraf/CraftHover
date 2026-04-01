@@ -15,7 +15,7 @@ Artisan products | CraftHover
     </button>
 </div>
 
-<!-- 🔥 TABLE -->
+<!--  TABLE -->
 <div class="table-responsive">
     <table class="table table-bordered table-striped align-middle">
 
@@ -36,8 +36,7 @@ Artisan products | CraftHover
             {% for product in products %}
 
             <tr>
-
-                <!-- 🔥 MULTIPLE IMAGES -->
+                <!--  MULTIPLE IMAGES -->
                 <td>
                     <div class="d-flex justify-content-center gap-2">
 
@@ -69,7 +68,9 @@ Artisan products | CraftHover
                 <!-- CATEGORY -->
                 <td>{{ product.category.name }}</td>
 
+                <!-- SUB CATEGORY -->
                 <td>{{ product.subcategory.name }}</td>
+
                 <!-- PRICE -->
                 <td>
                     <span class="text-success fw-bold">₹ {{ product.Offer_price }}</span><br>
@@ -116,7 +117,7 @@ Artisan products | CraftHover
     </table>
 </div>
 
-<!-- 🔥 ADD PRODUCT MODAL -->
+<!--  ADD PRODUCT MODAL -->
 
 <div class="modal fade" id="addProductModal" tabindex="-1">
 
@@ -188,7 +189,7 @@ Artisan products | CraftHover
                             </button>
                         </div>
 
-                        <!-- 🔥 IMAGE UPLOAD -->
+                        <!-- IMAGE UPLOAD -->
                         <div class="col-md-6 mb-3">
                             <label>Front Image</label>
                             <input type="file" name="front_image" class="form-control">
@@ -219,7 +220,6 @@ Artisan products | CraftHover
     </div>
 </div>
 
-<!-- 🔥 OPTIONAL CSS -->
 <style>
     .img-thumbnail {
         padding: 2px;
@@ -228,6 +228,8 @@ Artisan products | CraftHover
 </style>
 
 <script>
+    // Only show products that belong to the selected category, hide the rest
+    // Run this code only after the HTML page is fully loaded
 document.addEventListener("DOMContentLoaded", function () {
 
     const category = document.getElementById("category");
@@ -239,15 +241,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
         for (let option of productType.options) {
 
+            // Skip empty option
             if (option.value === "") continue;
 
+            // Check if category matches
             if (option.getAttribute("data-category") === selectedCategory) {
                 option.style.display = "block";
-            } else {
+            }
+            // If category doesn’t match → hide option
+             else {
                 option.style.display = "none";
             }
         }
-
+        // Clear previous selection
         productType.value = "";
     });
 
@@ -258,13 +264,15 @@ function generateDescription() {
 
     let name = document.querySelector('[name="product_name"]').value;
 
+    // Gets selected category text (not value)
     let category = document.getElementById("category");
     let categoryText = category.options[category.selectedIndex].text;
 
+    // Get product type text
     let productType = document.getElementById("productType");
     let productTypeText = productType.options[productType.selectedIndex].text;
 
-    // ✅ VALIDATION
+    //  VALIDATION
     if (!name || categoryText === "Select Category") {
         alert("Enter product name and category!");
         return;
@@ -275,7 +283,7 @@ function generateDescription() {
         return;
     }
 
-    // 🔥 Loading message
+    //  Loading message
     document.getElementById("description").value = "Generating description...";
 
     fetch("/generate-description/", {
@@ -287,7 +295,7 @@ function generateDescription() {
         body: JSON.stringify({
             name: name,
             category: categoryText,
-            product_type: productTypeText   // ✅ FIXED
+            product_type: productTypeText   //  FIXED
         })
     })
     .then(res => res.json())
@@ -300,10 +308,15 @@ function generateDescription() {
     });
 }
 
+// Prevent unauthorized requests and 
+// protect users from cross-site request forgery
+//  attacks by ensuring that every request is coming
+//  from the trusted website.
 function getCSRFToken() {
     return document.cookie.split('; ')
         .find(row => row.startsWith('csrftoken'))
         ?.split('=')[1];
 }
+
 </script>
 {% endblock %}

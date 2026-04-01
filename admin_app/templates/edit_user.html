@@ -1,0 +1,33 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Edit User{% endblock %}
+
+{% block header %}Edit User{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="col-md-5 mx-auto">
+
+        <div class="card shadow">
+            <div class="card-body">
+
+                <h3>Edit User</h3>
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <input type="text" name="username" class="form-control mb-3" value="{{ user.Username }}">
+                    <input type="email" name="email" class="form-control mb-3" value="{{ user.Email }}">
+                    <input type="password" name="password" class="form-control mb-3" placeholder="New Password ">
+
+                    <button class="btn btn-success w-100">Update</button>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

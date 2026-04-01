@@ -2,62 +2,50 @@ const container = document.querySelector(".container");
 const registerBtn = document.querySelector(".register-btn");
 const loginBtn = document.querySelector(".login-btn");
 
+const registerForm = document.querySelector(".register form");
+
 registerBtn.addEventListener('click', () => {
     container.classList.add('active');
-
-})
+});
 
 loginBtn.addEventListener("click", () => {
-    container.classList.remove("active")
-})
+    container.classList.remove("active");
+});
 
-function validateForm() {
-    let email = document.getElementById("email_or_phone");
-    let password = document.getElementById("password");
-    let confirmPassword = document.getElementById("confirmPassword");
-    let valid = true;
+if (registerForm) {
+    registerForm.addEventListener("submit", function (e) {
 
-    //reset previous errors
-    document.getElementById("userError").innerText = "";
-    document.getElementById("passwordError").innerText = "";
-    document.getElementById("confirmError").innerText = "";
+        let passwordInput = registerForm.querySelector("#registerPassword");
+        let confirmInput = registerForm.querySelector("#registerConfirmPassword");
 
+        let password = passwordInput.value;
+        let confirmPassword = confirmInput.value;
 
-    email.classList.remove("error");
-    password.classList.remove("error");
-    confirmPassword.classList.remove("error")
+        let passwordError = document.getElementById("passwordError");
+        let confirmError = document.getElementById("confirmError");
 
+        if (passwordError) passwordError.innerText = "";
+        if (confirmError) confirmError.innerText = "";
 
-    //emai or phone validation
+        passwordInput.classList.remove("error");
+        confirmInput.classList.remove("error");
 
-    if (email.value.trim() === "") {
-        document.getElementById("userError").innerText = "Email or Phone is required"
-        email.classList.add("error")
-        valid = false;
-    }
+        let isValid = true;
 
+        if (password.length < 6) {
+            if (passwordError) passwordError.innerText = "Password must be at least 6 characters";
+            passwordInput.classList.add("error");
+            isValid = false;
+        }
 
-    //password validation
+        if (password !== confirmPassword) {
+            if (confirmError) confirmError.innerText = "Passwords do not match";
+            confirmInput.classList.add("error");
+            isValid = false;
+        }
 
-    if (password.value.trim() === "") {
-        document.getElementById("passwordError").innerText = "Password is required"
-        password.classList.add("error")
-        valid = false;
-    }
-
-    //confrim password validatioin
-
-    if (confirmPassword.value.trim() === "") {
-        document.getElementById("confirmError").innerText = "confirm password is required"
-        confirmPassword.classList.add("error")
-        valid = false
-    }
-    else if (password.value !== confirmPassword.value) {
-        document.getElementById("confirmError").innerText = "password do not match";
-        valid = false
-    }
-
-    return valid;  //if false ,form will not submit
+        if (!isValid) {
+            e.preventDefault();
+        }
+    });
 }
-
-

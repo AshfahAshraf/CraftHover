@@ -1,0 +1,94 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Users{% endblock %}
+
+{% block header %}User Management{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between mb-4">
+        <h2>User Management</h2>
+
+        <!-- BUTTON -->
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+            + Add User
+        </button>
+    </div>
+
+    <!-- TABLE -->
+    <div class="card shadow">
+        <div class="card-body">
+
+            <div class="table-responsive">
+                <table class="table table-hover text-center align-middle">
+
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.id }}</td>
+                            <td>{{ user.Username }}</td>
+                            <td>{{ user.Email }}</td>
+                            <td>
+                                <a href="{% url 'edit_user' user.id %}" class="btn btn-success btn-sm">Edit</a>
+                                <a href="{% url 'delete_user' user.id %}" 
+                                   class="btn btn-danger btn-sm"
+                                   onclick="return confirm('Delete this user?')">
+                                   Delete
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- ADD USER MODAL -->
+<div class="modal fade" id="addUserModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <form method="POST" action="{% url 'add_user' %}">
+                {% csrf_token %}
+
+                <div class="modal-header">
+                    <h5>Add User</h5>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <input type="text" name="username" class="form-control mb-3" placeholder="Username" required>
+                    <input type="email" name="email" class="form-control mb-3" placeholder="Email" required>
+                    <input type="password" name="password" class="form-control mb-3" placeholder="Password" required>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-primary">Create User</button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

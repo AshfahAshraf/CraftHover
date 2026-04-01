@@ -1,0 +1,55 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block header %}Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="row g-4">
+
+    <div class="col-md-4 col-sm-6">
+        <div class="card p-3 shadow-sm">
+            <h6>Total Users</h6>
+            <h3>{{ total_users }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-sm-6">
+        <div class="card p-3 shadow-sm">
+            <h6>Total Products</h6>
+            <h3>{{ total_products }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-sm-6">
+        <div class="card p-3 shadow-sm">
+            <h6>Orders</h6>
+            <h3>{{ total_orders }}</h3>
+        </div>
+    </div>
+
+</div>
+
+<div class="mt-5">
+    <h5>Recent Categories</h5>
+
+    <table class="table table-bordered mt-3">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for category in categories %}
+            <tr>
+                <td>{{ category.id }}</td>
+                <td>{{ category.name }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

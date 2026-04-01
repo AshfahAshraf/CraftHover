@@ -4,10 +4,9 @@
      background: #ffffff;
      color: #222;
      overflow-x: hidden;
+     
  }
-
-
- /* HERO SECTION */
+/* HERO SECTION */
 
  .hero {
      height: 100vh;
@@ -20,7 +19,7 @@
      background-size: 400% 400%;
      animation: gradientMove 12s ease infinite;
  }
-
+/* LEFT  →  RIGHT  →  LEFT */
  @keyframes gradientMove {
      0% {
          background-position: 0% 50%;
@@ -48,8 +47,7 @@
      text-shadow: 0 0 20px rgba(212, 160, 23, 0.3);
 
  }
-
- .hero-btn {
+.hero-btn {
      display: inline-block;
      margin-top: 40px;
      padding: 14px 40px;
@@ -60,6 +58,9 @@
      transition: 0.3s;
      position: relative;
      overflow: hidden;
+     opacity: 0;
+     animation: fadeUp 1s forwards;
+     animation-delay: 4.7s;
  }
 
  .hero-btn:hover {
@@ -107,12 +108,6 @@
      animation-delay: 3.9s;
  }
 
- .hero-btn {
-     opacity: 0;
-     animation: fadeUp 1s forwards;
-     animation-delay: 4.7s;
- }
-
  /* Animation keyframe */
 
  @keyframes fadeUp {
@@ -122,8 +117,6 @@
      }
  }
 
-
-
  /* Showcase Section - Shrinking Image + Glass Cards */
  .showcase {
      height: 280vh;
@@ -131,7 +124,7 @@
      position: relative;
      background: radial-gradient(circle at center, #0f1c1a 0%, #030712 100%);
  }
-
+/* This element sticks to the screen while you scroll */
  .showcase-sticky {
      position: sticky;
      top: 0;
@@ -149,7 +142,7 @@
      height: 100%;
      max-width: 1400px;
  }
-
+/* image to center */
  .center-image-wrapper {
      position: absolute;
      top: 50%;
@@ -160,7 +153,8 @@
      display: flex;
      justify-content: center;
  }
-
+/* clamp() is used to set a value between a minimum and maximum ,
+Image adjusts to screen size automatically*/
  .shrinking-image {
      width: clamp(260px, 38vw, 460px);
      height: auto;
@@ -182,8 +176,8 @@
  .feature-card {
      position: absolute;
      background: rgba(255, 255, 255, 0.03);
-     backdrop-filter: blur(25px);
-     -webkit-backdrop-filter: blur(25px);
+     /* Blur the background behind this element */
+     backdrop-filter: blur(25px);  
      border: 1px solid rgba(255, 255, 255, 0.08);
      padding: 1.8rem 2.2rem;
      border-radius: 24px;
@@ -198,6 +192,7 @@
      opacity: 0;
      z-index: 5;
      transform: translateY(40px);
+     /* cubic-bezier is a function that controls animation speed pattern. */
      transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.8s ease-out;
  }
 
@@ -233,7 +228,7 @@
      position: relative;
      background: #020617;
  }
-
+/* text fixed in the center while scrolling */
  .center-text {
      position: sticky;
      top: 0;
@@ -280,8 +275,7 @@
     padding-left:60vw;
 }
 
-
- .feature-card.visible {
+.feature-card.visible {
      opacity: 1;
      transform: translate(0);
  }
@@ -295,6 +289,7 @@
      font-size: 1.2rem;
      margin-bottom: 0.3rem;
      background: linear-gradient(to right, #fff, #9ca3af);
+     /* browser support (Chrome, Safari) */
      -webkit-background-clip: text;
      background-clip: text;
      -webkit-text-fill-color: transparent;
@@ -318,7 +313,6 @@ border-radius:35px;
 background:#071b18;
 border:2px solid #0f2a26;
 overflow:visible;
-
 transform:translate(-200px,150px);
 opacity:0;
 transition:all 0.8s ease;
@@ -330,12 +324,9 @@ transform:translate(0,0);
 opacity:1;
 }
 
-
-
 .card-left{
 width: 50%;
 height:100%;
-
 border-radius:25px;
 overflow:hidden;
 display:flex;
@@ -358,9 +349,6 @@ padding:20px;
 color:white;
 
 }
-
-
-
 
 .card-right h2{
 font-size:36px;
@@ -390,20 +378,7 @@ color:#d7b787;
 position:absolute;
 left:0;
 }
-@media (max-width:900px){
-
-.service-card{
-flex-direction:column;
-}
-
-.service-video{
-width:100%;
-height:300px;
-}
-
-}
-
- .icon-circle {
+.icon-circle {
      width: 50px;
      height: 50px;
      background: rgba(255, 255, 255, 0.05);
@@ -416,8 +391,7 @@ height:300px;
      flex-shrink: 0;
  }
 
-
- /* RESPONSIVE FIX FOR SHOWCASE */
+/* RESPONSIVE FIX FOR SHOWCASE */
  @media (max-width: 1100px) {
 
      .shrinking-image {
@@ -495,13 +469,6 @@ height:300px;
          font-size: 0.85rem;
      }
  }
-
- .feature-card:hover {
-     transform: translateY(-8px);
-     box-shadow: 0 25px 70px rgba(0, 0, 0, 0.5);
- }
-
-
  /* How we Support Artisans */
 
 .artisan-card{
@@ -531,17 +498,14 @@ top:0;
 left:0;
 width:100%;
 height:100%;
-
 display:flex;
 flex-direction:column;
 justify-content:center;
 align-items:center;
-
 color:white;
 padding:20px;
 text-align:center;
 }
-
 
 /* Make cards fade + slide up when scrolling. */
 
@@ -556,25 +520,11 @@ opacity:1;
 transform:translateY(0);
 }
 
-
-
-
 .seller-benefits{
 min-height:100vh;
 display:flex;
 align-items:center;
 }
-.seller-benefits i{
-transition:0.3s;
-}
-
-.seller-benefits .col:hover i{
-transform:scale(1.2);
-}
-
-
-
-
 /* sucessss */
 
 .success-story{
@@ -589,13 +539,10 @@ transform:scale(1.2);
 
 .success-story p{
     font-size:17px;
-    color:#555;
+    color:#3f3e3e;
     line-height:1.7;
 }
 
-
-
-/* sell */
 /* SELL YOUR CRAFT SECTION */
 
 .sellyou{

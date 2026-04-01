@@ -1,6 +1,4 @@
-/* ========================= */
 /* NAVBAR SLIDE DOWN */
-/* ========================= */
 
 @keyframes slideDown {
   from {
@@ -98,9 +96,8 @@
 }
 
 
-/* ========================= */
 /* DROPDOWN ANIMATION */
-/* ========================= */
+
 
 @media (min-width: 992px) {
 
@@ -139,9 +136,7 @@
 }
 
 
-/* ========================= */
 /* CATEGORY SCROLL */
-/* ========================= */
 
 body{
 overflow-x:hidden;
@@ -179,4 +174,18 @@ padding:8px 12px;
 }
 body, * {
     cursor: auto !important;
+}
+
+/* FIRST NAVBAR */
+.navbar.sticky-top {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* SECOND NAVBAR */
+.category-navbar {
+  position: sticky;
+  top: 0; 
+  z-index: 999;
 }

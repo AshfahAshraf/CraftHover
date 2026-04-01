@@ -1,34 +1,14 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from .models import * 
 from django.db.models import Q ,Sum
 from django.conf import settings
-from .models import User
-#order
-
-from datetime import timedelta
-from django.utils import timezone
-
-# email
 import random
 from django.core.mail import send_mail
-
-# contact and artisan order
 from django.contrib import messages
-
-#description
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .utils.ai_description import generate_description
-
-
-#cart
-from django.shortcuts import get_object_or_404
-# from django.contrib.auth.decorators import login_required
-# @login_required
-
-
-
 # Create your views here.
 
 
@@ -46,7 +26,7 @@ def index(request):
                 print("passwords do not match")
                 return render(request, "register.html")
 
-            # ✅ CHECK EMAIL EXISTS
+            #  CHECK EMAIL EXISTS
             if User.objects.filter(Email=email).exists():
                 print("Email already exists")
                 return render(request, "register.html", {
@@ -82,9 +62,6 @@ def index(request):
 
     return render(request, "register.html")
 
-
-
- 
 ########
 #email 
 
@@ -94,7 +71,6 @@ def send_otp(request):
 
     if request.method == "POST":
         email = request.POST["email"]
-
 
         #check if email exists
         if not User.objects.filter(Email=email).exists():
@@ -114,12 +90,9 @@ def send_otp(request):
             fail_silently=False,
         )
 
-        
-
         return redirect("verify_otp")
     
     return render(request, "send_otp.html")
-
 
 #verify otp
 
@@ -139,7 +112,6 @@ def verify_otp(request):
             })
 
     return render(request, "verify_otp.html")
-
 
 #reset password
 
@@ -162,7 +134,7 @@ def reset_password(request):
 #########
 
 def terms_conditon(request):
-    return render(request, "terms_conditon.html")
+    return render(request,"terms_conditon.html")
 
 def privacy_policy(request):
     return render(request,"privacy_policy.html")
@@ -170,22 +142,10 @@ def privacy_policy(request):
 def navbar(request):
     return render(request,"navbar.html")
 
-from django.shortcuts import render
-from .models import Category
-
-
-# HOME PAGE (example)
-def home(request):
-    return render(request, "home.html", {
-        "categories": Category.objects.all()
-    })
-
-
-# SEARCH VIEW (MAIN LOGIC)
-from .models import Category, Product, SubCategory
-from django.db.models import Q
 
 def search(request):
+    # q usually stands for query
+    # It’s a common convention for search inputs
     query = request.GET.get('q')
 
     categories = []
@@ -200,7 +160,7 @@ def search(request):
             Q(category__name__icontains=query)
         )
 
-        # ✅ ADD THIS PART (VERY IMPORTANT)
+    
         for product in products:
             if product.Actual_price and product.Offer_price:
                 product.save_amount = product.Actual_price - product.Offer_price
@@ -227,16 +187,11 @@ def your_view(request):
 def footer(request):
     return render(request,"footer.html")
 
-def home(request):                
-    return render(request ,"Home.html")
-
 def aboutus(request):
     return render(request, "aboutUs.html")
-from .models import Order, Complaint
-from django.shortcuts import get_object_or_404
 
-from django.core.mail import send_mail
-from django.conf import settings
+
+# Contact Page
 
 def contact(request):
 
@@ -264,34 +219,123 @@ def contact(request):
             Description=description
         )
 
-        # ✅ SEND EMAIL
+        #  SEND EMAIL
         send_mail(
-            "Complaint Received",
+            "Complaint Received",  # Email Subject
+            #f - string (dynamic values)
             f"""
-Hello {fullname},
+                Hello {fullname},
 
-Your complaint has been received successfully.
+                Your complaint has been received successfully.
 
-Order ID: {order.id}
-Product: {product.Product_name}
-Issue: {issue_type}
+                Order ID: {order.id}
+                Product: {product.Product_name}
+                Issue: {issue_type}
 
-We will contact you soon.
+                We will contact you soon.
 
-Thank you,
-CraftHover Support
-""",
-            settings.EMAIL_HOST_USER,   # ✅ sender
-            [email],                   # ✅ receiver
-            fail_silently=False
+                Thank you,
+                CraftHover Support
+                """,
+                    settings.EMAIL_HOST_USER,   #  sender
+                    [email],                   #  receiver
+                    fail_silently=False         # If email fails →  Error will be shown
+                )
+
+        messages.success(request, "Complaint submitted successfully!")  #messages- Django message framework
+
+        return redirect("contact")  # Prevents form resubmission on refresh
+
+    return render(request, "contact.html")  # show HTML page
+
+
+#### wishlist
+# adding wishlist
+# It works like a  button (toggle) on your website
+
+# Click once → Add to wishlist
+# Click again → Remove from wishlist
+
+def add_to_wishlist(request, product_id):
+    user_id = request.session.get("user_id")
+
+    if not user_id:
+        return JsonResponse({"error": "login required"}, status=403)
+
+    item = Wishlist.objects.filter(
+        user_id=user_id,
+        product_id=product_id
+    ).first()
+
+    if item:
+        item.delete()
+        return JsonResponse({"status": "removed"})
+    else:
+        Wishlist.objects.create(
+            user_id=user_id,
+            product_id=product_id
         )
+        return JsonResponse({"status": "added"})
+    
+# wislist page view 
+# It shows the logged-in user’s wishlist page
 
-        messages.success(request, "Complaint submitted successfully!")
-        return redirect("contact")
+def wishlist_view(request):
 
-    return render(request, "contact.html")
+    user_id = request.session.get("user_id")
 
-########## cart
+    if not user_id:
+        return redirect("register")
+
+    wishlist_items = Wishlist.objects.filter(user_id=user_id)
+
+    return render(request, "wishlist.html", {
+        "wishlist_items": wishlist_items
+    })
+
+#  deleteing from wislist section
+
+def remove_wishlist(request, wishlist_id):
+
+    user_id = request.session.get("user_id")
+
+    item = get_object_or_404(Wishlist, id=wishlist_id, user_id=user_id)
+    item.delete()
+
+    return redirect("wishlist")
+
+# move wishlist item to cart
+
+def wishlist_to_cart(request, wishlist_id):
+
+    user_id = request.session.get("user_id")
+
+    user = get_object_or_404(User, id=user_id)
+
+    wishlist_item = get_object_or_404(
+        Wishlist,
+        id=wishlist_id,
+        user_id=user_id
+    )
+
+    product = wishlist_item.product
+
+    cart_item, created = Cart.objects.get_or_create(
+        user=user,
+        product=product
+    )
+
+    if not created:
+        cart_item.quantity += 1
+        cart_item.save()
+
+    wishlist_item.delete()
+
+    return redirect("wishlist")
+
+#########
+
+# cart
 
 # add product to cart
 
@@ -312,9 +356,9 @@ def add_to_cart(request, product_id):
         cart_item.quantity +=1
         cart_item.save()
 
-    print("CART NOW:", Cart.objects.all())  # 🔥 DEBUG
-
     return redirect("cart")
+
+# cart page view
 
 def cart_view(request):
 
@@ -355,7 +399,7 @@ def remove_from_cart(request, cart_id):
 
     return redirect("cart")
 
-# increase_quantity
+# increase_quantity product in the cart
 
 def increase_quantity(request, cart_id):
 
@@ -373,7 +417,7 @@ def increase_quantity(request, cart_id):
     return redirect("cart")
 
 
-# decrease_quantity 
+# decrease_quantity  product in the cart
 
 def decrease_quantity(request, cart_id):
 
@@ -394,117 +438,90 @@ def decrease_quantity(request, cart_id):
 
 
 ################
-def order_success(request):
-    return render(request, "order_success.html")
 
+# orderss
 
-# wishlist
-
-def product_list(request):
-
-    products = Product.objects.all()
+def orders(request):
 
     user_id = request.session.get("user_id")
-    wishlist_products = []
 
-    if user_id:
-        wishlist_products = Wishlist.objects.filter(
-            user_id=user_id
-        ).values_list('product_id', flat=True)
+    if not user_id:
+        return redirect("login")
+    # Sorts orders in descending order
+    # Latest order comes first
+    orders = Order.objects.filter(user_id=user_id).order_by("-id")
 
-    return render(request, "product_list.html", {
-        "products": products,
-        "wishlist_products": wishlist_products
-    })
+    context = {
+        "orders": orders,
+    }
 
-# add product to wishlist
+    return render(request,"order.html", context)
 
-from django.shortcuts import render, redirect, get_object_or_404
+# cancelling the order
+
+def cancel_order(request, order_id):
+
+    if request.method == "POST":
+
+        order = get_object_or_404(
+            Order,
+            id=order_id,
+            user_id=request.session.get("user_id")  
+        )
+
+        if order.status not in ["Delivered", "Cancelled"]:
+            order.status = "Cancelled"
+            order.save()
+
+    return redirect("order")
 
 
-
-# wislist page view
-
-def wishlist_view(request):
+#  PLACE ORDER
+def place_order(request):
 
     user_id = request.session.get("user_id")
 
     if not user_id:
         return redirect("register")
 
-    wishlist_items = Wishlist.objects.filter(user_id=user_id)
+    user = User.objects.get(id=user_id)
 
-    return render(request, "wishlist.html", {
-        "wishlist_items": wishlist_items
-    })
+    if request.method == "POST":
 
+        cart_items = Cart.objects.filter(user=user)
 
-def remove_wishlist(request, wishlist_id):
+        if not cart_items.exists():
+            return redirect("cart")
 
-    user_id = request.session.get("user_id")
+        shipping_cost = int(request.POST.get("shipping_cost") or 0)
 
-    item = get_object_or_404(Wishlist, id=wishlist_id, user_id=user_id)
-    item.delete()
+        total_price = 0
+        for item in cart_items:
+            total_price += item.product.Offer_price * item.quantity
 
-    return redirect("wishlist")
+        final_price = total_price + shipping_cost
+        # CREATE ORDER FOR EACH ITEM
+        for item in cart_items:
+            Order.objects.create(
+                user=user,
+                product=item.product,       
+                quantity=item.quantity,      
+                total_price=item.product.Offer_price * item.quantity,  #  per item price
+                final_price=final_price, 
+                status="Pending"
+            )
 
-    
-# move wishlist item to cart
+        cart_items.delete()
 
-def wishlist_to_cart(request, wishlist_id):
+        return redirect("order_success")
 
-    user_id = request.session.get("user_id")
+    return redirect("cart")
 
-    user = get_object_or_404(User, id=user_id)
+#####
+# after place order then it order sucess page
 
-    wishlist_item = get_object_or_404(
-        Wishlist,
-        id=wishlist_id,
-        user_id=user_id
-    )
-
-    product = wishlist_item.product
-
-    cart_item, created = Cart.objects.get_or_create(
-        user=user,
-        product=product
-    )
-
-    if not created:
-        cart_item.quantity += 1
-        cart_item.save()
-
-    wishlist_item.delete()
-
-    return redirect("wishlist")
-
-
-
-from django.http import JsonResponse
-
-def add_to_wishlist(request, product_id):
-    user_id = request.session.get("user_id")
-
-    if not user_id:
-        return JsonResponse({"error": "login required"}, status=403)
-
-    item = Wishlist.objects.filter(
-        user_id=user_id,
-        product_id=product_id
-    ).first()
-
-    if item:
-        item.delete()
-        return JsonResponse({"status": "removed"})
-    else:
-        Wishlist.objects.create(
-            user_id=user_id,
-            product_id=product_id
-        )
-        return JsonResponse({"status": "added"})
-#########
-
-
+def order_success(request):
+    return render(request, "order_success.html")
 
 def faq(request):
     return render(request,'faq.html')
@@ -529,12 +546,9 @@ def my_account(request):
         request.session.flush()
         return redirect("register")
 
-    # =========================
-    # HANDLE POST
-    # =========================
     if request.method == "POST":
 
-        # 🔹 UPDATE PROFILE
+        #  UPDATE PROFILE
         if "username" in request.POST:
 
             user.Username = request.POST.get("username", user.Username)
@@ -543,18 +557,18 @@ def my_account(request):
 
             user.save()
 
-        # 🔹 UPLOAD IMAGE
+        #  UPLOAD IMAGE
         elif "upload_image" in request.POST:
             if request.FILES.get("profile_image"):
                 user.profile_image = request.FILES.get("profile_image")
                 user.save()
 
-        # 🔹 REMOVE IMAGE
+        #  REMOVE IMAGE
         elif "remove_image" in request.POST:
             user.profile_image = None
             user.save()
 
-        # 🔹 ADD ADDRESS
+        #  ADD ADDRESS
         elif "full_name" in request.POST and "address_id" not in request.POST:
             Address.objects.create(
                 user=user,
@@ -566,12 +580,12 @@ def my_account(request):
                 phone=request.POST.get("phone"),
             )
 
-        # 🔹 DELETE ADDRESS
+        #  DELETE ADDRESS
         elif "delete_address_id" in request.POST:
             address_id = request.POST.get("delete_address_id")
             Address.objects.filter(id=address_id, user=user).delete()
 
-        # 🔹 UPDATE ADDRESS
+        #  UPDATE ADDRESS
         elif "update_address" in request.POST:
             address_id = request.POST.get("address_id")
 
@@ -586,9 +600,6 @@ def my_account(request):
                 address.phone = request.POST.get("phone")
                 address.save()
 
-    # =========================
-    # FETCH DATA
-    # =========================
     orders = Order.objects.filter(user=user).order_by("-order_date")[:3]
     addresses = Address.objects.filter(user=user)
 
@@ -598,11 +609,8 @@ def my_account(request):
         "addresses": addresses
     })
 
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.contrib.auth import update_session_auth_hash
 
-
+# change password for user
 
 def change_password(request):
 
@@ -638,84 +646,13 @@ def change_password(request):
     return render(request, "change_password.html")
 
 
-def orders(request):
 
-    user_id = request.session.get("user_id")
-
-    if not user_id:
-        return redirect("login")
-
-    orders = Order.objects.filter(user_id=user_id).order_by("-id")
-
-    context = {
-        "orders": orders,
-    }
-
-    return render(request,"order.html", context)
-
-def cancel_order(request, order_id):
-
-    if request.method == "POST":
-
-        order = get_object_or_404(
-            Order,
-            id=order_id,
-            user_id=request.session.get("user_id")  
-        )
-
-        if order.status not in ["Delivered", "Cancelled"]:
-            order.status = "Cancelled"
-            order.save()
-
-    return redirect("order")
-
-# =======================
-# PLACE ORDER
-# =======================
-def place_order(request):
-
-    user_id = request.session.get("user_id")
-
-    if not user_id:
-        return redirect("register")
-
-    user = User.objects.get(id=user_id)
-
-    if request.method == "POST":
-
-        cart_items = Cart.objects.filter(user=user)
-
-        if not cart_items.exists():
-            return redirect("cart")
-
-        shipping_cost = int(request.POST.get("shipping_cost") or 0)
-
-        total_price = 0
-        for item in cart_items:
-            total_price += item.product.Offer_price * item.quantity
-
-        final_price = total_price + shipping_cost
-
-        # ✅ CREATE ORDER FOR EACH ITEM
-        for item in cart_items:
-            Order.objects.create(
-                user=user,
-                product=item.product,        # ✅ REQUIRED
-                quantity=item.quantity,      # ✅ REQUIRED
-                total_price=item.product.Offer_price * item.quantity,  # ✅ per item price
-                status="Pending"
-            )
-
-        cart_items.delete()
-
-        return redirect("order_success")
-
-    return redirect("cart")
+# Artisan Sections
 
 def seller_home(request):
     return render(request,"seller_home.html")
 
-
+# Artisan Register page
 
 def artisan_register(request):
 
@@ -745,10 +682,9 @@ def artisan_register(request):
                 f"Your OTP is {otp}",
                 settings.EMAIL_HOST_USER,
                 [email],
+                # If something goes wrong while sending email, show the error.
                 fail_silently=False,
             )
-
-            print("OTP:", otp)
 
             return render(request, "artisan_register.html", {
                 "show_otp": True,
@@ -757,8 +693,9 @@ def artisan_register(request):
 
         # VERIFY OTP
         elif "verify_otp" in request.POST:
-
+            # what user entered
             user_otp = request.POST.get("otp")
+            # what you generated earlier (stored in session)
             saved_otp = request.session.get("email_otp")
 
             if user_otp == saved_otp:
@@ -790,7 +727,7 @@ def artisan_register(request):
             Artisan.objects.create(
                 name=request.POST.get("name"),
                 email=request.session.get("email"),
-                password=password,   # simple (no hashing)
+                password=password, 
                 phone=request.POST.get("phone"),
                 shop_name=request.POST.get("shop_name"),
                 address=request.POST.get("address"),
@@ -798,11 +735,13 @@ def artisan_register(request):
                 state=request.POST.get("state"),
                 pincode=request.POST.get("pincode"),
             )
-
+            # clear everything and send user to login page
             request.session.flush()
             return redirect("artisan_login")
 
     return render(request, "artisan_register.html")
+
+# Artisan Login
 
 def artisan_login(request):
 
@@ -816,6 +755,8 @@ def artisan_login(request):
         try:
             artisan = Artisan.objects.get(email=email,password=password)
 
+            # Django gives every user a session (a temporary storage tied to their browser).
+            # It works like a dictionary (key-value pair storage).
             request.session["artisan_id"] = artisan.id
 
             return redirect("artisan_dashboard")
@@ -826,7 +767,7 @@ def artisan_login(request):
 
     return render(request,"artisan_login.html",{"message":message})
 
-from django.db.models import Sum
+
 
 def artisan_dashboard(request):
 
@@ -835,25 +776,37 @@ def artisan_dashboard(request):
     if not artisan_id:
         return redirect("artisan_login")
 
-    # ✅ Products of this artisan
+    #  Gets number of products created by this artisan
     total_products = Product.objects.filter(artisan_id=artisan_id).count()
 
-    # ✅ Orders of this artisan
+    # Gets all orders related to this artisan’s products
+    # This is called double underscore (__) lookup
+    # Go through relationships
+    # product → from Order → Product
+    # artisan_id → from Product → Artisan ID
+    # Get all orders where
+    # the product’s artisan_id = logged-in artisan_id
+
     orders = Order.objects.filter(product__artisan_id=artisan_id)
 
     total_orders = orders.count()
 
     pending_orders = orders.filter(status="Pending").count()
 
-    # ✅ FIXED REVENUE LOGIC
-    SUCCESS_STATUSES = ["Shipped", "Delivered", "Completed"]
+    #  FIXED REVENUE LOGIC
 
+    SUCCESS_STATUSES = ["Shipped", "Delivered", "Completed"]
+        #pending will not calculate in the revenue
+        # Find all successful orders and calculate total revenue.
+        # If no orders, return 0
     total_revenue = orders.filter(
         status__in=SUCCESS_STATUSES
     ).aggregate(
         total=Sum("total_price")
     )["total"] or 0
 
+    # Left = name used in template
+    # Right = actual data/value
     context = {
         "total_orders": total_orders,
         "pending_orders": pending_orders,
@@ -862,10 +815,14 @@ def artisan_dashboard(request):
     }
 
     return render(request, "artisan_dashboard.html", context)
+
+# aritsan Product display
+
 def artisan_products(request):
 
     artisan_id = request.session.get("artisan_id")
 
+    # Fetches only products belonging to that artisan
     products = Product.objects.filter(artisan_id=artisan_id)
     categories = Category.objects.all()
     product_types = SubCategory.objects.all()
@@ -873,6 +830,7 @@ def artisan_products(request):
     return render(request, "artisan_products.html", {"products": products,  "categories": categories,
         "product_types": product_types})
 
+# adding artisan products in artisan page
 
 def add_product(request):
     if request.method == "POST":
@@ -888,7 +846,7 @@ def add_product(request):
             Description=request.POST.get("description"),
         )
 
-        # ✅ SAVE IMAGES CORRECTLY
+        #  SAVE IMAGES CORRECTLY
         if request.FILES.get("front_image"):
             product.front_image = request.FILES.get("front_image")
 
@@ -898,12 +856,12 @@ def add_product(request):
         if request.FILES.get("right_image"):
             product.right_image = request.FILES.get("right_image")
 
-
         product.save()
 
         return redirect("artisan_products")
     
-
+# in the add product we using ai generate description 
+# It is an API that generates product description and returns it.
 
 @csrf_exempt
 def generate_description_api(request):
@@ -930,12 +888,17 @@ def generate_description_api(request):
     except Exception as e:
         print("ERROR:", e)
         return JsonResponse({"error": str(e)}, status=500)
-    
+
+# eidting the product in the artisan section 
+
 def Artisan_edit_product(request, id):
 
     artisan_id = request.session.get("artisan_id")
 
-    product = Product.objects.get(id=id, artisan_id=artisan_id)
+    if not artisan_id:
+        return redirect("login")
+
+    product = get_object_or_404(Product, id=id, artisan_id=artisan_id)
 
     if request.method == "POST":
 
@@ -966,44 +929,19 @@ def delete_product(request, id):
 
     artisan_id = request.session.get("artisan_id")
 
-    product = Product.objects.get(id=id, artisan_id=artisan_id)
+     #  Check login
+    if not artisan_id:
+        return redirect("login")
 
-    product.delete()
+
+     #  Allow only POST (security)
+    if request.method == "POST":
+        product = get_object_or_404(Product, id=id, artisan_id=artisan_id)
+        product.delete()
 
     return redirect("artisan_products")
 
-# CREATE PRODUCT VIEW PAGE
-def product_list(request, subcategory_id):
-    products = Product.objects.filter(subcategory_id=subcategory_id)
-    subcategory = SubCategory.objects.get(id=subcategory_id)
-
-    user_id = request.session.get("user_id")
-
-    wishlist_products = []
-
-    if user_id:
-        wishlist_products = Wishlist.objects.filter(
-            user_id=user_id
-        ).values_list('product_id', flat=True)
-
-    # ✅ Calculate save amount
-    for product in products:
-        product.save_amount = product.Actual_price - product.Offer_price
-
-    return render(request, "product_list.html", {
-        "products": products,
-        "subcategory": subcategory,
-        "wishlist_products": wishlist_products   # ✅ IMPORTANT
-    })
-# product VIEW
-def product_detail(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-
-    product.savings = product.Actual_price - product.Offer_price
-
-    return render(request, "product_detail.html", {
-        "product": product
-    })
+# artisan order control section
 
 def artisan_orders(request):
     artisan_id = request.session.get("artisan_id")
@@ -1011,7 +949,6 @@ def artisan_orders(request):
     if not artisan_id:
         return redirect("login")
 
-    # 🔥 Handle actions (POST)
     if request.method == "POST":
         order_id = request.POST.get("order_id")
         action = request.POST.get("action")
@@ -1022,7 +959,6 @@ def artisan_orders(request):
             product__artisan_id=artisan_id
         )
 
-        # 🔥 Status logic
         if action == "ship" and order.status == "Pending":
             order.status = "Shipped"
             messages.success(request, "Order shipped successfully")
@@ -1041,28 +977,25 @@ def artisan_orders(request):
         order.save()
         return redirect("artisan_orders")
 
-    # 🔥 Show orders
+    #  Show orders
     orders = Order.objects.filter(
         product__artisan_id=artisan_id
     ).order_by("-id")
 
     return render(request, "artisan_orders.html", {"orders": orders})
 
+# artisan profile management
 
 def artisan_profile(request):
 
     artisan_id = request.session.get("artisan_id")
 
-    # 🔒 Check login
+    #  Check login
     if not artisan_id:
         return redirect("artisan_login")
 
-    # 🔥 Get correct artisan
     artisan = get_object_or_404(Artisan, id=artisan_id)
 
-    # =========================
-    # HANDLE POST
-    # =========================
     if request.method == "POST":
 
         artisan.name = request.POST.get("name")
@@ -1081,25 +1014,24 @@ def artisan_profile(request):
         artisan.bank_account_number = request.POST.get("bank_account_number")
         artisan.ifsc_code = request.POST.get("ifsc_code")
 
-        # 🔹 Image upload
+        #  Image upload
         if request.FILES.get("profile_image"):
             artisan.profile_image = request.FILES.get("profile_image")
 
         artisan.save()
 
-        # ✅ Success message
+        #  Success message
         messages.success(request, "Profile updated successfully")
 
         return redirect("artisan_profile")
 
-    # =========================
-    # CONTEXT
-    # =========================
     context = {
         "artisan": artisan
     }
 
     return render(request, "artisan_profile.html", context)
+
+# artisan Logout
 
 def artisan_logout(request):
 
@@ -1108,8 +1040,40 @@ def artisan_logout(request):
 
     return redirect("artisan_login")
 
+# PRODUCT list view VIEW PAGE
+def product_list(request, subcategory_id):
 
+    products = Product.objects.filter(subcategory_id=subcategory_id)
+    subcategory = SubCategory.objects.get(id=subcategory_id)
 
+    user_id = request.session.get("user_id")
+
+    wishlist_products = []
+
+    if user_id:
+        wishlist_products = Wishlist.objects.filter(
+            user_id=user_id
+        ).values_list('product_id', flat=True)
+
+    #  Calculate save amount
+    for product in products:
+        product.save_amount = product.Actual_price - product.Offer_price
+
+    return render(request, "product_list.html", {
+        "products": products,
+        "subcategory": subcategory,
+        "wishlist_products": wishlist_products  
+    })
+
+# product detail VIEW
+def product_detail(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+
+    product.savings = product.Actual_price - product.Offer_price
+
+    return render(request, "product_detail.html", {
+        "product": product
+    })
 
 def address(request):
     return render(request, "address.html")
@@ -1118,49 +1082,26 @@ def logout_view(request):
     request.session.flush()
     return redirect("/")
 
-
-from .models import Category
-
 def home(request):
     categories = Category.objects.all()
     return render(request, "home.html", {"categories": categories})
 
+# show full cateogry
 
-from google.oauth2 import id_token
-from google.auth.transport import requests
+def category_products(request, category_id):
 
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
+    category = Category.objects.get(id=category_id)
 
-GOOGLE_CLIENT_ID = "726606535094-7p8986te4g6ejmmsra3cvl6knam6n9eu.apps.googleusercontent.com"
+    products = Product.objects.filter(category_id=category_id)
 
-@api_view(['POST'])
-def google_login(request):
-    token = request.data.get("token")
+    # Calculate save amount
+    for product in products:
+        if product.Actual_price and product.Offer_price:
+            product.save_amount = product.Actual_price - product.Offer_price
+        else:
+            product.save_amount = 0
 
-    if not token:
-        return Response({"error": "Token missing"}, status=400)
-
-    try:
-        idinfo = id_token.verify_oauth2_token(
-            token,
-            requests.Request(),
-            GOOGLE_CLIENT_ID
-        )
-
-        email = idinfo.get('email')
-        name = idinfo.get('name')
-
-        # Create or get user
-        user, created = User.objects.get_or_create(
-            username=email,
-            defaults={"first_name": name}
-        )
-
-        return Response({
-            "message": "Login successful",
-            "email": email
-        })
-
-    except ValueError:
-        return Response({"error": "Invalid token"}, status=400)
+    return render(request, "product_list.html", {
+        "products": products,
+        "category": category
+    })

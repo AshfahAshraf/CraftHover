@@ -9,14 +9,14 @@ Artisan order | CraftHover
 
     <h2 class="mb-4">Orders</h2>
 
-
-    <!-- ✅ SUCCESS MESSAGES -->
+    <!--  SUCCESS MESSAGES -->
     {% if messages %}
     {% for message in messages %}
     <div class="alert alert-success alert-dismissible fade show">
         {{ message }}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
+
     {% endfor %}
     {% endif %}
 
@@ -70,7 +70,7 @@ Artisan order | CraftHover
 
                             </td>
 
-                            <!-- ✅ FIXED ACTION COLUMN -->
+                            <!--  FIXED ACTION COLUMN -->
                             <td>
 
                                 <form method="POST" style="display:inline;">
@@ -126,7 +126,6 @@ Artisan order | CraftHover
 
         </div>
     </div>
-
 </div>
 
 {% endblock %}

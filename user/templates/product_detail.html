@@ -10,15 +10,14 @@
 <div class="container py-5">
   <div class="row align-items-start">
 
-    <!-- 🔹 LEFT THUMBNAILS -->
+    <!--  LEFT THUMBNAILS -->
 
-
-    <!-- 🔹 MAIN IMAGE -->
+    <!--  MAIN IMAGE -->
 
     <div class="col-md-7">
       <div class="row align-items-center">
 
-        <!-- 🔥 LEFT SIDE (2 images together) -->
+        <!--  LEFT SIDE (2 images together) -->
         <div class="col-4 text-center ">
 
           {% if product.left_image %}
@@ -31,7 +30,7 @@
 
         </div>
 
-        <!-- ✅ MAIN IMAGE (RIGHT SIDE) -->
+        <!--  MAIN IMAGE (RIGHT SIDE) -->
         <div class="col-8 text-center mb-5">
           {% if product.front_image %}
           <img id="mainImage" src="{{ product.front_image.url }}" class="main-img">
@@ -41,7 +40,7 @@
       </div>
     </div>
 
-    <!-- 🔹 RIGHT SIDE DETAILS -->
+    <!--  RIGHT SIDE DETAILS -->
     <div class="col-md-5">
 
       <h3>{{ product.Product_name }}</h3>
@@ -55,7 +54,7 @@
           ₹{{ product.Actual_price }}
         </span>
 
-        <!-- ✅ SAVINGS -->
+        <!--  SAVINGS -->
         <span class="text-success ms-2">
           Save ₹{{ product.savings }}
         </span>
@@ -71,7 +70,7 @@
       <hr>
       <div class="accordion mt-3" id="detailsAccordion">
 
-        <!-- 🔽 Description -->
+        <!--  Description -->
         <div class="accordion-item">
           <h2 class="accordion-header">
             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#descBox">
@@ -92,7 +91,7 @@
           </div>
         </div>
 
-        <!-- 🔽 Manufacturer -->
+        <!--  Manufacturer -->
         <div class="accordion-item">
           <h2 class="accordion-header">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
@@ -113,7 +112,7 @@
           </div>
         </div>
 
-        <!-- 🔽 Returns -->
+        <!--  Returns -->
         <div class="accordion-item">
           <h2 class="accordion-header">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
@@ -146,12 +145,12 @@
   </div>
 </div>
 
-<!-- 🔥 CSS -->
+<!--  CSS -->
 <style>
   .main-img {
     max-height: 400px;
     width: 100%;
-    object-fit: contain;
+    object-fit: cover;
     transition: 0.3s;
     cursor: zoom-in;
   }
@@ -168,34 +167,38 @@
     transform: scale(1.1);
   }
 
-  /* ✅ simple zoom */
+  /*  simple zoom */
   .main-img:hover {
     transform: scale(1.5);
   }
 </style>
 
-<!-- 🔥 JS -->
+<!--  JS -->
 <script>
 
-  // ✅ GLOBAL FUNCTION (IMPORTANT)
-  function changeImage(el) {
-    const mainImage = document.getElementById("mainImage");
-    if (mainImage) {
-      mainImage.src = el.src;
-    }
-  }
+ 
+  // function changeImage(el) {
+  //   const mainImage = document.getElementById("mainImage");
+  //   if (mainImage) {
+  //     mainImage.src = el.src;
+  //   }
+  // }
 
   document.addEventListener("DOMContentLoaded", function () {
 
-    // 🔹 Zoom effect
+    //  Zoom effect
     const mainImg = document.getElementById("mainImage");
 
     if (mainImg) {
       mainImg.addEventListener("mousemove", function (e) {
         const rect = mainImg.getBoundingClientRect();
+        // Finds mouse position horizontally and veritcal
+
         const x = (e.clientX - rect.left) / rect.width * 100;
         const y = (e.clientY - rect.top) / rect.height * 100;
 
+        // Zoom starts from mouse position
+        
         mainImg.style.transformOrigin = x + "% " + y + "%";
         mainImg.style.transform = "scale(1.2)";
       });
