@@ -11,6 +11,7 @@
   }
 }
 
+
 .navbar {
   animation: slideDown 0.8s ease;
 }
@@ -175,6 +176,7 @@ padding:8px 12px;
 body, * {
     cursor: auto !important;
 }
+<<<<<<< HEAD:user/static/css/navbar.css
 
 /* FIRST NAVBAR */
 .navbar.sticky-top {
@@ -189,3 +191,5 @@ body, * {
   top: 0; 
   z-index: 999;
 }
+=======
+>>>>>>> e431a8a94e3f2b9d5c0c1ca14ce54cc4a888de9c:hello/static/css/navbar.css

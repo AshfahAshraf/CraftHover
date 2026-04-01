@@ -1,4 +1,8 @@
 from django.db import models
+<<<<<<< HEAD:user/models.py
+=======
+
+>>>>>>> e431a8a94e3f2b9d5c0c1ca14ce54cc4a888de9c:hello/models.py
 # Create your models here.
 #-----  User ----#
 
