@@ -16,23 +16,33 @@ def index(request):
 
     if request.method == 'POST':
 
+        # ================= REGISTER =================
         if "register" in request.POST:
             username = request.POST.get("textUsername")
             email = request.POST.get("textEmail")
             password = request.POST.get("textPassword")
             confirm_password = request.POST.get("textConfirmPassword")
 
-            if password != confirm_password:
-                print("passwords do not match")
-                return render(request, "register.html")
+            # Email format check
+            email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+            if not re.match(email_pattern, email):
+                return render(request, "register.html", {
+                    "error": "Invalid email format"
+                })
 
-            #  CHECK EMAIL EXISTS
+            # Password match check
+            if password != confirm_password:
+                return render(request, "register.html", {
+                    "error": "Passwords do not match"
+                })
+
+            # Check email exists
             if User.objects.filter(Email=email).exists():
-                print("Email already exists")
                 return render(request, "register.html", {
                     "error": "Email already registered"
                 })
 
+            # Save user
             reg = User(
                 Username=username,
                 Email=email,
@@ -40,25 +50,39 @@ def index(request):
             )
             reg.save()
 
-        #LOGIN
+            return render(request, "register.html", {
+                "success": "Registration successful"
+            })
 
+        # ================= LOGIN =================
         elif "login" in request.POST:
-                email = request.POST.get("textEmail")
-                password = request.POST.get("textPassword")
+            email = request.POST.get("textEmail")
+            password = request.POST.get("textPassword")
 
-                try:
-                    user = User.objects.get(
-                        Email=email,
-                        Password=password
-                    )
+            # Check email exists
+            if not User.objects.filter(Email=email).exists():
+                return render(request, "register.html", {
+                    "error": "Email does not exist"
+                })
 
-                    request.session["user_id"] = user.id
-                    request.session["user_name"] = user.Username
-                    return redirect("home")
+            # Check password
+            try:
+                user = User.objects.get(Email=email)
 
-                except User.DoesNotExist:
-                    print("invalid login")
-                
+                if user.Password != password:
+                    return render(request, "register.html", {
+                        "error": "Password does not match"
+                    })
+
+                # Login success
+                request.session["user_id"] = user.id
+                request.session["user_name"] = user.Username
+                return redirect("home")
+
+            except User.DoesNotExist:
+                return render(request, "register.html", {
+                    "error": "Login failed"
+                })
 
     return render(request, "register.html")
 

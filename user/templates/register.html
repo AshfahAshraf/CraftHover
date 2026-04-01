@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login/Signup Page | Craftoria</title>
-    <link rel="icon" href="{% static 'images/logo.png' %}" type="image/png">  <!-- Logo -->
+    <link rel="icon" href="{% static 'images/logo.png' %}" type="image/png"> <!-- Logo -->
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
@@ -20,6 +20,17 @@
 </head>
 
 <body>
+    {% if error %}
+    <div style="color:red;">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    {% if success %}
+    <div style="color:green;">
+        {{ success }}
+    </div>
+    {% endif %}
 
     <div class="container">
         <!-- Login Form-->
@@ -31,12 +42,14 @@
                 <h1 class="mb-3">Login</h1>
 
                 <div class="form-floating mb-3">
-                    <input type="email" name="textEmail" id="loginEmail" class="form-control" placeholder="Email" required>
+                    <input type="email" name="textEmail" id="loginEmail" class="form-control" placeholder="Email"
+                        required>
                     <label for="loginEmail"> Email</label>
                 </div>
 
                 <div class="form-floating mb-3">
-                    <input type="password" name="textPassword" id="loginPassword" class="form-control" placeholder="Password" required>
+                    <input type="password" name="textPassword" id="loginPassword" class="form-control"
+                        placeholder="Password" required>
                     <label for="loginPassword">Password</label>
                 </div>
                 <div class="forgot-link">
@@ -57,18 +70,21 @@
                 <h1 class="mb-3">Create Account</h1>
 
                 <div class="form-floating mb-3">
-                    <input type="text" name="textUsername" id="registerUsername" class="form-control" placeholder="username" required>
+                    <input type="text" name="textUsername" id="registerUsername" class="form-control"
+                        placeholder="username" required>
                     <label for="registerUsername"> User Name</label>
-                    
+
                 </div>
 
                 <div class="form-floating mb-3">
-                    <input type="email" name="textEmail" id="registerEmail" class="form-control" placeholder="Email" required>
+                    <input type="email" name="textEmail" id="registerEmail" class="form-control" placeholder="Email"
+                        required>
                     <label for="registerEmail"> Email</label>
                 </div>
 
                 <div class="form-floating mb-3">
-                    <input type="password" name="textPassword" id="registerPassword" class="form-control" placeholder="Password" required>
+                    <input type="password" name="textPassword" id="registerPassword" class="form-control"
+                        placeholder="Password" required>
                     <label for="registerPassword">Password</label>
                     <span id="passwordError" style="color:red"></span>
                 </div>
@@ -95,7 +111,7 @@
 
         <!-- Toggle Box -->
 
-        <div class="toggle-box"></div>  <!--  Works with CSS (sliding panel effect)-->
+        <div class="toggle-box"></div> <!--  Works with CSS (sliding panel effect)-->
 
         <!-- Toggle Box Left-->
         <div class="toggle-panel toggle-left">
