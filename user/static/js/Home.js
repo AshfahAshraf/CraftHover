@@ -89,10 +89,7 @@
             if (jewelryImage) jewelryImage.style.transform = `translateY(${translateYAmount}px) scale(${scaleAmount})`;
             
             // 2. Text Drawing CRAFTHOVER
-            let textProgress = 0;
-            if (progress > 0.20) {
-                textProgress = Math.min((progress - 0.20) / 0.60, 1);
-            }
+          let textProgress = Math.min(progress / 0.10, 1);
             if (scrollText) {
                 const drawProgress = 4000 - (textProgress * 4000);
                 scrollText.style.strokeDashoffset = drawProgress;
@@ -101,28 +98,6 @@
             // Fade out the jewelry image smoothly during the CRAFTHOVER animation
             if (jewelryImage) {
                 jewelryImage.style.opacity = 1 - textProgress;
-            }
-
-            // 3. Fading in the Cloud Background section + Scroll Parallax
-            let transitionProgress = 0;
-            if (progress > 0.80) {
-                transitionProgress = Math.min((progress - 0.80) / 0.20, 1);
-            }
-
-            const cloudBgArea = document.querySelector('.new-cloud-background');
-            const cloudCanvas = document.getElementById('cloudCanvas');
-
-            if (cloudBgArea) {
-                cloudBgArea.style.opacity = transitionProgress;
-            }
-
-            if (cloudCanvas) {
-                // Interactive zoom and pan driven purely by user scroll
-                const panX = transitionProgress * -15;
-                const panY = transitionProgress * -8;
-                const scale1 = 1 + (transitionProgress * 0.3); // slight zoom 1.0 to 1.3
-
-                cloudCanvas.style.transform = `translate(${panX}%, ${panY}%) scale(${scale1})`;
             }
 
             // --- EXPERIMENTAL: Cinematic Studio Video Reveal (Clip Path Scroll) ---
@@ -239,65 +214,6 @@
         window.addEventListener('resize', resize);
         resize();
 
-        class Cloud {
-            constructor() { this.reset(true); }
-            reset(randomX = false) {
-                this.z = Math.random() * 0.8 + 0.2; // depth
-                this.x = randomX ? Math.random() * width : -400 * this.z;
-                this.y = (Math.random() * height * 0.8) - (height * 0.1);
-                this.speed = (Math.random() * 0.4 + 0.1) * this.z;
-                this.scale = this.z * (Math.random() * 0.5 + 0.8);
-                this.opacity = this.z * 0.6 + 0.1;
-
-                this.puffs = [];
-                let numPuffs = Math.floor(Math.random() * 10) + 4; // 4 to 13 puffs
-                let cloudWidth = Math.random() * 320 + 80;
-                let cloudHeight = Math.random() * 80 + 30;
-                for (let i = 0; i < numPuffs; i++) {
-                    this.puffs.push({
-                        cx: (Math.random() - 0.5) * cloudWidth,
-                        cy: (Math.random() - 0.5) * cloudHeight,
-                        r: Math.random() * 80 + 40
-                    });
-                }
-            }
-            update() {
-                this.x += this.speed;
-                if (this.x > width + 400) this.reset();
-            }
-            draw() {
-                ctx.save();
-                ctx.translate(this.x, this.y);
-                ctx.scale(this.scale, this.scale);
-                ctx.globalAlpha = this.opacity;
-
-                for (let puff of this.puffs) {
-                    ctx.beginPath();
-                    ctx.arc(puff.cx, puff.cy, puff.r, 0, Math.PI * 2);
-                    let grad = ctx.createRadialGradient(puff.cx, puff.cy, 0, puff.cx, puff.cy, puff.r);
-                    grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
-                    grad.addColorStop(0.4, 'rgba(255, 255, 255, 0.8)');
-                    grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-                    ctx.fillStyle = grad;
-                    ctx.fill();
-                }
-                ctx.restore();
-            }
-        }
-
-        const clouds = [];
-        for (let i = 0; i < 35; i++) clouds.push(new Cloud());
-        clouds.sort((a, b) => a.z - b.z); // Sort by depth for correct overlapping
-
-        const animate = () => {
-            ctx.clearRect(0, 0, width, height);
-            for (let cloud of clouds) {
-                cloud.update();
-                cloud.draw();
-            }
-            requestAnimationFrame(animate);
-        };
-        animate();
     }
 });
 

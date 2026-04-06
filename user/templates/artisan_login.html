@@ -57,14 +57,20 @@
 
             <!-- Register Link -->
 
-            <div class="text-center mt-3">
-                <small>
-                    Don't have an account?
-                    <a href="{% url 'artisan_register' %}" class="text-decoration-none fw-bold">
-                        Register
-                    </a>
-                </small>
-            </div>
+                        <div class="text-center mt-3">
+                            <small>
+                                Don't have an account?
+                                <a href="{% url 'artisan_register' %}" class="text-decoration-none fw-bold">
+                                    Register
+                                </a>
+                            </small>
+
+                            <br>
+
+                            <a href="{% url 'send_otp' 'artisan' %}" class="text-decoration-none">
+                                Forgot Password?
+                            </a>
+                        </div>
 
         </div>
 

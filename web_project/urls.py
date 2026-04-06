@@ -12,7 +12,6 @@ urlpatterns = [
     path('admin-panel/', include('admin_app.urls')),
 
     
-
 ]
 
 #for serving media file for my account

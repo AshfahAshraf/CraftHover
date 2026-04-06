@@ -1,3 +1,4 @@
+import re
 from django.shortcuts import render,redirect,get_object_or_404
 from .models import * 
 from django.db.models import Q ,Sum
@@ -9,6 +10,7 @@ import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .utils.ai_description import generate_description
+import time
 # Create your views here.
 
 
@@ -16,7 +18,7 @@ def index(request):
 
     if request.method == 'POST':
 
-        # ================= REGISTER =================
+        #  REGISTER 
         if "register" in request.POST:
             username = request.POST.get("textUsername")
             email = request.POST.get("textEmail")
@@ -25,7 +27,7 @@ def index(request):
 
             # Email format check
             email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
-            if not re.match(email_pattern, email):
+            if not email or not re.match(email_pattern, email):
                 return render(request, "register.html", {
                     "error": "Invalid email format"
                 })
@@ -54,7 +56,7 @@ def index(request):
                 "success": "Registration successful"
             })
 
-        # ================= LOGIN =================
+        # LOGIN
         elif "login" in request.POST:
             email = request.POST.get("textEmail")
             password = request.POST.get("textPassword")
@@ -90,44 +92,63 @@ def index(request):
 #email 
 
 # send otp 
-
-def send_otp(request):
+# ================= SEND OTP =================
+def send_otp(request, user_type):
 
     if request.method == "POST":
-        email = request.POST["email"]
+        email = request.POST.get("email")
 
-        #check if email exists
-        if not User.objects.filter(Email=email).exists():
-            return render(request, "send_otp.html",{"error": "Email not registered"})
+        # choose model
+        if user_type == "user":
+            model = User
+        elif user_type == "artisan":
+            model = Artisan
+        else:
+            return redirect("login")
+
+        # check email
+        if not model.objects.filter(Email=email).exists():
+            return render(request, "send_otp.html", {
+                "error": "Email not registered"
+            })
 
         otp = str(random.randint(100000, 999999))
 
-        #store in session instead of database
+        # store session
         request.session['email'] = email
-        request.session['otp'] =otp
+        request.session['otp'] = otp
+        request.session['user_type'] = user_type
+        request.session['otp_time'] = time.time()
 
         send_mail(
-            "Password Reset OTP",
-            f"Your OTP is {otp}",
+            "Reset Your Crafthover Password",
+            f"Your OTP is: {otp}",
             "yourgmail@gmail.com",
             [email],
             fail_silently=False,
         )
 
         return redirect("verify_otp")
-    
+
     return render(request, "send_otp.html")
 
-#verify otp
 
+# ================= VERIFY OTP =================
 def verify_otp(request):
 
     if request.method == "POST":
         user_otp = request.POST.get("otp")
         saved_otp = request.session.get("otp")
+        otp_time = request.session.get("otp_time")
+
+        # check expiry (2 minutes)
+        if otp_time and (time.time() - otp_time > 120):
+            return render(request, "verify_otp.html", {
+                "error": "OTP expired"
+            })
 
         if user_otp == saved_otp:
-            request.session["otp_verified"] = True   # correct key
+            request.session["otp_verified"] = True
             return redirect("reset_password")
 
         else:
@@ -137,24 +158,39 @@ def verify_otp(request):
 
     return render(request, "verify_otp.html")
 
-#reset password
 
+# ================= RESET PASSWORD =================
 def reset_password(request):
 
     if not request.session.get("otp_verified"):
-        return redirect("send_otp")
+        return redirect("send_otp", user_type="user")
 
     if request.method == "POST":
-        new_password = request.POST["newPassword"]
+        new_password = request.POST.get("newPassword")
         email = request.session.get("email")
+        user_type = request.session.get("user_type")
 
-        user = User.objects.get(Email=email)
+        # select model
+        if user_type == "user":
+            user = User.objects.get(Email=email)
+
+        elif user_type == "artisan":
+            user = Artisan.objects.get(Email=email)
+
+        else:
+            return redirect("login")
+
+        # plain password (as you requested)
         user.Password = new_password
         user.save()
 
-        return redirect("register")
-    
-    return render(request,"reset_password.html")
+        # clear session
+        request.session.flush()
+
+        return redirect("login")
+
+    return render(request, "reset_password.html")
+
 #########
 
 def terms_conditon(request):
@@ -198,16 +234,6 @@ def search(request):
         "categories": Category.objects.all()
     })
 
-
-def your_view(request):
-    categories = Category.objects.all()
-    subcategories = SubCategory.objects.all()
-
-    return render(request, "your_template.html", {
-        "categories": categories,
-        "subcategories": subcategories
-    })
-
 def footer(request):
     return render(request,"footer.html")
 
@@ -219,19 +245,36 @@ def aboutus(request):
 
 def contact(request):
 
+    # Get logged-in user
+    user_id = request.session.get("user_id")
+
+    if not user_id:
+        return redirect("register")
+
     if request.method == "POST":
 
-        fullname = request.POST["fullname"]
-        email = request.POST["email"]
-        phonenumber = request.POST["phonenumber"]
-        orderid = request.POST["orderid"]
-        issue_type = request.POST["issue_type"]
-        description = request.POST["description"]
-        product_image = request.FILES["product_image"]
+        fullname = request.POST.get("fullname")
+        email = request.POST.get("email")
+        phonenumber = request.POST.get("phonenumber")
+        orderid = request.POST.get("orderid")
+        issue_type = request.POST.get("issue_type")
+        description = request.POST.get("description")
 
-        order = get_object_or_404(Order, id=orderid)
+        product_image = request.FILES.get("product_image")
+
+        #  Only allow delivered orders (SECURITY)
+        order = get_object_or_404(
+            Order,
+            id=orderid,
+            user_id=user_id,
+            status="Delivered"
+        )
+
+        #  Get product & artisan automatically
         product = order.product
+        artisan = product.artisan
 
+        #  Save complaint
         Complaint.objects.create(
             Fullname=fullname,
             Email=email,
@@ -243,10 +286,9 @@ def contact(request):
             Description=description
         )
 
-        #  SEND EMAIL
+        #  Send email
         send_mail(
-            "Complaint Received",  # Email Subject
-            #f - string (dynamic values)
+            "Complaint Received",
             f"""
                 Hello {fullname},
 
@@ -256,22 +298,152 @@ def contact(request):
                 Product: {product.Product_name}
                 Issue: {issue_type}
 
-                We will contact you soon.
+                Our team (artisan: {artisan.name}) will review it soon.
 
                 Thank you,
                 CraftHover Support
                 """,
-                    settings.EMAIL_HOST_USER,   #  sender
-                    [email],                   #  receiver
-                    fail_silently=False         # If email fails →  Error will be shown
-                )
+                settings.EMAIL_HOST_USER,
+                [email],
+                fail_silently=False
+        )
 
-        messages.success(request, "Complaint submitted successfully!")  #messages- Django message framework
+        messages.success(request, "Complaint submitted successfully!")
+        return redirect("contact")
 
-        return redirect("contact")  # Prevents form resubmission on refresh
+    #  ONLY LATEST 5 DELIVERED ORDERS
+    orders = Order.objects.filter(
+        user_id=user_id,
+        status="Delivered"
+    ).order_by("-id")[:5]
 
-    return render(request, "contact.html")  # show HTML page
+    return render(request, "contact.html", {
+        "orders": orders
+    })
 
+
+def artisan_complaints(request):
+
+    artisan_id = request.session.get("artisan_id")
+
+    #  check login
+    if not artisan_id:
+        return redirect("artisan_login")
+
+    #  get complaints of this artisan
+    complaints = Complaint.objects.filter(
+        Productname__artisan_id=artisan_id
+    ).order_by("-id")
+
+    return render(request, "artisan_complaints.html", {
+        "complaints": complaints
+    })
+
+
+
+def update_complaint(request, id):
+
+    artisan_id = request.session.get("artisan_id")
+
+    complaint = get_object_or_404(
+        Complaint,
+        id=id,
+        Productname__artisan_id=artisan_id
+    )
+
+    if request.method == "POST":
+
+        action = request.POST.get("action")
+
+        # ================= RESOLVE =================
+        if action == "resolve":
+
+            issue = complaint.Issue_type
+            artisan_name = complaint.Productname.artisan.name  # ✅ NEW
+
+            solutions = {
+                "Damaged Product": "We sincerely apologize for the inconvenience caused. After reviewing your complaint, we have arranged a replacement for the damaged product. It will be shipped to your address shortly.",
+                "Wrong Product Received": "We regret the error in your order. Our team has arranged for the correct product to be delivered to you. The incorrect item may be picked up if required.",
+                "Missing Item": "We understand your concern regarding the missing item. After checking your order, we have arranged to send the missing product, which will reach you soon.",
+                "Refund Issue": "Your refund request has been successfully processed. The amount will be credited to your original payment method within a few working days.",
+                "Delivery Delay": "We apologize for the delay in delivery. Your order has been prioritized and will be delivered to you at the earliest possible time."
+            }
+
+            solution_text = solutions.get(issue, "Your issue has been reviewed and resolved successfully.")
+
+            complaint.status = "Resolved"
+            complaint.save()
+
+            send_mail(
+                "Complaint Resolved",
+                f"""
+                        Hello {complaint.Fullname},
+
+                        We would like to inform you that your complaint has been carefully reviewed and resolved by our team.
+
+                        Product: {complaint.Productname.Product_name}
+                        Issue Reported: {issue}
+
+                        Resolution Details:
+                        {solution_text}
+
+                        We truly appreciate your patience and understanding while we worked on your request.
+
+                        Handled by: {artisan_name}
+
+                        Thank you for choosing CraftHover.
+
+                        CraftHover Support
+                        """,
+                settings.EMAIL_HOST_USER,
+                [complaint.Email],
+                fail_silently=False
+            )
+
+            messages.success(request, "Complaint resolved!")
+
+        # ================= REJECT =================
+        elif action == "reject":
+
+            artisan_name = complaint.Productname.artisan.name  # ✅ NEW
+
+            default_reason = "After carefully reviewing your complaint, we found that it does not meet our return or support policy conditions."
+
+            complaint.status = "Rejected"
+            complaint.reject_reason = default_reason
+            complaint.save()
+
+            send_mail(
+                "Complaint Update",
+                f"""
+                    Hello {complaint.Fullname},
+
+                    Thank you for reaching out to us regarding your concern.
+
+                    After reviewing your complaint, we regret to inform you that we are unable to process your request at this time.
+
+                    Product: {complaint.Productname.Product_name}
+                    Issue Reported: {complaint.Issue_type}
+
+                    Reason:
+                    {default_reason}
+
+                    Handled by: {artisan_name}
+
+                    If you need further clarification, please contact our support team.
+
+                    We appreciate your understanding.
+
+                    CraftHover Support
+                    """,
+                settings.EMAIL_HOST_USER,
+                [complaint.Email],
+                fail_silently=False
+            )
+
+            messages.error(request, "Complaint rejected!")
+
+    return redirect("artisan_complaints")
 
 #### wishlist
 # adding wishlist
@@ -388,6 +560,11 @@ def cart_view(request):
 
     user_id = request.session.get("user_id")
 
+    if not user_id:
+        return redirect("register")
+
+ 
+
     cart_items = []
     total_price = 0
     total_items = 0
@@ -400,10 +577,14 @@ def cart_view(request):
         total_price += item.total
         total_items += item.quantity
 
+
+    addresses = Address.objects.filter(user_id=user_id)
+
     context = {
         "cart_items": cart_items,
         "total_price": total_price,
-        "total_items": total_items
+        "total_items": total_items,
+        "addresses": addresses
     }
 
     return render(request, "cart.html", context)
@@ -470,7 +651,7 @@ def orders(request):
     user_id = request.session.get("user_id")
 
     if not user_id:
-        return redirect("login")
+        return redirect("register")
     # Sorts orders in descending order
     # Latest order comes first
     orders = Order.objects.filter(user_id=user_id).order_by("-id")
@@ -702,11 +883,10 @@ def artisan_register(request):
             request.session["email_otp"] = str(otp)
 
             send_mail(
-                "Email Verification OTP",
-                f"Your OTP is {otp}",
+                "Email Verification for Artisan Account",
+                f"Dear User,\n\nThank you for registering on our platform.\n\nYour OTP for email verification is: {otp}\n\nPlease enter this OTP to complete your registration. This OTP is valid for 5 minutes.\n\nIf you did not request this, please ignore this email.\n\nBest regards,\nYour Team",
                 settings.EMAIL_HOST_USER,
                 [email],
-                # If something goes wrong while sending email, show the error.
                 fail_silently=False,
             )
 
@@ -920,7 +1100,7 @@ def Artisan_edit_product(request, id):
     artisan_id = request.session.get("artisan_id")
 
     if not artisan_id:
-        return redirect("login")
+        return redirect("artisan_login")
 
     product = get_object_or_404(Product, id=id, artisan_id=artisan_id)
 
@@ -932,6 +1112,11 @@ def Artisan_edit_product(request, id):
         product.Quantity = request.POST.get("quantity")
         product.Description = request.POST.get("description")
 
+        # category + subcategory
+        product.category_id = request.POST.get("category")
+        product.subcategory_id = request.POST.get("product_type")
+
+        # images
         if request.FILES.get("front_image"):
             product.front_image = request.FILES.get("front_image")
 
@@ -945,9 +1130,10 @@ def Artisan_edit_product(request, id):
 
         return redirect("artisan_products")
 
-    return render(request, "Artisan_edit_product.html", {"product": product})
-
-
+    # ✅ VERY IMPORTANT (GET request)
+    return render(request, "artisan_edit_product.html", {
+        "product": product
+    })
 
 def delete_product(request, id):
 
@@ -955,7 +1141,7 @@ def delete_product(request, id):
 
      #  Check login
     if not artisan_id:
-        return redirect("login")
+        return redirect("artisan_login")
 
 
      #  Allow only POST (security)
@@ -971,7 +1157,7 @@ def artisan_orders(request):
     artisan_id = request.session.get("artisan_id")
 
     if not artisan_id:
-        return redirect("login")
+        return redirect("artisan_login")
 
     if request.method == "POST":
         order_id = request.POST.get("order_id")
@@ -1067,6 +1253,10 @@ def artisan_logout(request):
 # PRODUCT list view VIEW PAGE
 def product_list(request, subcategory_id):
 
+     # 🔒 ADD THIS LINE
+    if not request.session.get("user_id"):
+        return redirect("register")   # go to login/register
+
     products = Product.objects.filter(subcategory_id=subcategory_id)
     subcategory = SubCategory.objects.get(id=subcategory_id)
 
@@ -1114,6 +1304,11 @@ def home(request):
 
 def category_products(request, category_id):
 
+     #  ADD THIS
+    if not request.session.get("user_id"):
+        return redirect("register")
+
+
     category = Category.objects.get(id=category_id)
 
     products = Product.objects.filter(category_id=category_id)
@@ -1129,3 +1324,6 @@ def category_products(request, category_id):
         "products": products,
         "category": category
     })
+
+
+

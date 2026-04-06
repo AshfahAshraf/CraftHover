@@ -1,0 +1,164 @@
+{% extends "artisan_base.html" %}
+
+{% block title %}
+Artisan Complaint | CraftHover
+{% endblock %}
+
+{% block content %}
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .container-box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .status-pending {
+            color: orange;
+            font-weight: bold;
+        }
+
+        .status-resolved {
+            color: green;
+            font-weight: bold;
+        }
+
+        .status-rejected {
+            color: red;
+            font-weight: bold;
+        }
+
+        /* ✅ MOBILE FIX */
+        @media (max-width: 768px) {
+            h2 {
+                font-size: 20px;
+            }
+
+            .btn-sm {
+                font-size: 12px;
+                padding: 5px;
+            }
+
+            td, th {
+                font-size: 12px;
+            }
+
+            img {
+                width: 40px;
+                height: 40px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container mt-4">
+
+    <h2 class="text-center mb-4">Customer Complaints</h2>
+
+    <!-- Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-info text-center">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="container-box">
+
+        <!-- ✅ KEY FIX: TABLE RESPONSIVE -->
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-striped text-center align-middle">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Customer</th>
+                        <th>Product</th>
+                        <th>Issue</th>
+                        <th>Description</th>
+                        <th>Image</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for c in complaints %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ c.Fullname }}</td>
+                        <td>{{ c.Productname.Product_name }}</td>
+                        <td>{{ c.Issue_type }}</td>
+                        <td>{{ c.Description }}</td>
+
+                        <td>
+                            {% if c.Product_image %}
+                                <img src="{{ c.Product_image.url }}" width="60" height="60">
+                            {% else %}
+                                No Image
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if c.status == "Pending" %}
+                                <span class="status-pending">Pending</span>
+                            {% elif c.status == "Resolved" %}
+                                <span class="status-resolved">Resolved</span>
+                            {% elif c.status == "Rejected" %}
+                                <span class="status-rejected">Rejected</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if c.status == "Pending" %}
+
+                            <!-- RESOLVE -->
+                            <form method="POST" action="{% url 'update_complaint' c.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="resolve">
+                                <button class="btn btn-success btn-sm mb-2 w-100">
+                                    Resolve
+                                </button>
+                            </form>
+
+                            <!-- REJECT -->
+                            <form method="POST" action="{% url 'update_complaint' c.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="reject">
+                                <button class="btn btn-danger btn-sm w-100">
+                                    Reject
+                                </button>
+                            </form>
+
+                            {% else %}
+                                ✔ Completed
+                            {% endif %}
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="8">No complaints found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+</body>
+
+{% endblock %}

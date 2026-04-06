@@ -39,7 +39,7 @@
 
       <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}" style="letter-spacing: 3px;">
         <img src="{% static 'images/logo.png' %}" alt="Logo" width="80" height="84">
-        Craftoria
+        CraftHover
       </a>
 
       <!-- Center : Search-->
@@ -92,6 +92,7 @@
           
 
             <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="{% url 'my_account' %}">My Account</a></li>
               <li><a class="dropdown-item" href="{% url 'order' %}">Order</a></li>
               <li><a class="dropdown-item" href="{% url 'wishlist' %}">Wishlist</a></li>
               <li><a class="dropdown-item" href="{% url 'about_Us' %}">About Us</a></li>

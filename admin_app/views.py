@@ -2,88 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from user.models import *
 import random
 from django.core.mail import send_mail
-# from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
 from admin_app.models import AdminUser
-
-
-# ================= REGISTER =================
-def register_admin(request):
-    if request.method == "POST":
-
-        # STEP 1: SEND OTP
-        if "send_otp" in request.POST:
-            email = request.POST.get("email")
-
-            otp = str(random.randint(1000, 9999))
-            request.session['otp'] = otp
-            request.session['email'] = email
-
-            if "@" not in email:
-                return render(request, 'admin_register.html', {
-                    'error': 'Invalid email format'
-                })
-
-            send_mail(
-    '🔐 CraftHover Admin OTP Verification',
-    f'''
-Hello,
-
-Your One-Time Password (OTP) for admin registration is:
-
-🔢 {otp}
-
-This OTP is valid for a limited time. Please do not share it with anyone.
-
-If you did not request this, please ignore this email.
-
-Thanks,
-CraftHover Team
-''',
-    'yourgmail@gmail.com',
-    [email],
-    fail_silently=False,
-)
-
-            return render(request, 'admin_register.html', {
-                'otp_sent': True
-            })
-
-        # STEP 2: VERIFY OTP
-        elif "verify_otp" in request.POST:
-            user_otp = request.POST.get("otp")
-
-            if user_otp == request.session.get("otp"):
-                return render(request, 'admin_register.html', {
-                    'otp_verified': True
-                })
-            else:
-                return render(request, 'admin_register.html', {
-                    'otp_sent': True,
-                    'error': 'Invalid OTP'
-                })
-
-        # STEP 3: REGISTER
-        elif "register" in request.POST:
-            username = request.POST.get("username")
-            password = request.POST.get("password")
-            confirm = request.POST.get("confirm_password")
-
-            if password != confirm:
-                return render(request, 'admin_register.html', {
-                    'otp_verified': True,
-                    'error': 'Passwords do not match'
-                })
-
-            AdminUser.objects.create(
-                username=username,
-                email=request.session.get("email"),
-                password=password   # ⚠️ plain password
-            )
-
-            return redirect('login_admin')
-
-    return render(request, 'admin_register.html')
+import time
 
 
 def login_admin(request):
@@ -107,14 +27,98 @@ def login_admin(request):
 
         # 🔹 Login success
         request.session['admin_id'] = user.id
-        return redirect('dashboard')
+        return redirect('admin_dashboard')
 
     return render(request, 'login.html')
 
 def logout_admin(request):
     request.session.flush()
     return redirect('login_admin')
-# @login_required
+
+
+
+
+def admin_send_otp(request):
+
+    if request.method == "POST":
+        email = request.POST.get("email")
+
+        # check admin email
+        if not AdminUser.objects.filter(email=email).exists():
+            return render(request, "admin_send_otp.html", {
+                "error": "Email not registered"
+            })
+
+        otp = str(random.randint(100000, 999999))
+
+        # store session
+        request.session['admin_email'] = email
+        request.session['admin_otp'] = otp
+        request.session['admin_otp_time'] = time.time()
+
+        send_mail(
+            "Admin Password Reset - CraftHover",
+            f"Your OTP is: {otp}",
+            "yourgmail@gmail.com",
+            [email],
+            fail_silently=False,
+        )
+
+        return redirect("admin_verify_otp")
+
+    return render(request, "admin_send_otp.html")
+
+
+
+def admin_verify_otp(request):
+
+    if request.method == "POST":
+        user_otp = request.POST.get("otp")
+        saved_otp = request.session.get("admin_otp")
+        otp_time = request.session.get("admin_otp_time")
+
+        # expiry check (2 min)
+        if otp_time and (time.time() - otp_time > 120):
+            return render(request, "admin_verify.html", {
+                "error": "OTP expired"
+            })
+
+        if user_otp == saved_otp:
+            request.session["admin_otp_verified"] = True
+            return redirect("admin_reset_password")
+
+        else:
+            return render(request, "admin_verify.html", {
+                "error": "Invalid OTP"
+            })
+
+    return render(request, "admin_verify.html")
+
+
+def admin_reset_password(request):
+
+    if not request.session.get("admin_otp_verified"):
+        return redirect("admin_send_otp")
+
+    if request.method == "POST":
+        new_password = request.POST.get("newPassword")
+        email = request.session.get("admin_email")
+
+        admin = AdminUser.objects.get(email=email)
+
+        # plain password (as you want)
+        admin.password = new_password
+        admin.save()
+
+        # clear session
+        request.session.flush()
+
+        return redirect("login_admin")
+
+  
+    return render(request, "admin_reset.html")
+
+
 
 def dashboard(request):
     if not request.session.get('admin_id'):
@@ -141,18 +145,29 @@ def dashboard(request):
 def add_category(request):
     if request.method == "POST":
 
+        category_id = request.POST.get('category_id')
         category_name = request.POST.get('category_name')
         subcategory_name = request.POST.get('subcategory_name')
 
-        # ✅ ADD CATEGORY + SUBCATEGORY TOGETHER
-        if category_name:
-            category = Category.objects.create(name=category_name)
+        category = None
 
-            if subcategory_name:
-                SubCategory.objects.create(
-                    name=subcategory_name,
-                    category=category
-                )
+        # ✅ If existing category selected
+        if category_id:
+            category = Category.objects.get(id=category_id)
+
+        # ✅ Else check/create category (NO DUPLICATE)
+        elif category_name:
+            category = Category.objects.filter(name=category_name).first()
+
+            if not category:
+                category = Category.objects.create(name=category_name)
+
+        # ✅ Add subcategory
+        if category and subcategory_name:
+            SubCategory.objects.create(
+                name=subcategory_name,
+                category=category
+            )
 
         return redirect('add_category')
 
@@ -203,8 +218,6 @@ def delete_category(request, id):
 def delete_subcategory(request, id):
     SubCategory.objects.get(id=id).delete()
     return redirect('add_category')
-
-
 
 # PRODUCT LIST PAGE (your admin page)
 def admin_products(request):
@@ -321,7 +334,7 @@ def add_artisan(request):
 
         Artisan.objects.create(
             name=request.POST.get("name"),
-            email=request.session.get("email"),
+            email=request.POST.get("email"),
             password=request.POST.get("password"),   # ✅ plain password
             phone=request.POST.get("phone"),
             shop_name=request.POST.get("shop_name"),

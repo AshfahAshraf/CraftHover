@@ -28,10 +28,11 @@
                     <button class="btn btn-primary w-100">Login</button>
                 </form>
 
-                <p class="text-center mt-3">
-                    Don’t have an account? 
-                    <a href="{% url 'register_admin' %}">Register</a>
-                </p>
+                <div class="text-center mt-2">
+    <a href="{% url 'admin_send_otp' %}" class="small text-decoration-none">
+        Forgot Password?
+    </a>
+</div>
 
             </div>
         </div>

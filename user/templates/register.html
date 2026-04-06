@@ -20,7 +20,18 @@
 </head>
 
 <body>
-    {% if error %}
+  
+
+    <div class="container">
+        <!-- Login Form-->
+
+        <div class="form-box login">
+
+            <form method="POST">
+                {% csrf_token %}
+                <h1 class="mb-3">Login</h1>
+
+                  {% if error %}
     <div style="color:red;">
         {{ error }}
     </div>
@@ -31,15 +42,6 @@
         {{ success }}
     </div>
     {% endif %}
-
-    <div class="container">
-        <!-- Login Form-->
-
-        <div class="form-box login">
-
-            <form method="POST">
-                {% csrf_token %}
-                <h1 class="mb-3">Login</h1>
 
                 <div class="form-floating mb-3">
                     <input type="email" name="textEmail" id="loginEmail" class="form-control" placeholder="Email"
@@ -53,9 +55,13 @@
                     <label for="loginPassword">Password</label>
                 </div>
                 <div class="forgot-link">
-                    <a href="{% url 'send_otp' %}">Forgot Password?</a>
+                    <a href="{% url 'send_otp' 'user' %}">Forgot Password?</a>
                 </div>
+                <input type="hidden" name="image" id="loginImage">
+
                 <button type="submit" name="login" class="custom-btn">Sign in</button>
+
+            
             </form>
         </div>
 
@@ -64,7 +70,7 @@
         <!-- Register Form-->
         <div class="form-box register">
 
-            <form method="POST" action="">
+            <form method="POST" id="registerForm" action="">
                 {% csrf_token %}
 
                 <h1 class="mb-3">Create Account</h1>
@@ -105,6 +111,8 @@
                         <a href="{% url 'privacy_policy' %}">Privacy Policy</a> </label>
                 </div>
 
+                <input type="hidden" name="image" id="registerImage">
+                   
             </form>
         </div>
 
@@ -131,6 +139,30 @@
 
 
     <script src="{% static 'js/register.js' %}"></script>
+
+<script>
+function faceRegister() {
+    let email = document.getElementById("registerEmail").value;
+
+    if (!email) {
+        alert("Enter email first");
+        return;
+    }
+
+    fetch("/face-register/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": getCSRFToken()
+        },
+        body: "email=" + encodeURIComponent(email)
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message);
+    });
+}
+</script>
 
 </body>
 

@@ -12,12 +12,19 @@
 a {
     color: #1a1a1a;          
     text-decoration: none;   
+    cursor: pointer;
 }
 
 a:hover {
     color: #191818; 
     font-weight: 500; 
-     cursor: pointer;           
+     cursor: pointer   !important;        
+}
+
+li a {
+    display: block;
+    width: 100%;
+    cursor: pointer; 
 }
 </style>
 </head>
@@ -30,9 +37,9 @@ a:hover {
                     <img src="{% static 'images/logo.png' %}" alt="" class="image-fluid" style="max-width: 100px;">
                 
                 
-                    <h3 class="mt-3">About Craftoria</h3>
+                    <h3 class="mt-3">About CraftHover</h3>
                     <p>The Marketplace for Artisanal Treasures.</p>
-                    <p>craftoria connects talented artisans with customer who love handmade treasures.</p>
+                    <p>craftHover connects talented artisans with customer who love handmade treasures.</p>
                     <p>Discover unique, handmade products crafted with passion and care</p>
                     <div class="d-flex align-items-center mb-2">
                         <i class="fa-solid fa-phone"></i>
@@ -49,27 +56,26 @@ a:hover {
                
                 <div class="col-12 col-md-6 col-lg-4 mt-5  ">
                     <h3 class="mb-5 ms-3">Customer Service</h3>
-                    <ul class="list-unstyled d-flex flex-column gap-4 ms-3">
-                        <a href="{% url 'contact' %}"><li >Contact Us </li></a>
-                        <a href="{% url 'faq' %}"><li>FAQs </li></a>
-                        <a href="{% url 'return_refund' %}"><li>Return Policy</li></a>
-                        <a href="{% url 'shipping_info' %}"><li>Shipping info</li></a>
-                        
+                   <ul class="list-unstyled d-flex flex-column gap-4 ms-3">
+                        <li><a href="{% url 'contact' %}">Contact Us</a></li>
+                        <li><a href="{% url 'faq' %}">FAQs</a></li>
+                        <li><a href="{% url 'return_refund' %}">Return Policy</a></li>
+                        <li><a href="{% url 'shipping_info' %}">Shipping info</a></li>
                     </ul>
 
             </div>
             <div class="col-12 col-md-6 col-lg-4 mt-5 ">
                 <h3 class="mb-5">Account</h3>
-                <ul class="list-unstyled d-flex flex-column gap-4">
-                    <a href="{% url 'register' %}"><li>Login/Register</li></a>
-                    <a href="{% url 'my_account' %}"><li>My Account</li></a>
-                    <a href="{% url 'order' %}"><li>Orders</li></a>
-                    <a href="{% url 'wishlist' %}"><li>Wishlist</li></a>
-                    </ul>
+               <ul class="list-unstyled d-flex flex-column gap-4">
+                    <li><a href="{% url 'register' %}">Login/Register</a></li>
+                    <li><a href="{% url 'my_account' %}">My Account</a></li>
+                    <li><a href="{% url 'order' %}">Orders</a></li>
+                    <li><a href="{% url 'wishlist' %}">Wishlist</a></li>
+                </ul>
             </div>
         </div>
         <div class="text-center mt-4 border-top pt-3">
-            <p class="mb-0">&copy; Craftoria All Rights Reserved</p>
+            <p class="mt-2">&copy; CraftHover All Rights Reserved</p>
         </div>
         </div>
     </footer>
