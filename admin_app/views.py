@@ -5,13 +5,14 @@ from django.core.mail import send_mail
 from admin_app.models import AdminUser
 import time
 
+# admin login
 
 def login_admin(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
 
-        # 🔹 Check username exists
+        #  Check username exists
         try:
             user = AdminUser.objects.get(username=username)
         except AdminUser.DoesNotExist:
@@ -19,24 +20,25 @@ def login_admin(request):
                 'error': 'Username does not exist'
             })
 
-        # 🔹 Check password
+        #  Check password
         if user.password != password:
             return render(request, 'login.html', {
                 'error': 'Password does not match'
             })
 
-        # 🔹 Login success
+        #  Login success
         request.session['admin_id'] = user.id
         return redirect('admin_dashboard')
 
     return render(request, 'login.html')
 
+#admin logout
+
 def logout_admin(request):
     request.session.flush()
     return redirect('login_admin')
 
-
-
+#admin forget password
 
 def admin_send_otp(request):
 
@@ -67,7 +69,6 @@ def admin_send_otp(request):
         return redirect("admin_verify_otp")
 
     return render(request, "admin_send_otp.html")
-
 
 
 def admin_verify_otp(request):
@@ -118,7 +119,7 @@ def admin_reset_password(request):
   
     return render(request, "admin_reset.html")
 
-
+#admin dashboard
 
 def dashboard(request):
     if not request.session.get('admin_id'):
@@ -130,6 +131,7 @@ def dashboard(request):
     total_users = User.objects.count()
     total_products = Product.objects.count()
     total_orders = Order.objects.count()
+    total_artisans = Artisan.objects.count()
 
     total_revenue = sum(order.total_price for order in Order.objects.all())
 
@@ -139,7 +141,8 @@ def dashboard(request):
         'total_users': total_users,
         'total_products': total_products,
         'total_orders': total_orders,
-        'total_revenue': total_revenue
+        'total_revenue': total_revenue,
+        'total_artisans': total_artisans,
     })
 
 def add_category(request):
@@ -151,18 +154,18 @@ def add_category(request):
 
         category = None
 
-        # ✅ If existing category selected
+        #  If existing category selected
         if category_id:
             category = Category.objects.get(id=category_id)
 
-        # ✅ Else check/create category (NO DUPLICATE)
+        #  Else check/create category (NO DUPLICATE)
         elif category_name:
             category = Category.objects.filter(name=category_name).first()
 
             if not category:
                 category = Category.objects.create(name=category_name)
 
-        # ✅ Add subcategory
+        #  Add subcategory
         if category and subcategory_name:
             SubCategory.objects.create(
                 name=subcategory_name,
@@ -177,7 +180,7 @@ def add_category(request):
     })
 
 
-# ✅ EDIT CATEGORY
+#  EDIT CATEGORY
 def edit_category(request, id):
     category = Category.objects.get(id=id)
 
@@ -193,7 +196,7 @@ def edit_category(request, id):
     })
 
 
-# ✅ EDIT SUBCATEGORY
+#  EDIT SUBCATEGORY
 def edit_subcategory(request, id):
     sub = SubCategory.objects.get(id=id)
 
@@ -209,7 +212,7 @@ def edit_subcategory(request, id):
     })
 
 
-# ✅ DELETE
+#  DELETE
 def delete_category(request, id):
     Category.objects.get(id=id).delete()
     return redirect('add_category')
@@ -335,7 +338,7 @@ def add_artisan(request):
         Artisan.objects.create(
             name=request.POST.get("name"),
             email=request.POST.get("email"),
-            password=request.POST.get("password"),   # ✅ plain password
+            password=request.POST.get("password"),  
             phone=request.POST.get("phone"),
             shop_name=request.POST.get("shop_name"),
             address=request.POST.get("address"),

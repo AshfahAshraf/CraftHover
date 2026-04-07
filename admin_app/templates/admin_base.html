@@ -1,9 +1,13 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Admin{% endblock %}</title>
+    <title>{% block title %}Admin | CraftHover{% endblock %}</title>
+
+    <link rel="icon" href="{% static 'images/logo.png' %}" type="image/png">
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -14,7 +18,7 @@
         }
 
         .sidebar {
-            height: 100vh;
+            min-height: 100vh;
             background: #343a40;
             color: white;
         }
@@ -37,8 +41,15 @@
 
         .topbar {
             background: white;
-            padding: 10px 20px;
+            padding: 12px 20px;
             border-bottom: 1px solid #ddd;
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .sidebar {
+                min-height: auto;
+            }
         }
     </style>
 </head>
@@ -49,7 +60,8 @@
     <div class="row">
 
         <!-- Sidebar -->
-        <div class="col-md-2 sidebar d-md-block d-none">
+        <div class="col-md-2 col-12 sidebar">
+
             <h4 class="p-3">Admin</h4>
 
             <a href="{% url 'admin_dashboard' %}">Dashboard</a>
@@ -63,20 +75,20 @@
                     Logout
                 </a>
             </div>
+
         </div>
 
         <!-- Main Content -->
-        <div class="col-md-10 col-12">
+        <div class="col-md-10 col-12 p-0">
 
             <!-- Topbar -->
             <div class="topbar d-flex justify-content-between align-items-center">
-                <h5>{% block header %}Dashboard{% endblock %}</h5>
+                <h5 class="mb-0">{% block header %}Dashboard{% endblock %}</h5>
             </div>
 
             <!-- Page Content -->
             <div class="p-4">
                 {% block content %}
-                <!-- Page content goes here -->
                 {% endblock %}
             </div>
 

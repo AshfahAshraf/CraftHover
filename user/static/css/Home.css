@@ -51,7 +51,7 @@ body {
 }
 
 .hero-scroll-container {
-    height: 800vh;
+    height: 260vh;
     position: relative;
     z-index: 1;
 }
@@ -220,22 +220,6 @@ body {
     /* Provides cinematic pop! */
 }
 
-/* FOG/MIST EFFECT */
-.fog-layer {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 35vh;
-    /* White to transparent gradient imitating fog */
-    background: linear-gradient(to top,
-            rgba(255, 255, 255, 1) 0%,
-            rgba(255, 255, 255, 0.6) 45%,
-            rgba(255, 255, 255, 0) 100%);
-    z-index: 6;
-    pointer-events: none;
-}
-
 /* KEYFRAMES */
 @keyframes fadeInDown {
     from {
@@ -290,9 +274,6 @@ body {
         bottom: 50px;
     }
 
-    .fog-layer {
-        height: 45vh;
-    }
 }
 
 /* --- FULL CATEGORIES SHOWCASE --- */
@@ -516,7 +497,6 @@ body {
     border-radius: 50px;
     font-size: 0.95rem;
     font-weight: 500;
-    cursor: pointer;
     transform: translateY(20px);
     transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
@@ -541,98 +521,6 @@ body {
     letter-spacing: 1px;
     cursor: pointer;
     position: relative;
-}
-
-/* --- CINEMATIC STUDIO VIDEO REVEAL --- */
-.studio-reveal {
-    height: 300vh;
-    background: #050505;
-    position: relative;
-    z-index: 10;
-}
-
-.studio-sticky {
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-}
-
-.video-clipper {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    clip-path: circle(5% at 50% 50%);
-    will-change: clip-path;
-}
-
-.studio-video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0.7;
-}
-
-.studio-text-overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    z-index: 2;
-    color: #fff;
-}
-
-.studio-text-overlay h2 {
-    font-size: 5rem;
-    font-family: 'Playfair Display', serif;
-    margin-bottom: 20px;
-}
-
-/* --- INFINITE PRODUCT MARQUEE --- */
-.product-marquee-section {
-    padding: 100px 0;
-    background: #f7f9fa;
-    overflow: hidden;
-    position: relative;
-    z-index: 10;
-}
-
-.marquee-wrapper { width: 100vw; overflow: hidden; }
-.pm-track { display: flex; gap: 40px; width: max-content; }
-.pm-track img { height: 400px; width: 300px; object-fit: cover; border-radius: 12px; }
-
-/* NEW CLOUD BACKGROUND */
-.new-cloud-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    z-index: 7;
-    /* Just below CRAFTHOVER scroll text to cover old background */
-    opacity: 0;
-    /* Hidden initially, controlled by script.js */
-    pointer-events: none;
-    transition: opacity 0.8s ease;
-}
-
-#cloudCanvas {
-    position: absolute;
-    top: -15vh;
-    left: -15vw;
-    width: 130vw;
-    height: 130vh;
-    pointer-events: none;
-    z-index: 5;
-    /* Behind the text */
-    will-change: transform;
 }
 
 /* --- 5. SOCIAL VIDEO REELS --- */
@@ -771,4 +659,19 @@ body {
     .reels-header h2 {
         font-size: 2.2rem;
     }
+}
+
+.quick-view-btn,
+.add-cart-text {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.product-overlay {
+    pointer-events: none;
+}
+
+.product-card:hover .product-overlay {
+    opacity: 1;
+    pointer-events: auto;
 }

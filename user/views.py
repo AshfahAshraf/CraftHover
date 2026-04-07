@@ -563,8 +563,6 @@ def cart_view(request):
     if not user_id:
         return redirect("register")
 
- 
-
     cart_items = []
     total_price = 0
     total_items = 0
@@ -640,9 +638,6 @@ def decrease_quantity(request, cart_id):
         item.delete()
 
     return redirect("cart")
-
-
-################
 
 # orderss
 
@@ -1130,7 +1125,7 @@ def Artisan_edit_product(request, id):
 
         return redirect("artisan_products")
 
-    # ✅ VERY IMPORTANT (GET request)
+    #  VERY IMPORTANT (GET request)
     return render(request, "artisan_edit_product.html", {
         "product": product
     })
@@ -1253,7 +1248,7 @@ def artisan_logout(request):
 # PRODUCT list view VIEW PAGE
 def product_list(request, subcategory_id):
 
-     # 🔒 ADD THIS LINE
+     #  ADD THIS LINE
     if not request.session.get("user_id"):
         return redirect("register")   # go to login/register
 
@@ -1298,8 +1293,27 @@ def logout_view(request):
 
 def home(request):
     categories = Category.objects.all()
-    return render(request, "home.html", {"categories": categories})
 
+    # find most purchased category
+    top_category = Product.objects.values(
+        'category'
+    ).annotate(
+        total=Sum('order__quantity')
+    ).order_by('-total').first()
+
+    if top_category:
+        trending = Product.objects.filter(
+            category_id=top_category['category']
+        ).annotate(
+            total=Sum('order__quantity')
+        ).order_by('-total')[:4]
+    else:
+        trending = Product.objects.all()[:4]
+
+    return render(request, "home.html", {
+        "categories": categories,
+        "trending": trending
+    })
 # show full cateogry
 
 def category_products(request, category_id):

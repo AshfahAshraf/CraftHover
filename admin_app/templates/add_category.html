@@ -1,4 +1,5 @@
 {% extends 'admin_base.html' %}
+{% block title %}Category | CraftHover{% endblock %}
 
 {% block content %}
 
@@ -17,7 +18,7 @@
     <form method="POST">
         {% csrf_token %}
 
-        <!-- ✅ SELECT EXISTING CATEGORY -->
+        <!--  SELECT EXISTING CATEGORY -->
         {% if not edit_category and not edit_sub %}
         <div class="mb-3">
             <label>Select Existing Category</label>
@@ -30,7 +31,7 @@
         </div>
         {% endif %}
 
-        <!-- ✅ NEW CATEGORY -->
+        <!--  NEW CATEGORY -->
         <div class="mb-3">
             <label>Category Name (for new category)</label>
             <input type="text" name="category_name" class="form-control"
@@ -38,7 +39,7 @@
                 placeholder="Enter category">
         </div>
 
-        <!-- ✅ SUBCATEGORY -->
+        <!--  SUBCATEGORY -->
         <div class="mb-3">
             <label>SubCategory Name</label>
             <input type="text" name="subcategory_name" class="form-control"
@@ -57,7 +58,7 @@
 
     <hr>
 
-    <!-- ✅ TABLE -->
+    <!--  TABLE -->
     <h4>Category & SubCategory List</h4>
 
     <table class="table table-bordered">

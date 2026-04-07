@@ -44,12 +44,25 @@
 
       <!-- Center : Search-->
 
-      <form class="d-flex flex-grow-1 justify-content-center mx-3" role="search">
-        <div class="d-flex" style="max-width:500px; width:100%;">
-          <input class="form-control me-2" type="search" placeholder="Search">
-          <button class="btn btn-outline-success">Search</button>
-        </div>
-      </form>
+        <form method="GET"
+      action="{% url 'search' %}"
+      class="d-flex flex-grow-1 justify-content-center mx-3">
+
+  <div class="d-flex" style="max-width:500px; width:100%;">
+
+    <input 
+      class="form-control me-2"
+      type="search"
+      name="q"
+      placeholder="Search products, categories..."
+    >
+
+    <button class="btn btn-outline-success" type="submit">
+      Search
+    </button>
+
+  </div>
+</form>
 
 
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"

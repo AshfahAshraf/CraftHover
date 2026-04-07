@@ -14,7 +14,6 @@
             <div class="card shadow">
                 <div class="card-body">
 
-                    <h4 class="text-center mb-4">Edit Product</h4>
 
                     <form method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
@@ -23,7 +22,7 @@
                         <div class="mb-3">
                             <label>Product Name</label>
                             <input type="text" name="product_name" class="form-control"
-                                   value="{{ product.Product_name }}" required>
+                                value="{{ product.Product_name }}" required>
                         </div>
 
                         <!-- CATEGORY -->
@@ -31,8 +30,8 @@
                             <label>Category</label>
                             <select name="category" class="form-control">
                                 {% for c in categories %}
-                                <option value="{{ c.id }}"
-                                    {% if product.category.id == c.id %}selected{% endif %}>
+                                <option value="{{ c.id }}" {% if product.category.id == c.id %}selected
+                                {% endif %}>
                                     {{ c.name }}
                                 </option>
                                 {% endfor %}
@@ -44,8 +43,7 @@
                             <label>Product Type</label>
                             <select name="product_type" class="form-control">
                                 {% for t in product_types %}
-                                <option value="{{ t.id }}"
-                                    {% if product.subcategory.id == t.id %}selected{% endif %}>
+                                <option value="{{ t.id }}" {% if product.subcategory.id == t.id %}selected{% endif %}>
                                     {{ t.name }}
                                 </option>
                                 {% endfor %}
@@ -56,20 +54,19 @@
                         <div class="mb-3">
                             <label>Actual Price</label>
                             <input type="number" name="actual_price" class="form-control"
-                                   value="{{ product.Actual_price }}">
+                                value="{{ product.Actual_price }}">
                         </div>
 
                         <div class="mb-3">
                             <label>Offer Price</label>
                             <input type="number" name="offer_price" class="form-control"
-                                   value="{{ product.Offer_price }}">
+                                value="{{ product.Offer_price }}">
                         </div>
 
                         <!-- STOCK -->
                         <div class="mb-3">
                             <label>Quantity</label>
-                            <input type="number" name="quantity" class="form-control"
-                                   value="{{ product.Quantity }}">
+                            <input type="number" name="quantity" class="form-control" value="{{ product.Quantity }}">
                         </div>
 
                         <!-- DESCRIPTION -->

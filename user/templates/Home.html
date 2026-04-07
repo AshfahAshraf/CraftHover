@@ -19,9 +19,6 @@
 <body class="loading-locked">
     <div class="grain-overlay"></div>
 
-
-
-
     <div class="hero-scroll-container">
         <section class="hero-section">
             <!-- Background elements -->
@@ -33,7 +30,6 @@
                 <h1 class="headline">Find What Moves You</h1>
                 <p class="subtitle">Discover our exclusive collection of handcrafted artisan pieces, designed to elevate
                     your everyday elegance with a touch of magic.</p>
-                <!-- <a href="#collections" class="cta-button">Explore Collections</a> -->
             </div>
 
             <!-- Artisan Display with Fog -->
@@ -66,12 +62,7 @@
                 <h3 class="cat-title">Pottery & Clay Crafts</h3>
                 <p class="cat-desc">Mold earth into timeless elegance. Our masterful ceramics bring the heart of the
                     earth directly to your sanctuary.</p>
-                <!-- <ul class="subcats">
-                    <li>Clay Pots</li>
-                    <li>Ceramic Mugs</li>
-                    <li>Decorative Vases</li>
-                    <li>Diyas</li>
-                </ul> -->
+
                 <ul class="subcats">
                     {% for sub in categories.0.subcategory_set.all %}
                     <li>
@@ -81,7 +72,7 @@
                     </li>
                     {% endfor %}
                 </ul>
-                <!-- <a href="#" class="explore-btn">Explore Ceramic Art</a> -->
+
                 <a href="{% url 'category_products' 1 %}" class="explore-btn">
                     Explore Ceramic Art
                 </a>
@@ -91,23 +82,14 @@
             </div>
         </div>
 
-
-
-
-
-        <!-- 2. Handloom (Alternate side) -->
+     <!-- 2. Handloom (Alternate side) -->
         <div class="cat-row reverse">
             <div class="cat-text scroll-reveal reveal-right">
                 <span class="cat-number">02</span>
                 <h3 class="cat-title">Handloom & Textile</h3>
                 <p class="cat-desc">Woven with tradition, our textiles tell stories of heritage, featuring rich textures
                     and intricate block prints.</p>
-                <!-- <ul class="subcats">
-                    <li>Sarees</li>
-                    <li>Shawls</li>
-                    <li>Block Printed Fabrics</li>
-                    <li>Cushion Covers</li>
-                </ul> -->
+            
                 <ul class="subcats">
                     {% for sub in categories.1.subcategory_set.all %}
                     <li>
@@ -117,7 +99,7 @@
                     </li>
                     {% endfor %}
                 </ul>
-                <!-- <a href="#" class="explore-btn">Explore Textiles</a> -->
+
                 <a href="{% url 'category_products' 2 %}" class="explore-btn">
                     Explore Textiles
                 </a>
@@ -134,12 +116,7 @@
                 <h3 class="cat-title">Wooden Crafts</h3>
                 <p class="cat-desc">Carved with precision and care. Explore our selection of majestic woodwork bringing
                     the vitality of the forest home.</p>
-                <!-- <ul class="subcats">
-                    <li>Wooden Toys</li>
-                    <li>Wall Décor</li>
-                    <li>Jewelry Boxes</li>
-                    <li>Kitchen Items</li>
-                </ul> -->
+        
                 <ul class="subcats">
                     {% for sub in categories.2.subcategory_set.all %}
                     <li>
@@ -149,7 +126,7 @@
                     </li>
                     {% endfor %}
                 </ul>
-                <!-- <a href="#" class="explore-btn">Explore Woodwork</a> -->
+
                 <a href="{% url 'category_products' 3 %}" class="explore-btn">
                     Explore Woodwork
                 </a>
@@ -166,12 +143,7 @@
                 <h3 class="cat-title">Handmade Jewelry</h3>
                 <p class="cat-desc">Adorn yourself with breathtaking, handcrafted jewelry reflecting true artisanal
                     elegance and beauty.</p>
-                <!-- <ul class="subcats">
-                    <li>Necklaces</li>
-                    <li>Earrings</li>
-                    <li>Bangles</li>
-                    <li>Anklets</li>
-                </ul> -->
+        
                 <ul class="subcats">
                     {% for sub in categories.3.subcategory_set.all %}
                     <li>
@@ -181,8 +153,8 @@
                     </li>
                     {% endfor %}
                 </ul>
-                <!-- <a href="#" class="explore-btn">Explore Jewelry</a> -->
-                <a href="{% url 'category_products' 4 %}" class="explore-btn">
+
+                    <a href="{% url 'category_products' 4 %}" class="explore-btn">
                     Explore Jewelry
                 </a>
             </div>
@@ -198,12 +170,7 @@
                 <h3 class="cat-title">Paintings & Artwork</h3>
                 <p class="cat-desc">A stroke of genius capturing culture onto canvas. Indulge in traditional and modern
                     handcrafted masterpieces.</p>
-                <!-- <ul class="subcats">
-                    <li>Canvas Paintings</li>
-                    <li>Wall Art</li>
-                    <li>Traditional Paintings</li>
-                    <li>Greeting Cards</li>
-                </ul> -->
+            
                 <ul class="subcats">
                     {% for sub in categories.4.subcategory_set.all %}
                     <li>
@@ -213,7 +180,7 @@
                     </li>
                     {% endfor %}
                 </ul>
-                <!-- <a href="#" class="explore-btn">Explore Artwork</a> -->
+
                 <a href="{% url 'category_products' 5 %}" class="explore-btn">
                     Explore Artwork
                 </a>
@@ -230,12 +197,7 @@
                 <h3 class="cat-title">Bamboo & Natural Fiber</h3>
                 <p class="cat-desc">Sustainable, stunning, and sturdy. Our natural fiber crafts breathe tranquility into
                     any living space.</p>
-                <!-- <ul class="subcats">
-                    <li>Bamboo Baskets</li>
-                    <li>Cane Furniture</li>
-                    <li>Jute Bags</li>
-                    <li>Mats</li>
-                </ul> -->
+               
                 <ul class="subcats">
                     {% for sub in categories.5.subcategory_set.all %}
                     <li>
@@ -245,7 +207,6 @@
                     </li>
                     {% endfor %}
                 </ul>
-                <!-- <a href="#" class="explore-btn">Explore Bamboo Details</a> -->
 
                 <a href="{% url 'category_products' 6 %}" class="explore-btn">
                     Explore Bamboo Details
@@ -263,12 +224,7 @@
                 <h3 class="cat-title">Leather & Accessories</h3>
                 <p class="cat-desc">Premium quality leather shaped by skilled hands. Discover genuine durability styled
                     for the modern aesthete.</p>
-                <!-- <ul class="subcats">
-                    <li>Wallets</li>
-                    <li>Bags</li>
-                    <li>Belts</li>
-                    <li>Keychains</li>
-                </ul> -->
+                
                 <ul class="subcats">
                     {% for sub in categories.6.subcategory_set.all %}
                     <li>
@@ -278,7 +234,6 @@
                     </li>
                     {% endfor %}
                 </ul>
-                <!-- <a href="#" class="explore-btn">Explore Leather Goods</a> -->
                 <a href="{% url 'category_products' 7 %}" class="explore-btn">
                     Explore Leather Goods
                 </a>
@@ -297,124 +252,37 @@
         </div>
 
         <div class="trending-grid">
-            <!-- Product 1 -->
-            <div class="product-card scroll-reveal reveal-fade">
-                <div class="product-image">
-                    <img src="https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=600&auto=format&fit=crop"
-                        alt="The Obsidian Vessel">
-                    <div class="product-overlay">
-                        <button class="quick-view-btn">Quick View</button>
-                    </div>
-                </div>
-                <div class="product-info">
-                    <h4 class="product-name">The Obsidian Vessel</h4>
-                    <p class="product-price">$1,200</p>
-                    <button class="add-cart-text">+ Add to Cart</button>
-                </div>
-            </div>
 
-            <!-- Product 2 -->
-            <div class="product-card scroll-reveal reveal-fade" style="transition-delay: 0.1s;">
-                <div class="product-image">
-                    <img src="https://images.unsplash.com/photo-1599643477873-1efeed81d119?q=80&w=600&auto=format&fit=crop"
-                        alt="Gold Crescent Necklace">
-                    <div class="product-overlay">
-                        <button class="quick-view-btn">Quick View</button>
-                    </div>
-                </div>
-                <div class="product-info">
-                    <h4 class="product-name">Crescent Aura Necklace</h4>
-                    <p class="product-price">$850</p>
-                    <button class="add-cart-text">+ Add to Cart</button>
-                </div>
-            </div>
+{% for product in trending %}
+<div class="product-card scroll-reveal reveal-fade" style="transition-delay: {{ forloop.counter0|floatformat:1 }}s;">
 
-            <!-- Product 3 -->
-            <div class="product-card scroll-reveal reveal-fade" style="transition-delay: 0.2s;">
-                <div class="product-image">
-                    <img src="https://images.unsplash.com/photo-1605370288673-9da57d903932?q=80&w=600&auto=format&fit=crop"
-                        alt="Woven Throw">
-                    <div class="product-overlay">
-                        <button class="quick-view-btn">Quick View</button>
-                    </div>
-                </div>
-                <div class="product-info">
-                    <h4 class="product-name">Heritage Indigo Throw</h4>
-                    <p class="product-price">$340</p>
-                    <button class="add-cart-text">+ Add to Cart</button>
-                </div>
-            </div>
+    <div class="product-image">
+        <img src="{{ product.front_image.url }}" alt="{{ product.Product_name }}">
 
-            <!-- Product 4 -->
-            <div class="product-card scroll-reveal reveal-fade" style="transition-delay: 0.3s;">
-                <div class="product-image">
-                    <img src="https://images.unsplash.com/photo-1610555356070-d0efb6505f81?q=80&w=600&auto=format&fit=crop"
-                        alt="Carved Wooden Bowl">
-                    <div class="product-overlay">
-                        <button class="quick-view-btn">Quick View</button>
-                    </div>
-                </div>
-                <div class="product-info">
-                    <h4 class="product-name">Walnut Kinship Bowl</h4>
-                    <p class="product-price">$410</p>
-                    <button class="add-cart-text">+ Add to Cart</button>
-                </div>
-            </div>
+        <div class="product-overlay">
+            <a href="{% url 'product_detail' product.id %}" class="quick-view-btn">
+                Quick View
+            </a>
         </div>
+    </div>
+
+    <div class="product-info">
+        <h4 class="product-name">{{ product.Product_name }}</h4>
+        <p class="product-price">₹{{ product.Offer_price }}</p>
+
+        <a href="{% url 'add_to_cart' product.id %}" class="add-cart-text">
+            + Add to Cart
+        </a>
+    </div>
+
+</div>
+{% endfor %}
+
+</div>
 
     </section>
 
-
-
-    <!-- 2. CINEMATIC STUDIO VIDEO REVEAL -->
-    <section class="studio-reveal">
-        <div class="studio-sticky">
-            <div class="video-clipper" id="videoClipper">
-                <!-- Using a high-res still image as a placeholder for a cinematic silent video -->
-                <img src="https://images.unsplash.com/photo-1544974127-d0df6eeeb5af?q=80&w=2000&auto=format&fit=crop"
-                    alt="Artisan at work" class="studio-video">
-                <div class="studio-text-overlay">
-                    <h2>Forged in Silence</h2>
-                    <p>Witness the meticulous dedication behind every curve.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 3. INFINITE FLOATING PRODUCT MARQUEE -->
-    <section class="product-marquee-section">
-        <div class="marquee-wrapper">
-            <div class="pm-track" id="pmTrack">
-                <img src="https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=500&auto=format&fit=crop"
-                    alt="Product">
-                <img src="https://images.unsplash.com/photo-1610555356070-d0efb6505f81?q=80&w=500&auto=format&fit=crop"
-                    alt="Product">
-                <img src="https://images.unsplash.com/photo-1605370288673-9da57d903932?q=80&w=500&auto=format&fit=crop"
-                    alt="Product">
-                <img src="https://images.unsplash.com/photo-1599643477873-1efeed81d119?q=80&w=500&auto=format&fit=crop"
-                    alt="Product">
-                <img src="https://images.unsplash.com/photo-1590874103328-eac38a683ce7?q=80&w=500&auto=format&fit=crop"
-                    alt="Product">
-                <img src="https://images.unsplash.com/photo-1528698827591-e19ccd700a5d?q=80&w=500&auto=format&fit=crop"
-                    alt="Product">
-                <!-- Duplicates to fill the loop seamlessly -->
-                <img src="https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=500&auto=format&fit=crop"
-                    alt="Product">
-                <img src="https://images.unsplash.com/photo-1610555356070-d0efb6505f81?q=80&w=500&auto=format&fit=crop"
-                    alt="Product">
-                <img src="https://images.unsplash.com/photo-1605370288673-9da57d903932?q=80&w=500&auto=format&fit=crop"
-                    alt="Product">
-                <img src="https://images.unsplash.com/photo-1599643477873-1efeed81d119?q=80&w=500&auto=format&fit=crop"
-                    alt="Product">
-            </div>
-        </div>
-    </section>
-
-
-
-
-
-    <!-- 4. SOCIAL VIDEO REELS AUTOPLAY CAROUSEL -->
+     <!-- 4. SOCIAL VIDEO REELS AUTOPLAY CAROUSEL -->
     <section class="social-reels">
         <div class="reels-header scroll-reveal reveal-fade">
             <h2 class="split-reveal">Artisan In Motion</h2>
