@@ -197,3 +197,145 @@ screen after a short delay */
     color: #4e7af4;
     text-decoration: underline;
 }
+
+
+/* ================= RESPONSIVE FIX ================= */
+
+/* Tablet & Large Mobile */
+@media (max-width: 992px) {
+    body {
+        padding: 20px;
+        background: linear-gradient(135deg, #e2e2e2 0%, #c9d6ff 100%);
+    }
+
+    .container {
+        width: 100%;
+        max-width: 450px;
+        height: auto;
+        min-height: 580px;
+        border-radius: 25px;
+        overflow: visible;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .form-box {
+        position: relative;
+        width: 100% !important;
+        height: auto;
+        padding: 40px 30px;
+        right: 0 !important;
+        left: 0 !important;
+        opacity: 1;
+        visibility: visible;
+        transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    /* Hide the animation panel and toggle box on mobile */
+    .toggle-box,
+    .toggle-panel {
+        display: none !important;
+    }
+
+    /* Switch between login and register */
+    .form-box.register {
+        display: none !important;
+    }
+
+    .container.active .form-box.login {
+        display: none !important;
+    }
+
+    .container.active .form-box.register {
+        display: flex !important;
+        visibility: visible !important;
+        animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .mobile-header {
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .mobile-header h2 {
+        font-size: 28px;
+        font-weight: 700;
+        color: #7494ec;
+        margin-bottom: 5px;
+    }
+
+    .mobile-header p {
+        font-size: 14px;
+        color: #666;
+        margin: 0;
+    }
+
+    .container h1 {
+        font-size: 32px;
+        margin-bottom: 25px;
+        color: #333;
+    }
+
+    .custom-btn {
+        height: 52px;
+        margin-top: 10px;
+        font-size: 17px;
+        transition: background 0.3s, transform 0.2s;
+    }
+
+    .custom-btn:active {
+        transform: scale(0.98);
+    }
+
+    .mobile-toggle {
+        text-align: center;
+        margin-top: 25px;
+    }
+
+    .mobile-toggle a {
+        transition: color 0.3s;
+    }
+
+    .mobile-toggle a:hover {
+        color: #4e7af4 !important;
+    }
+}
+
+/* Small Mobile Devices */
+@media (max-width: 480px) {
+    body {
+        padding: 15px;
+    }
+
+    .container {
+        border-radius: 20px;
+    }
+
+    .form-box {
+        padding: 35px 20px;
+    }
+
+    .container h1 {
+        font-size: 28px;
+    }
+
+    .form-floating label {
+        font-size: 14px;
+    }
+
+    .form-control {
+        font-size: 15px;
+    }
+
+    .terms {
+        font-size: 13px;
+        line-height: 1.4;
+    }
+}

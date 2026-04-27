@@ -95,10 +95,14 @@ Artisan products | CraftHover
                             Edit
                         </a>
 
-                        <a href="{% url 'delete_product' product.id %}" class="btn btn-danger btn-sm"
-                            onclick="return confirm('Are you sure you want to delete this product?')">
-                            Delete
-                        </a>
+                        <form method="POST" action="{% url 'delete_product' product.id %}"
+                            onsubmit="return confirm('Are you sure?')">
+
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                Delete
+                            </button>
+                        </form>
                     </div>
                 </td>
 
@@ -161,9 +165,9 @@ Artisan products | CraftHover
                                 <option value="{{ t.id }}" data-category="{{ t.category.id }}">
                                     {{ t.name }}
                                 </option>
-                                 {% endfor %}
+                                {% endfor %}
                             </select>
-                               
+
                         </div>
 
                         <div class="col-md-6 mb-3">
@@ -225,98 +229,143 @@ Artisan products | CraftHover
         padding: 2px;
         border-radius: 6px;
     }
+    /* Table scroll fix */
+.table-responsive {
+    overflow-x: auto;
+}
+
+/* Prevent breaking */
+table {
+    min-width: 900px;
+}
+
+/* Wrap only product name */
+td:nth-child(2) {
+    white-space: normal;
+    max-width: 150px;
+    word-break: break-word;
+}
+
+/* Image fix */
+.img-thumbnail {
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
+}
+
+/* Mobile improvements */
+@media (max-width: 768px) {
+
+    h3 {
+        font-size: 18px;
+    }
+
+    .btn {
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    table {
+        font-size: 12px;
+    }
+
+    .img-thumbnail {
+        width: 35px;
+        height: 35px;
+    }
+}
 </style>
 
 <script>
     // Only show products that belong to the selected category, hide the rest
     // Run this code only after the HTML page is fully loaded
-document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
 
-    const category = document.getElementById("category");
-    const productType = document.getElementById("productType");
+        const category = document.getElementById("category");
+        const productType = document.getElementById("productType");
 
-    category.addEventListener("change", function () {
+        category.addEventListener("change", function () {
 
-        let selectedCategory = this.value;
+            let selectedCategory = this.value;
 
-        for (let option of productType.options) {
+            for (let option of productType.options) {
 
-            // Skip empty option
-            if (option.value === "") continue;
+                // Skip empty option
+                if (option.value === "") continue;
 
-            // Check if category matches
-            if (option.getAttribute("data-category") === selectedCategory) {
-                option.style.display = "block";
+                // Check if category matches
+                if (option.getAttribute("data-category") === selectedCategory) {
+                    option.style.display = "block";
+                }
+                // If category doesn’t match → hide option
+                else {
+                    option.style.display = "none";
+                }
             }
-            // If category doesn’t match → hide option
-             else {
-                option.style.display = "none";
-            }
+            // Clear previous selection
+            productType.value = "";
+        });
+
+    });
+
+
+    function generateDescription() {
+
+        let name = document.querySelector('[name="product_name"]').value;
+
+        // Gets selected category text (not value)
+        let category = document.getElementById("category");
+        let categoryText = category.options[category.selectedIndex].text;
+
+        // Get product type text
+        let productType = document.getElementById("productType");
+        let productTypeText = productType.options[productType.selectedIndex].text;
+
+        //  VALIDATION
+        if (!name || categoryText === "Select Category") {
+            alert("Enter product name and category!");
+            return;
         }
-        // Clear previous selection
-        productType.value = "";
-    });
 
-});
+        if (!productTypeText || productTypeText === "Select Product Type") {
+            alert("Select product type!");
+            return;
+        }
 
+        //  Loading message
+        document.getElementById("description").value = "Generating description...";
 
-function generateDescription() {
-
-    let name = document.querySelector('[name="product_name"]').value;
-
-    // Gets selected category text (not value)
-    let category = document.getElementById("category");
-    let categoryText = category.options[category.selectedIndex].text;
-
-    // Get product type text
-    let productType = document.getElementById("productType");
-    let productTypeText = productType.options[productType.selectedIndex].text;
-
-    //  VALIDATION
-    if (!name || categoryText === "Select Category") {
-        alert("Enter product name and category!");
-        return;
-    }
-
-    if (!productTypeText || productTypeText === "Select Product Type") {
-        alert("Select product type!");
-        return;
-    }
-
-    //  Loading message
-    document.getElementById("description").value = "Generating description...";
-
-    fetch("/generate-description/", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": getCSRFToken()
-        },
-        body: JSON.stringify({
-            name: name,
-            category: categoryText,
-            product_type: productTypeText   //  FIXED
+        fetch("/generate-description/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCSRFToken()
+            },
+            body: JSON.stringify({
+                name: name,
+                category: categoryText,
+                product_type: productTypeText   //  FIXED
+            })
         })
-    })
-    .then(res => res.json())
-    .then(data => {
-        document.getElementById("description").value = data.description;
-    })
-    .catch(err => {
-        console.log(err);
-        alert("Error generating description");
-    });
-}
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("description").value = data.description;
+            })
+            .catch(err => {
+                console.log(err);
+                alert("Error generating description");
+            });
+    }
 
-// Prevent unauthorized requests and 
-// protect users from cross-site request forgery
-//  attacks by ensuring that every request is coming
-//  from the trusted website.
-function getCSRFToken() {
-    return document.cookie.split('; ')
-        .find(row => row.startsWith('csrftoken'))
-        ?.split('=')[1];
-}
+    // Prevent unauthorized requests and 
+    // protect users from cross-site request forgery
+    //  attacks by ensuring that every request is coming
+    //  from the trusted website.
+    function getCSRFToken() {
+        return document.cookie.split('; ')
+            .find(row => row.startsWith('csrftoken'))
+            ?.split('=')[1];
+    }
 
 </script>
 {% endblock %}

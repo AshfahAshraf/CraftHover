@@ -32,4 +32,7 @@ urlpatterns = [
     path('add-artisan/', views.add_artisan, name='add_artisan'),
     path('edit-artisan/<int:id>/', views.edit_artisan, name='edit_artisan'),
     path('delete-artisan/<int:id>/', views.delete_artisan, name='delete_artisan'),
+
+    path('check-email/', views.check_email, name='check_email'),
+
 ]

@@ -1,7 +1,9 @@
 {% extends 'navbar.html' %}
 {% load static %}
 {% block title %}
-{{ product.Product_name }} - {{ product.category.name }} | CraftHover
+
+{{ subcategory.name }} Products | CraftHover
+
 {% endblock %}
 {% block content %}
 <style>
@@ -10,7 +12,9 @@
     width: 100%;
     object-fit: cover;
   }
-
+.card {
+  cursor: pointer;
+}
   .wishlist-btn {
     position: absolute;
     top: 10px;

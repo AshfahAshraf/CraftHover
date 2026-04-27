@@ -2,72 +2,141 @@
 <!DOCTYPE html>
 <html>
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Crafttover{% endblock %}</title>
-    <link rel="icon" href="{% static 'images/logo.png' %}" type="image/png"> <!-- CraftHover Logo-->
-    <!--Bootstrap -->
+    <title>{% block title %}CraftHover{% endblock %}</title>
+
+    <link rel="icon" href="{% static 'images/logo.png' %}" type="image/png">
+
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
     <style>
-        .sidebar {
-            height: 100vh;
-            background: #212529;
-            color: white;
-            padding-top: 20px;
-            position: fixed;
-            width: 220px;
+        body {
+            background-color: #f5f5f5;
         }
 
-        .sidebar a {
+        /* 🔹 Desktop Sidebar */
+        .sidebar {
+            min-height: 100vh;
+            background: #212529;
             color: white;
+        }
+
+        /* Sidebar Links → Section Style */
+        .sidebar a {
+            color: #ddd;
             display: block;
-            padding: 12px 20px;
+            padding: 14px 18px;
+            text-decoration: none;
+            border-bottom: 1px solid #343a40;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        /* Hover */
+        .sidebar a:hover {
+            background: #343a40;
+            color: #fff;
+            padding-left: 22px;
+        }
+
+        /* Active Link (optional) */
+        .sidebar a.active {
+            background: #0d6efd;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* 🔹 Mobile Sidebar (Offcanvas) */
+        .offcanvas {
+            background: #212529;
+            color: white;
+        }
+
+        .offcanvas-body a {
+            display: block;
+            padding: 14px 18px;
+            border-bottom: 1px solid #343a40;
+            color: #ddd;
             text-decoration: none;
         }
 
-        .sidebar a:hover {
+        .offcanvas-body a:hover {
             background: #343a40;
+            color: #fff;
         }
 
-        .main-content {
-            margin-left: 220px;
+        /* Logout button spacing fix */
+        .sidebar .btn,
+        .offcanvas-body .btn {
+            margin-top: 10px;
         }
+
     </style>
-
 </head>
 
-<body class="bg-light">
+<body>
 
-    <div class="sidebar p-1">
-
-        <h5 class="text-center mb-4">CraftHover</h5>
-
-        <a href="{% url 'artisan_dashboard' %}">Dashboard</a>
-        <a href="{% url 'artisan_products' %}">Products</a>
-        <a href="{% url 'artisan_orders' %}">Orders</a>
-        <a href="{% url 'artisan_profile' %}">Profile Management</a>
-    <a href="{% url 'artisan_complaints' %}">Complaints</a>
-
-        <hr>
-        <a href="{% url 'artisan_logout' %}" class="btn btn-danger mt-3">
-            Logout
-        </a>
-
+<!-- 🔹 Navbar (Mobile Top Bar) -->
+<nav class="navbar navbar-dark bg-dark d-md-none">
+    <div class="container-fluid">
+        <button class="btn btn-outline-light" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
+            ☰
+        </button>
+        <span class="navbar-brand mb-0 h6">CraftHover</span>
     </div>
+</nav>
 
-    <div class="main-content">
+<div class="container-fluid">
+    <div class="row">
 
-        <div class="container py-4">
+        <!-- 🔹 Sidebar (Desktop) -->
+        <div class="col-md-3 col-lg-2 d-none d-md-block sidebar p-3">
+            <h5 class="text-center mb-4">CraftHover</h5>
 
+            <a href="{% url 'artisan_dashboard' %}">Dashboard</a>
+            <a href="{% url 'artisan_products' %}">Products</a>
+            <a href="{% url 'artisan_orders' %}">Orders</a>
+            <a href="{% url 'artisan_profile' %}">Profile Management</a>
+            <a href="{% url 'artisan_complaints' %}">Complaints</a>
+
+            <hr>
+            <a href="{% url 'artisan_logout' %}" class="btn btn-danger w-100">
+                Logout
+            </a>
+        </div>
+
+        <!-- 🔹 Offcanvas Sidebar (Mobile) -->
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu">
+            <div class="offcanvas-header">
+                <h5>CraftHover</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+            </div>
+
+            <div class="offcanvas-body">
+                <a href="{% url 'artisan_dashboard' %}">Dashboard</a>
+                <a href="{% url 'artisan_products' %}">Products</a>
+                <a href="{% url 'artisan_orders' %}">Orders</a>
+                <a href="{% url 'artisan_profile' %}">Profile Management</a>
+                <a href="{% url 'artisan_complaints' %}">Complaints</a>
+
+                <hr>
+                <a href="{% url 'artisan_logout' %}" class="btn btn-danger w-100">
+                    Logout
+                </a>
+            </div>
+        </div>
+
+        <!-- 🔹 Main Content -->
+        <div class="col-md-9 col-lg-10 p-4">
             {% block content %}
             {% endblock %}
-
         </div>
 
     </div>
+</div>
 
 </body>
-
 </html>

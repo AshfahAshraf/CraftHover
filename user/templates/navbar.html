@@ -6,8 +6,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Navbar  | CraftHover</title>
-<link rel="icon" href="{% static 'images/logo.png' %}" type="image/png">
+<title>{% block title %}CraftHover{% endblock %}</title>
+  <link rel="icon" href="{% static 'images/logo.png' %}" type="image/png">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
@@ -16,9 +16,83 @@
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 
+<style>
+/* FORCE HORIZONTAL SCROLL AND OVERRIDE CACHE */
+.category-scroll {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+    white-space: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 5px;
+    margin-bottom: 0;
+}
 
+/* Hide scrollbar for a cleaner look */
+.category-scroll::-webkit-scrollbar {
+    display: none;
+}
+.category-scroll {
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
+}
 
+/* PREVENT DROPDOWN CLIPPING */
+.category-navbar {
+    position: sticky !important;
+    top: 80px; /* Or whatever height the top navbar is, roughly */
+    z-index: 990 !important;
+}
 
+.category-wrapper {
+    min-width: 0; /* Prevents the horizontal scroll from stretching the page width */
+}
+
+.category-scroll .nav-item.dropdown {
+    position: static !important; /* Make parent static so dropdown is relative to navbar */
+}
+
+.category-scroll .dropdown-menu {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important; /* Full width dropdown */
+    border-radius: 0 0 10px 10px !important;
+    border: 1px solid #eee !important;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.08) !important;
+    margin-top: 0 !important;
+    transform: none !important; /* Disable Popper.js transform */
+    padding: 20px !important;
+    
+    /* Make the subcategories display nicely inside the full width menu */
+    display: none; 
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.category-scroll .dropdown-menu.show {
+    display: flex !important;
+}
+
+.category-scroll .dropdown-menu li {
+    flex: 0 0 auto;
+}
+
+.category-scroll .dropdown-menu .dropdown-item {
+    background: #f8f9fa;
+    border-radius: 30px;
+    padding: 8px 20px;
+    font-weight: 500;
+}
+
+.category-scroll .dropdown-menu .dropdown-item:hover {
+    background: #d23636;
+    color: white;
+}
+</style>
 
 </head>
 
@@ -139,9 +213,9 @@
 <!-- CATEGORY NAVBAR -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light category-navbar">
 
-<div class="container-fluid">
+<div class="container-fluid category-wrapper">
 
-    <ul class="navbar-nav mx-auto">
+    <ul class="navbar-nav mx-auto category-scroll">
 
       {% for category in categories %}
       <li class="nav-item dropdown mx-3">

@@ -20,7 +20,7 @@
 </head>
 
 <body>
-  
+
 
     <div class="container">
         <!-- Login Form-->
@@ -29,19 +29,24 @@
 
             <form method="POST">
                 {% csrf_token %}
-                <h1 class="mb-3">Login</h1>
+                <!-- Mobile Header -->
+                <div class="mobile-header d-lg-none">
+                    <h2>Hello. Welcome!</h2>
+                    <p>Sign in to your account</p>
+                </div>
 
-                  {% if error %}
-    <div style="color:red;">
-        {{ error }}
-    </div>
-    {% endif %}
+                <h1 class="mb-3 d-none d-lg-block">Login</h1>
 
-    {% if success %}
-    <div style="color:green;">
-        {{ success }}
-    </div>
-    {% endif %}
+
+                {% if login_error %}
+                <div style="color:red;">{{ login_error }}</div>
+                {% endif %}
+
+                {% if success %}
+                <div style="color:green;">
+                    {{ success }}
+                </div>
+                {% endif %}
 
                 <div class="form-floating mb-3">
                     <input type="email" name="textEmail" id="loginEmail" class="form-control" placeholder="Email"
@@ -61,7 +66,10 @@
 
                 <button type="submit" name="login" class="custom-btn">Sign in</button>
 
-            
+                <!-- Mobile Toggle Link -->
+                <div class="mobile-toggle mt-4 d-lg-none" style="font-size: 14.5px;">
+                    <p>Don't have an account? <a href="javascript:void(0)" onclick="document.querySelector('.container').classList.add('active')" style="color: #7494ec; font-weight: 600;">Create Account</a></p>
+                </div>
             </form>
         </div>
 
@@ -70,49 +78,91 @@
         <!-- Register Form-->
         <div class="form-box register">
 
-            <form method="POST" id="registerForm" action="">
+            <form method="POST" id="registerForm">
                 {% csrf_token %}
 
-                <h1 class="mb-3">Create Account</h1>
+                <!-- Mobile Header -->
+                <div class="mobile-header d-lg-none">
+                    <h2>Create Account</h2>
+                    <p>Join the Crafthover community</p>
+                </div>
 
-                <div class="form-floating mb-3">
-                    <input type="text" name="textUsername" id="registerUsername" class="form-control"
-                        placeholder="username" required>
-                    <label for="registerUsername"> User Name</label>
+                <h1 class="mb-3 d-none d-lg-block">Create Account</h1>
+
+
+                <!-- STEP 1 -->
+                <div id="step1">
+
+                    <div class="form-floating mb-3">
+                        <input type="text" name="textUsername" id="registerUsername" class="form-control" required>
+                        <label>User Name</label>
+                    </div>
+
+                    <div class="form-floating mb-2">
+                        <input type="email" name="textEmail" id="registerEmail" class="form-control" required>
+                        <label>Email</label>
+                    </div>
+
+                    <span id="emailError" style="color:red;">
+                        {{ register_error }}
+                    </span>
+                    <button type="button" class="custom-btn mt-2" onclick="sendOTP()">Continue</button>
+
+                    <!-- Mobile Toggle Link -->
+                    <div class="mobile-toggle mt-4 d-lg-none" style="font-size: 14.5px;">
+                        <p>Already have an account? <a href="javascript:void(0)" onclick="document.querySelector('.container').classList.remove('active')" style="color: #7494ec; font-weight: 600;">Sign In</a></p>
+                    </div>
+                </div>
+
+                <!-- STEP 2 OTP -->
+                <div id="step2" style="display:none;">
+
+                    <input type="text" id="otpInput" class="form-control mb-2" placeholder="Enter OTP">
+
+                    <button type="button" class="custom-btn" onclick="verifyOTP()">Verify OTP</button>
 
                 </div>
 
-                <div class="form-floating mb-3">
-                    <input type="email" name="textEmail" id="registerEmail" class="form-control" placeholder="Email"
-                        required>
-                    <label for="registerEmail"> Email</label>
+                <!-- STEP 3 PASSWORD -->
+                <div id="step3" style="display:none;">
+
+                    <div class="form-floating mb-3 position-relative">
+                        <input type="password" name="textPassword" id="registerPassword" class="form-control" required>
+                        <label>Password</label>
+
+                        <i class="fa-solid fa-eye" onclick="togglePassword('registerPassword', this)"
+                            style="position:absolute; right:15px; top:18px; cursor:pointer;"></i>
+
+                        <span id="passwordError" style="color:red"></span>
+                    </div>
+
+                    <div class="form-floating mb-3 position-relative">
+                        <input type="password" name="textConfirmPassword" id="registerConfirmPassword"
+                            class="form-control" required>
+                        <label>Confirm Password</label>
+
+                        <i class="fa-solid fa-eye" onclick="togglePassword('registerConfirmPassword', this)"
+                            style="position:absolute; right:15px; top:18px; cursor:pointer;"></i>
+
+                        <span id="confirmError" style="color:red"></span>
+                    </div>
+
+                    <button type="submit" name="register" id="signupBtn" class="custom-btn" disabled>
+                        Sign Up
+                    </button>
+
+                    <div class="terms mt-3">
+                        <input type="checkbox" required>
+                        <label>
+                            By creating an account, I accept the
+                            <a href="{% url 'terms_conditons' %}">Terms & Conditions</a> &
+                            <a href="{% url 'privacy_policy' %}">Privacy Policy</a>
+                        </label>
+                    </div>
                 </div>
 
-                <div class="form-floating mb-3">
-                    <input type="password" name="textPassword" id="registerPassword" class="form-control"
-                        placeholder="Password" required>
-                    <label for="registerPassword">Password</label>
-                    <span id="passwordError" style="color:red"></span>
-                </div>
 
-                <div class="form-floating mb-3">
-                    <input type="password" name="textConfirmPassword" id="registerConfirmPassword" class="form-control"
-                        placeholder="Password" required>
-                    <label for="registerConfirmPassword">Confirm Password</label>
-                    <span id="confirmError" style="color:red"></span>
-                </div>
 
-                <button type="submit" name="register" class="custom-btn">Sign Up</button>
-
-                <div class="terms">
-                    <input type="checkbox" required>
-                    <label for="terms">By creating an account, i accept the<a href="{% url 'terms_conditons' %}"> Terms
-                            & Conditions</a> &
-                        <a href="{% url 'privacy_policy' %}">Privacy Policy</a> </label>
-                </div>
-
-                <input type="hidden" name="image" id="registerImage">
-                   
             </form>
         </div>
 
@@ -140,29 +190,154 @@
 
     <script src="{% static 'js/register.js' %}"></script>
 
-<script>
-function faceRegister() {
-    let email = document.getElementById("registerEmail").value;
+    <script>
 
-    if (!email) {
-        alert("Enter email first");
-        return;
-    }
+        let serverError = "{{ register_error|escapejs }}";
 
-    fetch("/face-register/", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "X-CSRFToken": getCSRFToken()
-        },
-        body: "email=" + encodeURIComponent(email)
-    })
-    .then(res => res.json())
-    .then(data => {
-        alert(data.message);
-    });
-}
-</script>
+        if (serverError) {
+            document.getElementById("emailError").innerText = serverError;
+        }
+
+        /* 👁️ Toggle Password */
+        function togglePassword(inputId, icon) {
+            let input = document.getElementById(inputId);
+
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.replace("fa-eye", "fa-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.replace("fa-eye-slash", "fa-eye");
+            }
+        }
+
+        /* 📧 Live Email Validation */
+        document.getElementById("registerEmail").addEventListener("input", function () {
+            let email = this.value;
+            let error = document.getElementById("emailError");
+
+            let pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!pattern.test(email)) {
+                error.innerText = "Invalid email format";
+            } else {
+                error.innerText = "";
+            }
+        });
+
+
+        /* 🔐 SEND OTP */
+        function sendOTP() {
+            let email = document.getElementById("registerEmail").value;
+            let username = document.getElementById("registerUsername").value;
+
+            if (emailExists) {
+                alert("Email already registered");
+                return;
+            }
+
+            if (!email || !username) {
+                alert("Enter username and email");
+                return;
+            }
+
+            fetch("/signup-send-otp/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": getCSRFToken()
+                },
+                body: "email=" + email
+            })
+                .then(res => res.json())
+                .then(data => {
+                    alert("OTP sent!");
+
+                    document.getElementById("step1").style.display = "none";
+                    document.getElementById("step2").style.display = "block";
+                });
+        }
+
+
+        /* 🔐 VERIFY OTP */
+        function verifyOTP() {
+            let otp = document.getElementById("otpInput").value;
+
+            if (!otp) {
+                alert("Enter OTP");
+                return;
+            }
+
+            fetch("/signup-verify-otp/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": getCSRFToken()
+                },
+                body: "otp=" + otp
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        alert("OTP Verified!");
+
+                        document.getElementById("step2").style.display = "none";
+                        document.getElementById("step3").style.display = "block";
+
+                        document.getElementById("signupBtn").disabled = false;
+
+                    } else {
+                        alert("Invalid OTP");
+                    }
+                });
+        }
+
+
+        /* CSRF */
+        function getCSRFToken() {
+            return document.querySelector('[name=csrfmiddlewaretoken]').value;
+        }
+
+
+        let emailExists = false;
+
+        document.getElementById("registerEmail").addEventListener("input", function () {
+            let email = this.value;
+            let error = document.getElementById("emailError");
+
+            let pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!pattern.test(email)) {
+                error.innerText = "Invalid email format";
+                return;
+            }
+
+            // 🔥 check from backend
+            fetch("/signup-send-otp/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": getCSRFToken()
+                },
+                body: "email=" + email
+            })
+                .then(res => res.json())
+                .then(data => {
+
+                    if (data.status === "exists") {
+                        error.innerText = "Email already registered";
+                        emailExists = true;
+                    } else {
+                        // clear only when user actually changes email
+                        if (email !== "") {
+                            error.innerText = "";
+                        }
+                        emailExists = false;
+                    }
+
+                });
+        });
+    </script>
 
 </body>
 

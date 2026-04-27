@@ -1,18 +1,17 @@
 {% extends 'admin_base.html' %}
 
 {% block title %}Artisan Management{% endblock %}
-
 {% block header %}Artisan Management{% endblock %}
 
 {% block content %}
 
-<div class="container-fluid">
+<div class="container-fluid px-2 px-md-4">
 
     <!-- HEADER -->
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2 mb-4">
         <h2 class="fw-bold">Artisan Management</h2>
 
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addArtisanModal">
+        <button class="btn btn-primary w-100 w-md-auto" data-bs-toggle="modal" data-bs-target="#addArtisanModal">
             + Add Artisan
         </button>
     </div>
@@ -22,7 +21,7 @@
         <div class="card-body">
 
             <div class="table-responsive">
-                <table class="table table-hover text-center align-middle">
+                <table class="table table-hover text-center align-middle small">
 
                     <thead class="table-dark">
                         <tr>
@@ -45,17 +44,18 @@
                             <td>{{ artisan.city }}</td>
 
                             <td>
-                                <a href="{% url 'edit_artisan' artisan.id %}" class="btn btn-success btn-sm">Edit</a>
-
-                                <a href="{% url 'delete_artisan' artisan.id %}" class="btn btn-danger btn-sm"
-                                    onclick="return confirm('Delete this artisan?')">
-                                    Delete
-                                </a>
+                                <div class="d-flex flex-column flex-md-row gap-1 justify-content-center">
+                                    <a href="{% url 'edit_artisan' artisan.id %}" class="btn btn-success btn-sm">Edit</a>
+                                    <a href="{% url 'delete_artisan' artisan.id %}" class="btn btn-danger btn-sm"
+                                       onclick="return confirm('Delete this artisan?')">
+                                        Delete
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="6" class="text-muted py-3">No artisans available</td>
+                            <td colspan="6" class="text-muted">No artisans available</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -70,7 +70,7 @@
 
 <!-- ADD MODAL -->
 <div class="modal fade" id="addArtisanModal">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-fullscreen-sm-down">
         <div class="modal-content">
 
             <form method="POST" action="{% url 'add_artisan' %}">
@@ -82,47 +82,90 @@
                 </div>
 
                 <div class="modal-body">
-
                     <div class="row">
 
-                        <div class="col-md-6 mb-3">
-                            <input type="text" name="name" class="form-control" placeholder="Name" required>
+                        <!-- NAME -->
+                        <div class="col-12 col-md-6 mb-3">
+                            <input type="text" name="name" id="name"
+                                   class="form-control"
+                                   value="{{ old.name|default:'' }}"
+                                   placeholder="Name">
+                            <small id="name-error" class="text-danger"></small>
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                            <input type="password" name="password" class="form-control" placeholder="Password" required>
+                        <!-- EMAIL -->
+                        <div class="col-12 col-md-6 mb-3">
+                            <input type="email" name="email" id="email"
+                                   class="form-control"
+                                   value="{{ old.email|default:'' }}"
+                                   placeholder="Email">
+                            <small id="email-error" class="text-danger">
+                                {% if error %}{{ error }}{% endif %}
+                            </small>
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                            <input type="text" name="phone" class="form-control" placeholder="Phone">
+                        <!-- PASSWORD -->
+                        <div class="col-12 col-md-6 mb-3">
+                            <input type="password" name="password" id="password"
+                                   class="form-control"
+                                   placeholder="Password">
+                            <small id="password-error" class="text-danger"></small>
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                            <input type="text" name="shop_name" class="form-control" placeholder="Shop Name">
+                        <!-- PHONE -->
+                        <div class="col-12 col-md-6 mb-3">
+                            <input type="text" name="phone" id="phone"
+                                   class="form-control"
+                                   value="{{ old.phone|default:'' }}"
+                                   placeholder="Phone (10 digits)" maxlength="10">
+                            <small id="phone-error" class="text-danger"></small>
                         </div>
 
-                        <div class="col-md-12 mb-3">
-                            <textarea name="address" class="form-control" placeholder="Address"></textarea>
+                        <!-- SHOP -->
+                        <div class="col-12 col-md-6 mb-3">
+                            <input type="text" name="shop_name"
+                                   class="form-control"
+                                   value="{{ old.shop_name|default:'' }}"
+                                   placeholder="Shop Name">
                         </div>
 
-                        <div class="col-md-4 mb-3">
-                            <input type="text" name="city" class="form-control" placeholder="City">
+                        <!-- ADDRESS -->
+                        <div class="col-12 mb-3">
+                            <textarea name="address" class="form-control"
+                                      placeholder="Address">{{ old.address|default:'' }}</textarea>
                         </div>
 
-                        <div class="col-md-4 mb-3">
-                            <input type="text" name="state" class="form-control" placeholder="State">
+                        <!-- CITY -->
+                        <div class="col-12 col-md-4 mb-3">
+                            <input type="text" name="city"
+                                   class="form-control"
+                                   value="{{ old.city|default:'' }}"
+                                   placeholder="City">
                         </div>
 
-                        <div class="col-md-4 mb-3">
-                            <input type="text" name="pincode" class="form-control" placeholder="Pincode">
+                        <!-- STATE -->
+                        <div class="col-12 col-md-4 mb-3">
+                            <input type="text" name="state"
+                                   class="form-control"
+                                   value="{{ old.state|default:'' }}"
+                                   placeholder="State">
+                        </div>
+
+                        <!-- PINCODE -->
+                        <div class="col-12 col-md-4 mb-3">
+                            <input type="text" name="pincode"
+                                   class="form-control"
+                                   value="{{ old.pincode|default:'' }}"
+                                   placeholder="Pincode">
                         </div>
 
                     </div>
-
                 </div>
 
                 <div class="modal-footer">
-                    <button class="btn btn-primary">Add Artisan</button>
+                    <button type="submit" id="submitBtn" class="btn btn-primary w-100 w-md-auto">
+                        Add Artisan
+                    </button>
                 </div>
 
             </form>
@@ -130,5 +173,110 @@
         </div>
     </div>
 </div>
+
+<!-- AUTO REOPEN MODAL -->
+<script>
+{% if open_modal %}
+    var modal = new bootstrap.Modal(document.getElementById('addArtisanModal'));
+    modal.show();
+{% endif %}
+</script>
+
+<!-- VALIDATION (UNCHANGED) -->
+<script>
+let nameInput = document.getElementById("name");
+let emailInput = document.getElementById("email");
+let passwordInput = document.getElementById("password");
+let phoneInput = document.getElementById("phone");
+
+let nameError = document.getElementById("name-error");
+let emailError = document.getElementById("email-error");
+let passwordError = document.getElementById("password-error");
+let phoneError = document.getElementById("phone-error");
+
+let submitBtn = document.getElementById("submitBtn");
+
+let isNameValid = false;
+let isEmailValid = false;
+let isPasswordValid = false;
+let isPhoneValid = true;
+
+function checkForm() {
+    submitBtn.disabled = !(isNameValid && isEmailValid && isPasswordValid && isPhoneValid);
+}
+
+// NAME
+nameInput.addEventListener("input", function () {
+    if (this.value.trim().length < 3) {
+        nameError.innerText = "Name must be at least 3 characters";
+        isNameValid = false;
+    } else {
+        nameError.innerText = "";
+        isNameValid = true;
+    }
+    checkForm();
+});
+
+// PASSWORD
+passwordInput.addEventListener("input", function () {
+    if (this.value.length < 4) {
+        passwordError.innerText = "Password too short";
+        isPasswordValid = false;
+    } else {
+        passwordError.innerText = "";
+        isPasswordValid = true;
+    }
+    checkForm();
+});
+
+// EMAIL
+emailInput.addEventListener("input", function () {
+    let email = this.value;
+
+    if (!email.includes("@")) {
+        emailError.innerText = "Invalid email";
+        isEmailValid = false;
+        checkForm();
+        return;
+    }
+
+    fetch(`/check-email/?email=${email}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.exists) {
+                emailError.innerText = "Email already exists!";
+                isEmailValid = false;
+            } else {
+                emailError.innerText = "";
+                isEmailValid = true;
+            }
+            checkForm();
+        });
+});
+
+// PHONE
+phoneInput.addEventListener("input", function () {
+    let value = this.value.replace(/\D/g, "");
+    this.value = value;
+
+    if (value.length === 0) {
+        phoneError.innerText = "";
+        isPhoneValid = true;
+    } 
+    else if (value.length !== 10) {
+        phoneError.innerText = "Phone must be 10 digits";
+        isPhoneValid = false;
+    } 
+    else {
+        phoneError.innerText = "";
+        isPhoneValid = true;
+    }
+
+    checkForm();
+});
+
+// INITIAL
+submitBtn.disabled = true;
+</script>
 
 {% endblock %}

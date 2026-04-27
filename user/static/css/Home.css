@@ -358,20 +358,32 @@ body {
 .subcats li {
     background: #fff;
     border: 1px solid #eaeaea;
-    padding: 10px 20px;
+    padding: 0; /* Move padding to a tag */
     border-radius: 50px;
     font-size: 0.95rem;
     color: #444;
     transition: all 0.3s;
     box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+    overflow: hidden;
+}
+
+.subcats li a {
+    text-decoration: none;
+    color: #444;
+    display: block;
+    padding: 10px 20px;
+    transition: color 0.3s;
 }
 
 .subcats li:hover {
     background: var(--primary-color);
-    color: #fff;
     border-color: var(--primary-color);
     transform: translateY(-3px);
     box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.subcats li:hover a {
+    color: #fff !important;
 }
 
 .explore-btn {
@@ -435,6 +447,24 @@ body {
     transform: translate(0, 0);
 }
 
+@media (max-width: 768px) {
+    .cat-row, .cat-row.reverse {
+        flex-direction: column;
+        gap: 30px;
+        margin-bottom: 80px;
+    }
+    .cat-text {
+        flex: none;
+        width: 100%;
+        padding: 0 15px;
+    }
+    .cat-image {
+        flex: none;
+        width: 100%;
+        height: 350px;
+    }
+}
+
 /* --- TRENDING PIECES --- */
 .trending-section {
     padding: 120px 50px;
@@ -454,6 +484,22 @@ body {
     gap: 40px;
     max-width: 1400px;
     margin: 0 auto 80px auto;
+}
+
+@media (max-width: 1024px) {
+    .trending-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+        padding: 0 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .trending-grid {
+        grid-template-columns: repeat(1, 1fr);
+        gap: 20px;
+        padding: 0 15px;
+    }
 }
 
 .product-card {

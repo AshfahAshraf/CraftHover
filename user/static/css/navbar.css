@@ -145,19 +145,26 @@ overflow-x:hidden;
 
 .category-wrapper{
 width:100%;
-overflow:hidden;
 }
 
 .category-scroll{
 display:flex;
+flex-direction: row !important;
 flex-wrap:nowrap;
 overflow-x:auto;
-overflow-y:hidden;
 white-space:nowrap;
 scroll-behavior:smooth;
 list-style:none;
 padding:8px 10px;
 margin:0;
+}
+
+/* Prevent dropdowns from being clipped by overflow-x */
+.category-scroll .dropdown {
+    position: static !important;
+}
+.category-scroll .dropdown-menu {
+    top: 100%;
 }
 
 .category-scroll::-webkit-scrollbar{
@@ -176,8 +183,6 @@ padding:8px 12px;
 body, * {
     cursor: auto !important;
 }
-<<<<<<< HEAD:user/static/css/navbar.css
-
 /* FIRST NAVBAR */
 .navbar.sticky-top {
   position: sticky;
@@ -191,5 +196,3 @@ body, * {
   top: 0; 
   z-index: 999;
 }
-=======
->>>>>>> e431a8a94e3f2b9d5c0c1ca14ce54cc4a888de9c:hello/static/css/navbar.css

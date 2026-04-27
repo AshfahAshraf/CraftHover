@@ -1,20 +1,50 @@
 {% extends "navbar.html" %}
 
+
+{% load static %}
 {% block content %}
-<!-- {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Page — craftHover</title>
-<link rel="stylesheet" href="{% static 'css/Home.css' %}">    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
-</head> -->
 
+<style>
+/* INJECTED TO BYPASS BROWSER CACHE ON MOBILE */
+@media (max-width: 1024px) {
+    .trending-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 30px !important;
+        padding: 0 20px !important;
+    }
+}
+@media (max-width: 768px) {
+    .cat-row, .cat-row.reverse {
+        flex-direction: column !important;
+        gap: 30px !important;
+        margin-bottom: 80px !important;
+    }
+    .cat-text {
+        flex: none !important;
+        width: 100% !important;
+        padding: 0 15px !important;
+    }
+    .cat-image {
+        display: block !important;
+        flex: none !important;
+        width: 100% !important;
+        height: 350px !important;
+        margin-top: 20px !important;
+    }
+    .trending-grid {
+        grid-template-columns: repeat(1, 1fr) !important;
+        gap: 20px !important;
+        padding: 0 15px !important;
+    }
+}
+
+/* Force subcategory text to white on hover */
+.subcats li:hover a, 
+.subcats li a:hover {
+    color: #ffffff !important;
+}
+</style>
 
 <body class="loading-locked">
     <div class="grain-overlay"></div>
@@ -48,202 +78,56 @@
         </section>
     </div>
 
-    <!-- FULL CATEGORIES SHOWCASE -->
-    <section id="full-categories" class="full-categories-section">
-        <div class="category-header scroll-reveal reveal-fade">
-            <h2 class="section-title split-reveal">Masterful Collections</h2>
-            <p class="section-subtitle">Discover pieces that elevate your aura with traditional heritage.</p>
+<section id="full-categories" class="full-categories-section">
+
+    <div class="category-header">
+        <h2 class="section-title">Masterful Collections</h2>
+        <p class="section-subtitle">
+            Discover pieces that elevate your aura with traditional heritage.
+        </p>
+    </div>
+
+    {% for cat in categories %}
+    <div class="cat-row {% if forloop.counter|divisibleby:2 %}reverse{% endif %}">
+
+        <!-- TEXT -->
+        <div class="cat-text">
+            <span class="cat-number">
+                {{ forloop.counter|stringformat:"02d" }}
+            </span>
+
+            <h3 class="cat-title">{{ cat.name }}</h3>
+            {% if cat.description and cat.description != "None" %}
+            <p class="cat-desc">{{ cat.description }}</p>
+            {% endif %}
+
+            <!-- SUBCATEGORIES -->
+            <ul class="subcats">
+                {% for sub in cat.subcategory_set.all %}
+                <li>
+                    <a href="{% url 'product_list' sub.id %}">
+                        {{ sub.name }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <a href="{% url 'category_products' cat.id %}" class="explore-btn">
+                Explore {{ cat.name }}
+            </a>
         </div>
 
-        <!-- 1. Pottery -->
-        <div class="cat-row">
-            <div class="cat-text scroll-reveal reveal-left">
-                <span class="cat-number">01</span>
-                <h3 class="cat-title">Pottery & Clay Crafts</h3>
-                <p class="cat-desc">Mold earth into timeless elegance. Our masterful ceramics bring the heart of the
-                    earth directly to your sanctuary.</p>
-
-                <ul class="subcats">
-                    {% for sub in categories.0.subcategory_set.all %}
-                    <li>
-                        <a href="{% url 'product_list' sub.id %}" style="text-decoration:none; color:inherit;">
-                            {{ sub.name }}
-                        </a>
-                    </li>
-                    {% endfor %}
-                </ul>
-
-                <a href="{% url 'category_products' 1 %}" class="explore-btn">
-                    Explore Ceramic Art
-                </a>
-            </div>
-            <div class="cat-image scroll-reveal reveal-right">
-                <img src="{% static 'images/pottery_Clay_Crafts_box.jpg' %}" alt="Pottery & Clay Crafts">
-            </div>
+        <!-- IMAGE -->
+        <div class="cat-image">
+            {% if cat.image %}
+                <img src="{{ cat.image.url }}" alt="{{ cat.name }}">
+            {% endif %}
         </div>
 
-     <!-- 2. Handloom (Alternate side) -->
-        <div class="cat-row reverse">
-            <div class="cat-text scroll-reveal reveal-right">
-                <span class="cat-number">02</span>
-                <h3 class="cat-title">Handloom & Textile</h3>
-                <p class="cat-desc">Woven with tradition, our textiles tell stories of heritage, featuring rich textures
-                    and intricate block prints.</p>
-            
-                <ul class="subcats">
-                    {% for sub in categories.1.subcategory_set.all %}
-                    <li>
-                        <a href="{% url 'product_list' sub.id %}" style="text-decoration:none; color:inherit;">
-                            {{ sub.name }}
-                        </a>
-                    </li>
-                    {% endfor %}
-                </ul>
+    </div>
+    {% endfor %}
 
-                <a href="{% url 'category_products' 2 %}" class="explore-btn">
-                    Explore Textiles
-                </a>
-            </div>
-            <div class="cat-image scroll-reveal reveal-left">
-                <img src="{% static 'images/handloom_box.jpg' %}" alt="Handloom & Textile">
-            </div>
-        </div>
-
-        <!-- 3. Wooden -->
-        <div class="cat-row">
-            <div class="cat-text scroll-reveal reveal-left">
-                <span class="cat-number">03</span>
-                <h3 class="cat-title">Wooden Crafts</h3>
-                <p class="cat-desc">Carved with precision and care. Explore our selection of majestic woodwork bringing
-                    the vitality of the forest home.</p>
-        
-                <ul class="subcats">
-                    {% for sub in categories.2.subcategory_set.all %}
-                    <li>
-                        <a href="{% url 'product_list' sub.id %}" style="text-decoration:none; color:inherit;">
-                            {{ sub.name }}
-                        </a>
-                    </li>
-                    {% endfor %}
-                </ul>
-
-                <a href="{% url 'category_products' 3 %}" class="explore-btn">
-                    Explore Woodwork
-                </a>
-            </div>
-            <div class="cat-image scroll-reveal reveal-right">
-                <img src="{% static 'images/wooden_Craft_box.jpg' %}" alt="Wooden Crafts">
-            </div>
-        </div>
-
-        <!-- 4. Handmade Jewelry -->
-        <div class="cat-row reverse">
-            <div class="cat-text scroll-reveal reveal-right">
-                <span class="cat-number">04</span>
-                <h3 class="cat-title">Handmade Jewelry</h3>
-                <p class="cat-desc">Adorn yourself with breathtaking, handcrafted jewelry reflecting true artisanal
-                    elegance and beauty.</p>
-        
-                <ul class="subcats">
-                    {% for sub in categories.3.subcategory_set.all %}
-                    <li>
-                        <a href="{% url 'product_list' sub.id %}" style="text-decoration:none; color:inherit;">
-                            {{ sub.name }}
-                        </a>
-                    </li>
-                    {% endfor %}
-                </ul>
-
-                    <a href="{% url 'category_products' 4 %}" class="explore-btn">
-                    Explore Jewelry
-                </a>
-            </div>
-            <div class="cat-image scroll-reveal reveal-left">
-                <img src="{% static 'images/jewelry_box.jpg' %}" alt="Handmade Jewelry">
-            </div>
-        </div>
-
-        <!-- 5. Paintings & Artwork -->
-        <div class="cat-row">
-            <div class="cat-text scroll-reveal reveal-left">
-                <span class="cat-number">05</span>
-                <h3 class="cat-title">Paintings & Artwork</h3>
-                <p class="cat-desc">A stroke of genius capturing culture onto canvas. Indulge in traditional and modern
-                    handcrafted masterpieces.</p>
-            
-                <ul class="subcats">
-                    {% for sub in categories.4.subcategory_set.all %}
-                    <li>
-                        <a href="{% url 'product_list' sub.id %}" style="text-decoration:none; color:inherit;">
-                            {{ sub.name }}
-                        </a>
-                    </li>
-                    {% endfor %}
-                </ul>
-
-                <a href="{% url 'category_products' 5 %}" class="explore-btn">
-                    Explore Artwork
-                </a>
-            </div>
-            <div class="cat-image scroll-reveal reveal-right">
-                <img src="{% static 'images/art_work_box.jpg' %}" alt="Paintings & Artwork">
-            </div>
-        </div>
-
-        <!-- 6. Bamboo & Natural Fiber -->
-        <div class="cat-row reverse">
-            <div class="cat-text scroll-reveal reveal-right">
-                <span class="cat-number">06</span>
-                <h3 class="cat-title">Bamboo & Natural Fiber</h3>
-                <p class="cat-desc">Sustainable, stunning, and sturdy. Our natural fiber crafts breathe tranquility into
-                    any living space.</p>
-               
-                <ul class="subcats">
-                    {% for sub in categories.5.subcategory_set.all %}
-                    <li>
-                        <a href="{% url 'product_list' sub.id %}" style="text-decoration:none; color:inherit;">
-                            {{ sub.name }}
-                        </a>
-                    </li>
-                    {% endfor %}
-                </ul>
-
-                <a href="{% url 'category_products' 6 %}" class="explore-btn">
-                    Explore Bamboo Details
-                </a>
-            </div>
-            <div class="cat-image scroll-reveal reveal-left">
-                <img src="{% static 'images/bamboo_box.jpg' %}" alt="Bamboo & Natural Fiber">
-            </div>
-        </div>
-
-        <!-- 7. Leather & Accessories -->
-        <div class="cat-row">
-            <div class="cat-text scroll-reveal reveal-left">
-                <span class="cat-number">07</span>
-                <h3 class="cat-title">Leather & Accessories</h3>
-                <p class="cat-desc">Premium quality leather shaped by skilled hands. Discover genuine durability styled
-                    for the modern aesthete.</p>
-                
-                <ul class="subcats">
-                    {% for sub in categories.6.subcategory_set.all %}
-                    <li>
-                        <a href="{% url 'product_list' sub.id %}" style="text-decoration:none; color:inherit;">
-                            {{ sub.name }}
-                        </a>
-                    </li>
-                    {% endfor %}
-                </ul>
-                <a href="{% url 'category_products' 7 %}" class="explore-btn">
-                    Explore Leather Goods
-                </a>
-            </div>
-            <div class="cat-image scroll-reveal reveal-right">
-                <img src="{% static 'images/leather_box.jpg' %}" alt="Leather & Accessories">
-            </div>
-        </div>
-    </section>
-
+</section>
     <!-- TRENDING PIECES -->
     <section id="trending" class="trending-section">
         <div class="trending-header scroll-reveal reveal-fade">

@@ -1,10 +1,15 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from user.models import *
-import random
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from django.db import IntegrityError
+from django.contrib.auth.hashers import make_password
+
 from django.core.mail import send_mail
-from admin_app.models import AdminUser
+import random
 import time
 
+from user.models import *
+from admin_app.models import AdminUser
+from .models import Artisan
 # admin login
 
 def login_admin(request):
@@ -144,41 +149,40 @@ def dashboard(request):
         'total_revenue': total_revenue,
         'total_artisans': total_artisans,
     })
-
 def add_category(request):
+    categories = Category.objects.all()
+    subcategories = SubCategory.objects.all()
+
     if request.method == "POST":
+        category_id = request.POST.get("category_id")
+        name = request.POST.get("category_name")
+        desc = request.POST.get("category_desc")
+        image = request.FILES.get("category_image")
+        sub_name = request.POST.get("subcategory_name")
 
-        category_id = request.POST.get('category_id')
-        category_name = request.POST.get('category_name')
-        subcategory_name = request.POST.get('subcategory_name')
-
-        category = None
-
-        #  If existing category selected
+        #  Use existing category OR create new
         if category_id:
             category = Category.objects.get(id=category_id)
-
-        #  Else check/create category (NO DUPLICATE)
-        elif category_name:
-            category = Category.objects.filter(name=category_name).first()
-
-            if not category:
-                category = Category.objects.create(name=category_name)
+        else:
+            category = Category.objects.create(
+                name=name,
+                description=desc,
+                image=image
+            )
 
         #  Add subcategory
-        if category and subcategory_name:
+        if sub_name:
             SubCategory.objects.create(
-                name=subcategory_name,
+                name=sub_name,
                 category=category
             )
 
         return redirect('add_category')
 
     return render(request, 'add_category.html', {
-        'categories': Category.objects.all(),
-        'subcategories': SubCategory.objects.all()
+        'categories': categories,
+        'subcategories': subcategories
     })
-
 
 #  EDIT CATEGORY
 def edit_category(request, id):
@@ -186,11 +190,35 @@ def edit_category(request, id):
 
     if request.method == "POST":
         category.name = request.POST.get('category_name')
+        category.description = request.POST.get('category_desc')
+
+        #  IMAGE FIX
+        if 'category_image' in request.FILES:
+            if category.image:
+                category.image.delete()
+
+            category.image = request.FILES['category_image']
+
         category.save()
         return redirect('add_category')
 
     return render(request, 'add_category.html', {
         'edit_category': category,
+        'categories': Category.objects.all(),
+        'subcategories': SubCategory.objects.all()
+    })
+
+#  EDIT SUBCATEGORY
+def edit_subcategory(request, id):
+    sub = SubCategory.objects.get(id=id)
+
+    if request.method == "POST":
+        sub.name = request.POST.get('subcategory_name')
+        sub.save()
+        return redirect('add_category')
+
+    return render(request, 'add_category.html', {
+        'edit_sub': sub,
         'categories': Category.objects.all(),
         'subcategories': SubCategory.objects.all()
     })
@@ -214,9 +242,14 @@ def edit_subcategory(request, id):
 
 #  DELETE
 def delete_category(request, id):
-    Category.objects.get(id=id).delete()
-    return redirect('add_category')
+    category = Category.objects.get(id=id)
 
+    # delete image file also
+    if category.image:
+        category.image.delete()
+
+    category.delete()
+    return redirect('add_category')
 
 def delete_subcategory(request, id):
     SubCategory.objects.get(id=id).delete()
@@ -237,31 +270,39 @@ def admin_products(request):
 
 # EDIT PRODUCT
 def edit_product(request, id):
-    product = get_object_or_404(Product, id=id)
+    try:
+        product = Product.objects.get(id=id)
+    except Product.DoesNotExist:
+        return redirect('admin_products')  # or show error page
+
     categories = Category.objects.all()
-    product_types = SubCategory.objects.all() 
+    product_types = SubCategory.objects.all()
 
     if request.method == "POST":
-        product.Product_name = request.POST.get('product_name')
-        product.category_id = request.POST.get('category')
-        product.subcategory_id = request.POST.get('product_type')
-        product.Actual_price = request.POST.get('actual_price')
-        product.Offer_price = request.POST.get('offer_price')
-        product.Quantity = request.POST.get('quantity')
-        product.description = request.POST.get('description')
+        try:
+            product.Product_name = request.POST.get('product_name')
+            product.category_id = request.POST.get('category')
+            product.subcategory_id = request.POST.get('product_type')
+            product.Actual_price = request.POST.get('actual_price')
+            product.Offer_price = request.POST.get('offer_price')
+            product.Quantity = request.POST.get('quantity')
+            product.description = request.POST.get('description')
 
-        # Image update (optional)
-        if request.FILES.get('front_image'):
-            product.front_image = request.FILES.get('front_image')
+            # Image update (optional)
+            if request.FILES.get('front_image'):
+                product.front_image = request.FILES.get('front_image')
 
-        if request.FILES.get('left_image'):
-            product.left_image = request.FILES.get('left_image')
+            if request.FILES.get('left_image'):
+                product.left_image = request.FILES.get('left_image')
 
-        if request.FILES.get('right_image'):
-            product.right_image = request.FILES.get('right_image')
+            if request.FILES.get('right_image'):
+                product.right_image = request.FILES.get('right_image')
 
-        product.save()
-        return redirect('admin_products')
+            product.save()
+            return redirect('admin_products')
+
+        except Exception as e:
+            print("Error updating product:", e)
 
     return render(request, 'edit_product.html', {
         'product': product,
@@ -270,13 +311,14 @@ def edit_product(request, id):
     })
 
 
-
-
 def delete_product(request, id):
-    product = get_object_or_404(Product, id=id)
-    product.delete()
-    return redirect('admin_products')
+    try:
+        product = Product.objects.get(id=id)
+        product.delete()
+    except Product.DoesNotExist:
+        print("Product not found")  # optional
 
+    return redirect('admin_products')
 
 # LIST USERS
 def admin_users(request):
@@ -291,10 +333,10 @@ def add_user(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
 
-        User.objects.create_user(
-            username=username,
-            email=email,
-            password=password
+        User.objects.create(
+            Username=username,
+            Email=email,
+            Password=password
         )
 
     return redirect('admin_users')
@@ -302,7 +344,10 @@ def add_user(request):
 
 # EDIT USER
 def edit_user(request, id):
-    user = get_object_or_404(User, id=id)
+    try:
+        user = User.objects.get(id=id)
+    except User.DoesNotExist:
+        return redirect('admin_users')
 
     if request.method == "POST":
         user.username = request.POST.get('username')
@@ -316,14 +361,15 @@ def edit_user(request, id):
 
     return render(request, 'edit_user.html', {'user': user})
 
-
 # DELETE USER
 def delete_user(request, id):
-    user = get_object_or_404(User, id=id)
+    try:
+        user = User.objects.get(id=id)
+    except User.DoesNotExist:
+        return redirect('admin_users')
+
     user.delete()
     return redirect('admin_users')
-
-
 
 # LIST ARTISANS
 def admin_artisans(request):
@@ -331,28 +377,62 @@ def admin_artisans(request):
     return render(request, 'artisans.html', {'artisans': artisans})
 
 
-# ADD ARTISAN (PLAIN PASSWORD)
+# ADD ARTISAN 
 def add_artisan(request):
-    if request.method == "POST":
+    artisans = Artisan.objects.all()
 
-        Artisan.objects.create(
-            name=request.POST.get("name"),
-            email=request.POST.get("email"),
-            password=request.POST.get("password"),  
-            phone=request.POST.get("phone"),
-            shop_name=request.POST.get("shop_name"),
-            address=request.POST.get("address"),
-            city=request.POST.get("city"),
-            state=request.POST.get("state"),
-            pincode=request.POST.get("pincode"),
-        )
+    if request.method == "POST":
+        email = request.POST.get("email")
+        phone = request.POST.get("phone")
+
+        #  EMAIL DUPLICATE CHECK
+        if Artisan.objects.filter(email=email).exists():
+            return render(request, "artisans.html", {
+                "artisans": artisans,
+                "error": "Email already exists!",
+                "old": request.POST,
+                "open_modal": True
+            })
+
+        # PHONE VALIDATION (10 digits only)
+        if phone:
+            if (not phone.isdigit()) or len(phone) != 10:
+                return render(request, "artisans.html", {
+                    "artisans": artisans,
+                    "error": "Phone must be exactly 10 digits!",
+                    "old": request.POST,
+                    "open_modal": True
+                })
+
+        try:
+            Artisan.objects.create(
+                name=request.POST.get("name"),
+                email=email,
+                password=make_password(request.POST.get("password")),
+                phone=phone,
+                shop_name=request.POST.get("shop_name"),
+                address=request.POST.get("address"),
+                city=request.POST.get("city"),
+                state=request.POST.get("state"),
+                pincode=request.POST.get("pincode"),
+            )
+            return redirect('admin_artisans')
+
+        except IntegrityError:
+            return render(request, "artisans.html", {
+                "artisans": artisans,
+                "error": "Email already exists!",
+                "old": request.POST,
+                "open_modal": True
+            })
 
     return redirect('admin_artisans')
-
-
-# EDIT ARTISAN
+# EDIT ARTISAN 
 def edit_artisan(request, id):
-    artisan = get_object_or_404(Artisan, id=id)
+    artisan = Artisan.objects.filter(id=id).first()
+
+    if not artisan:
+        return redirect('admin_artisans')
 
     if request.method == "POST":
         artisan.name = request.POST.get("name")
@@ -363,9 +443,8 @@ def edit_artisan(request, id):
         artisan.state = request.POST.get("state")
         artisan.pincode = request.POST.get("pincode")
 
-        # update password if entered
         if request.POST.get("password"):
-            artisan.password = request.POST.get("password")
+            artisan.password = make_password(request.POST.get("password"))
 
         artisan.save()
         return redirect('admin_artisans')
@@ -373,8 +452,18 @@ def edit_artisan(request, id):
     return render(request, 'edit_artisan.html', {'artisan': artisan})
 
 
-# DELETE ARTISAN
+# DELETE ARTISAN 
 def delete_artisan(request, id):
-    artisan = get_object_or_404(Artisan, id=id)
-    artisan.delete()
+    artisan = Artisan.objects.filter(id=id).first()
+
+    if artisan:
+        artisan.delete()
+
     return redirect('admin_artisans')
+
+
+# LIVE EMAIL CHECK 
+def check_email(request):
+    email = request.GET.get("email")
+    exists = Artisan.objects.filter(email=email).exists()
+    return JsonResponse({"exists": exists})

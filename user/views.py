@@ -1,93 +1,140 @@
 import re
-from django.shortcuts import render,redirect,get_object_or_404
-from .models import * 
-from django.db.models import Q ,Sum
-from django.conf import settings
 import random
+import json
+import time
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.db.models import Q, Sum
+from django.conf import settings
 from django.core.mail import send_mail
 from django.contrib import messages
-import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+
+from .models import *
+from .models import Order, Complaint, User
 from .utils.ai_description import generate_description
-import time
 # Create your views here.
+
 
 
 def index(request):
 
+    context = {}
+
     if request.method == 'POST':
 
-        #  REGISTER 
+        # ================= REGISTER =================
         if "register" in request.POST:
+
             username = request.POST.get("textUsername")
             email = request.POST.get("textEmail")
             password = request.POST.get("textPassword")
             confirm_password = request.POST.get("textConfirmPassword")
 
-            # Email format check
+            # Email validation
             email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
             if not email or not re.match(email_pattern, email):
-                return render(request, "register.html", {
-                    "error": "Invalid email format"
-                })
+                context["register_error"] = "Invalid email format"
+                return render(request, "register.html", context)
 
-            # Password match check
+            # OTP check
+            if not request.session.get("signup_verified"):
+                context["register_error"] = "Please verify OTP first"
+                return render(request, "register.html", context)
+
+            # Password match
             if password != confirm_password:
-                return render(request, "register.html", {
-                    "error": "Passwords do not match"
-                })
+                context["register_error"] = "Passwords do not match"
+                return render(request, "register.html", context)
 
-            # Check email exists
+            # Email exists
             if User.objects.filter(Email=email).exists():
-                return render(request, "register.html", {
-                    "error": "Email already registered"
-                })
+                context["register_error"] = "Email already registered"
+                return render(request, "register.html", context)
 
             # Save user
-            reg = User(
+            User.objects.create(
                 Username=username,
                 Email=email,
                 Password=password
             )
-            reg.save()
 
-            return render(request, "register.html", {
-                "success": "Registration successful"
-            })
+            # clear OTP session
+            request.session.pop("signup_verified", None)
+            request.session.pop("signup_otp", None)
 
-        # LOGIN
+            context["success"] = "Registration successful"
+            return render(request, "register.html", context)
+
+
+        # ================= LOGIN =================
         elif "login" in request.POST:
+
             email = request.POST.get("textEmail")
             password = request.POST.get("textPassword")
 
-            # Check email exists
-            if not User.objects.filter(Email=email).exists():
-                return render(request, "register.html", {
-                    "error": "Email does not exist"
-                })
-
-            # Check password
             try:
                 user = User.objects.get(Email=email)
 
                 if user.Password != password:
-                    return render(request, "register.html", {
-                        "error": "Password does not match"
-                    })
+                    context["login_error"] = "Incorrect password"
+                    return render(request, "register.html", context)
 
-                # Login success
+                # success
                 request.session["user_id"] = user.id
                 request.session["user_name"] = user.Username
+                request.session["email"] = user.Email
+
                 return redirect("home")
 
             except User.DoesNotExist:
-                return render(request, "register.html", {
-                    "error": "Login failed"
-                })
+                context["login_error"] = "Email does not exist"
+                return render(request, "register.html", context)
 
-    return render(request, "register.html")
+    return render(request, "register.html", context)
 
+
+# ================= SIGNUP OTP =================
+
+def signup_send_otp(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+
+        if not email:
+            return JsonResponse({"status": "error"})
+
+        if User.objects.filter(Email=email).exists():
+            return JsonResponse({"status": "exists"})
+
+        otp = str(random.randint(100000, 999999))
+        request.session["signup_otp"] = otp
+
+        try:
+            send_mail(
+                "Your OTP Code",
+                f"Your OTP is: {otp}",
+                "your_email@gmail.com",  # change this
+                [email],
+                fail_silently=False,
+            )
+        except Exception as e:
+            print("Email error:", e)
+            return JsonResponse({"status": "email_error"})
+
+        return JsonResponse({"status": "success"})
+
+
+def signup_verify_otp(request):
+    if request.method == "POST":
+        user_otp = request.POST.get("otp")
+        real_otp = request.session.get("signup_otp")
+
+        if user_otp == real_otp:
+            request.session["signup_verified"] = True
+            return JsonResponse({"status": "success"})
+        else:
+            return JsonResponse({"status": "failed"})
 ########
 #email 
 
@@ -240,78 +287,119 @@ def footer(request):
 def aboutus(request):
     return render(request, "aboutUs.html")
 
-
 # Contact Page
 
 def contact(request):
 
-    # Get logged-in user
     user_id = request.session.get("user_id")
 
     if not user_id:
         return redirect("register")
 
+    errors = {}
+
     if request.method == "POST":
+        try:
+            fullname = request.POST.get("fullname", "").strip()
+            email = request.POST.get("email", "").strip()
+            phonenumber = request.POST.get("phonenumber", "").strip()
+            orderid = request.POST.get("orderid")
+            issue_type = request.POST.get("issue_type")
+            description = request.POST.get("description", "").strip()
+            product_image = request.FILES.get("product_image")
 
-        fullname = request.POST.get("fullname")
-        email = request.POST.get("email")
-        phonenumber = request.POST.get("phonenumber")
-        orderid = request.POST.get("orderid")
-        issue_type = request.POST.get("issue_type")
-        description = request.POST.get("description")
+            #  VALIDATIONS
+            if not fullname:
+                errors["fullname"] = "Full name is required"
 
-        product_image = request.FILES.get("product_image")
+            if not email:
+                errors["email"] = "Email is required"
 
-        #  Only allow delivered orders (SECURITY)
-        order = get_object_or_404(
-            Order,
-            id=orderid,
-            user_id=user_id,
-            status="Delivered"
-        )
+            # Phone validation (ONLY 10 digits)
+            if not re.fullmatch(r"\d{10}", phonenumber):
+                errors["phonenumber"] = "Phone number must be exactly 10 digits"
 
-        #  Get product & artisan automatically
-        product = order.product
-        artisan = product.artisan
+            if not orderid:
+                errors["orderid"] = "Please select an order"
 
-        #  Save complaint
-        Complaint.objects.create(
-            Fullname=fullname,
-            Email=email,
-            Phonenumber=phonenumber,
-            Orderid=order,
-            Productname=product,
-            Issue_type=issue_type,
-            Product_image=product_image,
-            Description=description
-        )
+            if not issue_type:
+                errors["issue_type"] = "Please select issue type"
 
-        #  Send email
-        send_mail(
-            "Complaint Received",
-            f"""
-                Hello {fullname},
+            if not description:
+                errors["description"] = "Description is required"
 
-                Your complaint has been received successfully.
+            # If errors → show in same page
+            if errors:
+                orders = Order.objects.filter(
+                    user_id=user_id,
+                    status="Delivered"
+                ).order_by("-id")[:5]
 
-                Order ID: {order.id}
-                Product: {product.Product_name}
-                Issue: {issue_type}
+                return render(request, "contact.html", {
+                    "orders": orders,
+                    "errors": errors,
+                    "form_data": request.POST
+                })
 
-                Our team (artisan: {artisan.name}) will review it soon.
+            #  SAFE ORDER FETCH (instead of get_object_or_404)
+            try:
+                order = Order.objects.get(
+                    id=orderid,
+                    user_id=user_id,
+                    status="Delivered"
+                )
+            except Order.DoesNotExist:
+                messages.error(request, "Invalid order selected")
+                return redirect("contact")
 
-                Thank you,
-                CraftHover Support
-                """,
-                settings.EMAIL_HOST_USER,
-                [email],
-                fail_silently=False
-        )
+            product = order.product
+            artisan = product.artisan
 
-        messages.success(request, "Complaint submitted successfully!")
-        return redirect("contact")
+            #  SAVE
+            Complaint.objects.create(
+                Fullname=fullname,
+                Email=email,
+                Phonenumber=phonenumber,
+                Orderid=order,
+                Productname=product,
+                Issue_type=issue_type,
+                Product_image=product_image,
+                Description=description
+            )
 
-    #  ONLY LATEST 5 DELIVERED ORDERS
+            #  EMAIL (with try-except)
+            try:
+                send_mail(
+                    "Complaint Received",
+                    f"""
+                            Hello {fullname},
+
+                            Your complaint has been received successfully.
+
+                            Order ID: {order.id}
+                            Product: {product.Product_name}
+                            Issue: {issue_type}
+
+                            Our team (artisan: {artisan.name}) will review it soon.
+
+                            Thank you,
+                            CraftHover Support
+                    """,
+                    settings.EMAIL_HOST_USER,
+                    [email],
+                    fail_silently=False
+                )
+            except Exception as e:
+                print("Email error:", e)
+
+            messages.success(request, "Complaint submitted successfully!")
+            return redirect("contact")
+
+        except Exception as e:
+            print("Error:", e)
+            messages.error(request, "Something went wrong. Please try again.")
+            return redirect("contact")
+
     orders = Order.objects.filter(
         user_id=user_id,
         status="Delivered"
@@ -320,7 +408,6 @@ def contact(request):
     return render(request, "contact.html", {
         "orders": orders
     })
-
 
 def artisan_complaints(request):
 
@@ -339,17 +426,18 @@ def artisan_complaints(request):
         "complaints": complaints
     })
 
-
-
 def update_complaint(request, id):
 
     artisan_id = request.session.get("artisan_id")
 
-    complaint = get_object_or_404(
-        Complaint,
-        id=id,
-        Productname__artisan_id=artisan_id
-    )
+    try:
+        complaint = Complaint.objects.get(
+            id=id,
+            Productname__artisan_id=artisan_id
+        )
+    except Complaint.DoesNotExist:
+        messages.error(request, "Complaint not found!")
+        return redirect("artisan_complaints")
 
     if request.method == "POST":
 
@@ -359,7 +447,7 @@ def update_complaint(request, id):
         if action == "resolve":
 
             issue = complaint.Issue_type
-            artisan_name = complaint.Productname.artisan.name  # ✅ NEW
+            artisan_name = complaint.Productname.artisan.name
 
             solutions = {
                 "Damaged Product": "We sincerely apologize for the inconvenience caused. After reviewing your complaint, we have arranged a replacement for the damaged product. It will be shipped to your address shortly.",
@@ -405,7 +493,7 @@ def update_complaint(request, id):
         # ================= REJECT =================
         elif action == "reject":
 
-            artisan_name = complaint.Productname.artisan.name  # ✅ NEW
+            artisan_name = complaint.Productname.artisan.name
 
             default_reason = "After carefully reviewing your complaint, we found that it does not meet our return or support policy conditions."
 
@@ -416,26 +504,26 @@ def update_complaint(request, id):
             send_mail(
                 "Complaint Update",
                 f"""
-                    Hello {complaint.Fullname},
+                        Hello {complaint.Fullname},
 
-                    Thank you for reaching out to us regarding your concern.
+                        Thank you for reaching out to us regarding your concern.
 
-                    After reviewing your complaint, we regret to inform you that we are unable to process your request at this time.
+                        After reviewing your complaint, we regret to inform you that we are unable to process your request at this time.
 
-                    Product: {complaint.Productname.Product_name}
-                    Issue Reported: {complaint.Issue_type}
+                        Product: {complaint.Productname.Product_name}
+                        Issue Reported: {complaint.Issue_type}
 
-                    Reason:
-                    {default_reason}
+                        Reason:
+                        {default_reason}
 
-                    Handled by: {artisan_name}
+                        Handled by: {artisan_name}
 
-                    If you need further clarification, please contact our support team.
+                        If you need further clarification, please contact our support team.
 
-                    We appreciate your understanding.
+                        We appreciate your understanding.
 
-                    CraftHover Support
-                    """,
+                        CraftHover Support
+                        """,
                 settings.EMAIL_HOST_USER,
                 [complaint.Email],
                 fail_silently=False
@@ -444,7 +532,6 @@ def update_complaint(request, id):
             messages.error(request, "Complaint rejected!")
 
     return redirect("artisan_complaints")
-
 #### wishlist
 # adding wishlist
 # It works like a  button (toggle) on your website
@@ -495,8 +582,13 @@ def remove_wishlist(request, wishlist_id):
 
     user_id = request.session.get("user_id")
 
-    item = get_object_or_404(Wishlist, id=wishlist_id, user_id=user_id)
-    item.delete()
+    try:
+        item = Wishlist.objects.get(id=wishlist_id, user_id=user_id)
+        item.delete()
+    except Wishlist.DoesNotExist:
+        print("Wishlist item not found")
+    except Exception as e:
+        print("Error:", e)
 
     return redirect("wishlist")
 
@@ -506,26 +598,35 @@ def wishlist_to_cart(request, wishlist_id):
 
     user_id = request.session.get("user_id")
 
-    user = get_object_or_404(User, id=user_id)
+    try:
+        user = User.objects.get(id=user_id)
 
-    wishlist_item = get_object_or_404(
-        Wishlist,
-        id=wishlist_id,
-        user_id=user_id
-    )
+        wishlist_item = Wishlist.objects.get(
+            id=wishlist_id,
+            user_id=user_id
+        )
 
-    product = wishlist_item.product
+        product = wishlist_item.product
 
-    cart_item, created = Cart.objects.get_or_create(
-        user=user,
-        product=product
-    )
+        cart_item, created = Cart.objects.get_or_create(
+            user=user,
+            product=product
+        )
 
-    if not created:
-        cart_item.quantity += 1
-        cart_item.save()
+        if not created:
+            cart_item.quantity += 1
+            cart_item.save()
 
-    wishlist_item.delete()
+        wishlist_item.delete()
+
+    except User.DoesNotExist:
+        print("User not found")
+
+    except Wishlist.DoesNotExist:
+        print("Wishlist item not found")
+
+    except Exception as e:
+        print("Error:", e)
 
     return redirect("wishlist")
 
@@ -535,27 +636,36 @@ def wishlist_to_cart(request, wishlist_id):
 
 # add product to cart
 
+from django.shortcuts import render, redirect
+from .models import Product, Cart, Address
+
+
+# ADD TO CART
 def add_to_cart(request, product_id):
 
     user_id = request.session.get("user_id")
 
     if not user_id:
         return redirect("register")
-   
-    product = get_object_or_404(Product, id=product_id)
+
+    try:
+        product = Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return redirect("home")   # or show error page
 
     cart_item, created = Cart.objects.get_or_create(
-        user_id= user_id,
-        product =product
+        user_id=user_id,
+        product=product
     )
+
     if not created:
-        cart_item.quantity +=1
+        cart_item.quantity += 1
         cart_item.save()
 
     return redirect("cart")
 
-# cart page view
 
+# CART PAGE
 def cart_view(request):
 
     user_id = request.session.get("user_id")
@@ -567,14 +677,15 @@ def cart_view(request):
     total_price = 0
     total_items = 0
 
-    if user_id:
+    try:
         cart_items = Cart.objects.filter(user_id=user_id)
+    except Exception:
+        cart_items = []
 
     for item in cart_items:
         item.total = item.product.Offer_price * item.quantity
         total_price += item.total
         total_items += item.quantity
-
 
     addresses = Address.objects.filter(user_id=user_id)
 
@@ -588,8 +699,7 @@ def cart_view(request):
     return render(request, "cart.html", context)
 
 
-# remove product from cart
-
+# REMOVE FROM CART
 def remove_from_cart(request, cart_id):
 
     user_id = request.session.get("user_id")
@@ -597,13 +707,16 @@ def remove_from_cart(request, cart_id):
     if not user_id:
         return redirect("register")
 
-    item = get_object_or_404(Cart, id=cart_id, user_id=user_id)
-    item.delete()
+    try:
+        item = Cart.objects.get(id=cart_id, user_id=user_id)
+        item.delete()
+    except Cart.DoesNotExist:
+        pass  # silently ignore
 
     return redirect("cart")
 
-# increase_quantity product in the cart
 
+# INCREASE QUANTITY
 def increase_quantity(request, cart_id):
 
     user_id = request.session.get("user_id")
@@ -611,17 +724,20 @@ def increase_quantity(request, cart_id):
     if not user_id:
         return redirect("register")
 
-    item = get_object_or_404(Cart, id=cart_id, user_id=user_id)
+    try:
+        item = Cart.objects.get(id=cart_id, user_id=user_id)
 
-    if item.quantity < item.product.Quantity:
-        item.quantity += 1
-        item.save()
+        if item.quantity < item.product.Quantity:
+            item.quantity += 1
+            item.save()
+
+    except Cart.DoesNotExist:
+        pass
 
     return redirect("cart")
 
 
-# decrease_quantity  product in the cart
-
+# DECREASE QUANTITY
 def decrease_quantity(request, cart_id):
 
     user_id = request.session.get("user_id")
@@ -629,13 +745,17 @@ def decrease_quantity(request, cart_id):
     if not user_id:
         return redirect("register")
 
-    item = get_object_or_404(Cart, id=cart_id, user_id=user_id)
+    try:
+        item = Cart.objects.get(id=cart_id, user_id=user_id)
 
-    if item.quantity > 1:
-        item.quantity -= 1
-        item.save()
-    else:
-        item.delete()
+        if item.quantity > 1:
+            item.quantity -= 1
+            item.save()
+        else:
+            item.delete()
+
+    except Cart.DoesNotExist:
+        pass
 
     return redirect("cart")
 
@@ -663,11 +783,13 @@ def cancel_order(request, order_id):
 
     if request.method == "POST":
 
-        order = get_object_or_404(
-            Order,
-            id=order_id,
-            user_id=request.session.get("user_id")  
-        )
+        try:
+            order = Order.objects.get(
+                id=order_id,
+                user_id=request.session.get("user_id")
+            )
+        except Order.DoesNotExist:
+            return redirect("order")  # or handle error as needed
 
         if order.status not in ["Delivered", "Cancelled"]:
             order.status = "Cancelled"
@@ -1097,7 +1219,14 @@ def Artisan_edit_product(request, id):
     if not artisan_id:
         return redirect("artisan_login")
 
-    product = get_object_or_404(Product, id=id, artisan_id=artisan_id)
+    try:
+        product = Product.objects.get(id=id, artisan_id=artisan_id)
+    except Product.DoesNotExist:
+        return redirect("artisan_products")  # or show error page
+
+    # dropdown data
+    categories = Category.objects.all()
+    product_types = SubCategory.objects.all()
 
     if request.method == "POST":
 
@@ -1125,29 +1254,31 @@ def Artisan_edit_product(request, id):
 
         return redirect("artisan_products")
 
-    #  VERY IMPORTANT (GET request)
     return render(request, "artisan_edit_product.html", {
-        "product": product
+        "product": product,
+        "categories": categories,
+        "product_types": product_types
     })
-
 def delete_product(request, id):
-
     artisan_id = request.session.get("artisan_id")
 
-     #  Check login
+    #  Check login
     if not artisan_id:
         return redirect("artisan_login")
 
-
-     #  Allow only POST (security)
+    #  Allow only POST
     if request.method == "POST":
-        product = get_object_or_404(Product, id=id, artisan_id=artisan_id)
-        product.delete()
+        try:
+            product = Product.objects.get(id=id, artisan_id=artisan_id)
+            product.delete()
+            messages.success(request, "Product deleted successfully")
+
+        except Product.DoesNotExist:
+            messages.error(request, "Product not found or unauthorized")
 
     return redirect("artisan_products")
 
 # artisan order control section
-
 def artisan_orders(request):
     artisan_id = request.session.get("artisan_id")
 
@@ -1158,84 +1289,93 @@ def artisan_orders(request):
         order_id = request.POST.get("order_id")
         action = request.POST.get("action")
 
-        order = get_object_or_404(
-            Order,
-            id=order_id,
-            product__artisan_id=artisan_id
-        )
+        try:
+            order = Order.objects.get(
+                id=order_id,
+                product__artisan_id=artisan_id
+            )
+        except Order.DoesNotExist:
+            messages.error(request, "Order not found!")
+            return redirect("artisan_orders")
 
+        #  STATUS LOGIC
         if action == "ship" and order.status == "Pending":
             order.status = "Shipped"
             messages.success(request, "Order shipped successfully")
-
 
         elif action == "deliver" and order.status == "Shipped":
             order.status = "Delivered"
             messages.success(request, "Order delivered successfully")
 
-
         elif action == "cancel" and order.status not in ["Delivered", "Cancelled"]:
             order.status = "Cancelled"
             messages.success(request, "Order cancelled successfully")
 
+        else:
+            messages.warning(request, "Invalid action!")
 
         order.save()
         return redirect("artisan_orders")
 
-    #  Show orders
+    #  GET → Show orders
     orders = Order.objects.filter(
         product__artisan_id=artisan_id
     ).order_by("-id")
 
     return render(request, "artisan_orders.html", {"orders": orders})
-
 # artisan profile management
+
 
 def artisan_profile(request):
 
     artisan_id = request.session.get("artisan_id")
 
-    #  Check login
+    # Check login
     if not artisan_id:
         return redirect("artisan_login")
 
-    artisan = get_object_or_404(Artisan, id=artisan_id)
+    try:
+        artisan = Artisan.objects.get(id=artisan_id)
+    except Artisan.DoesNotExist:
+        messages.error(request, "Artisan not found")
+        return redirect("artisan_login")
 
     if request.method == "POST":
+        try:
+            artisan.name = request.POST.get("name")
+            artisan.email = request.POST.get("email")
+            artisan.phone = request.POST.get("phone")
 
-        artisan.name = request.POST.get("name")
-        artisan.email = request.POST.get("email")
-        artisan.phone = request.POST.get("phone")
+            artisan.shop_name = request.POST.get("shop_name")
 
-        artisan.shop_name = request.POST.get("shop_name")
+            artisan.address = request.POST.get("address")
+            artisan.city = request.POST.get("city")
+            artisan.state = request.POST.get("state")
+            artisan.pincode = request.POST.get("pincode")
 
-        artisan.address = request.POST.get("address")
-        artisan.city = request.POST.get("city")
-        artisan.state = request.POST.get("state")
-        artisan.pincode = request.POST.get("pincode")
+            artisan.bio = request.POST.get("bio")
 
-        artisan.bio = request.POST.get("bio")
+            artisan.bank_account_number = request.POST.get("bank_account_number")
+            artisan.ifsc_code = request.POST.get("ifsc_code")
 
-        artisan.bank_account_number = request.POST.get("bank_account_number")
-        artisan.ifsc_code = request.POST.get("ifsc_code")
+            #  Image upload
+            if request.FILES.get("profile_image"):
+                artisan.profile_image = request.FILES.get("profile_image")
 
-        #  Image upload
-        if request.FILES.get("profile_image"):
-            artisan.profile_image = request.FILES.get("profile_image")
+            artisan.save()
 
-        artisan.save()
+            messages.success(request, "Profile updated successfully")
+            return redirect("artisan_profile")
 
-        #  Success message
-        messages.success(request, "Profile updated successfully")
-
-        return redirect("artisan_profile")
+        except Exception as e:
+            #  Catch unexpected errors
+            messages.error(request, f"Something went wrong: {str(e)}")
 
     context = {
         "artisan": artisan
     }
 
     return render(request, "artisan_profile.html", context)
-
 # artisan Logout
 
 def artisan_logout(request):
@@ -1276,14 +1416,17 @@ def product_list(request, subcategory_id):
 
 # product detail VIEW
 def product_detail(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
+    
+    try:
+        product = Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return redirect("home")  # or any page you prefer
 
     product.savings = product.Actual_price - product.Offer_price
 
     return render(request, "product_detail.html", {
         "product": product
     })
-
 def address(request):
     return render(request, "address.html")
 

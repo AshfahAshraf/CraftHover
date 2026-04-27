@@ -3,162 +3,255 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact | CraftHover</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact | CraftHover</title>
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
 
-    <style>
-        body {
-            background: #f5f5f5;
-        }
+* {
+    box-sizing: border-box;
+}
 
-        .main-box {
-            background: linear-gradient(135deg, #a66cff, #c2b280);
-            border-radius: 20px;
-        }
+body {
+    background: #f5f5f5;
+}
 
-        .contact-info {
-            background: white;
-            border-radius: 0 20px 20px 0;
-        }
+.container {
+    position: relative;
+}
 
-        .btn-custom {
-            background-color: #544860;
-            color: white;
-        }
+/* MAIN BOX */
+.main-box {
+    background: linear-gradient(135deg, #a66cff, #c2b280);
+    border-radius: 20px;
+    overflow: hidden;
+}
 
-        .btn-custom:hover {
-            background-color: #3d3347;
-            color: white;
-        }
-    </style>
+/* EQUAL HEIGHT */
+.row.g-0 {
+    display: flex;
+    align-items: stretch;
+}
+
+/* LEFT FORM */
+.form-section {
+    padding: 50px 40px;
+}
+
+/* RIGHT PANEL */
+.contact-info {
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    transform: translateX(12px); /* ✅ FIXED */
+}
+
+/* INPUT FIX */
+.form-control,
+.form-select,
+textarea {
+    width: 100%;
+}
+
+/* BUTTON */
+.btn-custom {
+    background-color: #544860;
+    color: white;
+}
+
+.btn-custom:hover {
+    background-color: #3d3347;
+    color: white;
+}
+
+/* VALIDATION */
+.error {
+    color: red;
+    font-size: 13px;
+}
+
+.valid {
+    border: 2px solid #28a745 !important;
+}
+
+.invalid {
+    border: 2px solid #dc3545 !important;
+}
+
+/* BACK BUTTON */
+.back-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 10;
+}
+
+.back-btn .btn {
+    border-radius: 20px;
+    padding: 6px 14px;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+
+    .row.g-0 {
+        flex-direction: column;
+    }
+
+    .form-section {
+        padding: 25px;
+    }
+
+    .contact-info {
+        padding: 25px;
+        text-align: center;
+        border-radius: 0 0 20px 20px;
+        transform: none; /* ✅ important for mobile */
+    }
+}
+
+</style>
 </head>
 
 <body>
 
-    <div class="container mt-5">
+<div class="container py-5">
 
-        <h1 class="text-center fw-bold">Report an Issue</h1>
-        <p class="text-center text-muted">
-            If something went wrong with your order, we're here to help
-        </p>
+<!-- BACK BUTTON -->
+<div class="back-btn">
+    <a href="{% url 'home' %}" class="btn btn-light">
+        <i class="fa fa-arrow-left"></i> Back
+    </a>
+</div>
 
-        <div class="row justify-content-center mt-4">
-            <div class="col-lg-10 shadow-lg main-box">
+<h1 class="text-center fw-bold">Report an Issue</h1>
+<p class="text-center text-muted">
+If something went wrong with your order, we're here to help
+</p>
 
-                <div class="row">
+<div class="row justify-content-center mt-4">
+<div class="col-lg-10 shadow-lg main-box">
 
-                    <!-- LEFT: FORM -->
-                    <div class="col-md-6 p-5">
+<div class="row g-0">
 
-                        <!--  Messages -->
-                        {% if messages %}
-                        {% for message in messages %}
-                        <div class="alert alert-success text-center">
-                            {{ message }}
-                        </div>
-                        {% endfor %}
-                        {% endif %}
+<!-- LEFT -->
+<div class="col-md-6 form-section">
 
-                        <form method="POST" enctype="multipart/form-data">
-                            {% csrf_token %}
+<form method="POST" enctype="multipart/form-data" id="complaintForm">
+{% csrf_token %}
 
-                            <div class="mb-3">
-                                <label class="form-label">Full Name</label>
-                                <input type="text" name="fullname" class="form-control" required>
-                            </div>
+<div class="mb-3">
+<label>Full Name</label>
+<input type="text" id="fullname" name="fullname" class="form-control">
+<span class="error" id="fullnameError"></span>
+</div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Email</label>
-                                <input type="email" name="email" class="form-control" required>
-                            </div>
+<div class="mb-3">
+<label>Email</label>
+<input type="email" class="form-control" value="{{ request.session.email }}" readonly>
+</div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Phone Number</label>
-                                <input type="number" name="phonenumber" class="form-control" required>
-                            </div>
+<div class="mb-3">
+<label>Phone Number</label>
+<input type="text" id="phone" name="phonenumber" maxlength="10" class="form-control">
+<span class="error" id="phoneError"></span>
+</div>
 
-                            <!--  ORDER DROPDOWN -->
-                            <div class="mb-3">
-                                <label class="form-label">Select Your Order</label>
+<div class="mb-3">
+<label>Select Order</label>
+<select id="order" name="orderid" class="form-select">
+<option value="">Select Order</option>
+{% for order in orders %}
+<option value="{{ order.id }}">{{ order.id }}</option>
+{% endfor %}
+</select>
+<span class="error" id="orderError"></span>
+</div>
 
-                                <select name="orderid" class="form-select" required>
-                                    <option value="">Select Order</option>
+<div class="mb-3">
+<label>Issue</label>
+<select id="issue" name="issue_type" class="form-select">
+<option value="">Select Issue</option>
+<option>Damaged Product</option>
+<option>Wrong Product</option>
+</select>
+<span class="error" id="issueError"></span>
+</div>
 
-                                    {% for order in orders %}
-                                    <option value="{{ order.id }}">
-                                        Order #{{ order.id }} - {{ order.product.Product_name }}
-                                        (Delivered)
-                                    </option>
-                                    {% empty %}
-                                    <option disabled>No delivered orders available</option>
-                                    {% endfor %}
-                                </select>
+<div class="mb-3">
+<label>Upload Image</label>
+<input type="file" id="image" name="product_image" class="form-control">
+<span class="error" id="imageError"></span>
+</div>
 
-                            </div>
+<div class="mb-3">
+<label>Description</label>
+<textarea id="description" name="description" class="form-control"></textarea>
+<span class="error" id="descError"></span>
+</div>
 
-                            <!-- ISSUE TYPE -->
-                            <div class="mb-3">
-                                <label class="form-label">Type of Issue</label>
-                                <select name="issue_type" class="form-select" required>
-                                    <option value="">Select Issue</option>
-                                    <option value="Damaged Product">Damaged Product</option>
-                                    <option value="Wrong Product Received">Wrong Product Received</option>
-                                    <option value="Missing Item">Missing Item</option>
-                                    <option value="Refund Issue">Refund Issue</option>
-                                    <option value="Delivery Delay">Delivery Delay</option>
-                                </select>
-                            </div>
+<button class="btn btn-custom w-100">Submit Complaint</button>
 
-                            <!-- IMAGE -->
-                            <div class="mb-3">
-                                <label class="form-label">Upload Product Image</label>
-                                <input type="file" name="product_image" class="form-control">
-                            </div>
+</form>
+</div>
 
-                            <!-- DESCRIPTION -->
-                            <div class="mb-3">
-                                <label class="form-label">Describe the Problem</label>
-                                <textarea name="description" rows="4" class="form-control" required></textarea>
-                            </div>
+<!-- RIGHT -->
+<div class="col-md-6 contact-info">
+<div>
+<h3 class="fw-bold">Contact Us</h3>
+<p>We're open for suggestions</p>
 
-                            <button type="submit" class="btn btn-custom w-100 fw-bold">
-                                Submit Complaint
-                            </button>
+<p><i class="fa fa-map-marker-alt"></i> Bangalore</p>
+<p><i class="fa fa-phone"></i> 12345 67890</p>
+<p><i class="fa fa-envelope"></i> support@crafthover.com</p>
 
-                        </form>
-                    </div>
+<p><b>Response Time:</b> 24-48 Hours</p>
+<p><b>Working Days:</b> Mon - Sat (9AM - 6PM)</p>
+</div>
+</div>
 
-                    <!-- RIGHT: CONTACT INFO -->
-                    <div class="col-md-6 contact-info d-flex align-items-center">
-                        <div class="p-4">
+</div>
+</div>
+</div>
+</div>
 
-                            <h3 class="fw-bold">Contact Us</h3>
-                            <p>We're open for any suggestions or just to have a chat</p>
+<!-- VALIDATION -->
+<script>
 
-                            <p><i class="fa fa-map-marker-alt"></i> <b>Address:</b> Bangalore</p>
-                            <p><i class="fa fa-phone"></i> <b>Phone:</b> 12345 67890</p>
-                            <p><i class="fa fa-envelope"></i> <b>Email:</b> support@crafthover.com</p>
+function valid(el){ el.classList.add("valid"); el.classList.remove("invalid"); }
+function invalid(el){ el.classList.add("invalid"); el.classList.remove("valid"); }
 
-                            <p><b>Response Time:</b> 24-48 Hours</p>
-                            <p><b>Working Days:</b> Mon - Sat (9AM - 6PM)</p>
+const name = document.getElementById("fullname");
+const phone = document.getElementById("phone");
+const order = document.getElementById("order");
+const issue = document.getElementById("issue");
+const desc = document.getElementById("description");
+const image = document.getElementById("image");
 
-                        </div>
-                    </div>
+document.getElementById("complaintForm").onsubmit = function(e){
 
-                </div>
+let ok = true;
 
-            </div>
-        </div>
+if(!name.value){ invalid(name); fullnameError.innerText="Required"; ok=false; }
+if(!/^\d{10}$/.test(phone.value)){ invalid(phone); phoneError.innerText="10 digits"; ok=false; }
+if(!order.value){ invalid(order); orderError.innerText="Select order"; ok=false; }
+if(!issue.value){ invalid(issue); issueError.innerText="Select issue"; ok=false; }
+if(!desc.value){ invalid(desc); descError.innerText="Required"; ok=false; }
+if(!image.files.length){ invalid(image); imageError.innerText="Upload image"; ok=false; }
 
-    </div>
+if(!ok){
+e.preventDefault();
+}
+
+};
+
+</script>
 
 </body>
-
 </html>

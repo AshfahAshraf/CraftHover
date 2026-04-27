@@ -2,7 +2,74 @@
 {% block title %}Category | CraftHover{% endblock %}
 
 {% block content %}
+<style>
+    /* ===== RESPONSIVE FIX ===== */
 
+/* Form spacing */
+.container-fluid {
+    padding: 15px;
+}
+
+/* Make inputs full width */
+input, textarea, select {
+    width: 100%;
+}
+
+/* Image responsive */
+table img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* TABLE RESPONSIVE */
+.table {
+    width: 100%;
+}
+
+/* Mobile view */
+@media (max-width: 768px) {
+
+    h3 {
+        font-size: 20px;
+    }
+
+    /* Stack form nicely */
+    .mb-3 {
+        margin-bottom: 12px;
+    }
+
+    /* Make table scrollable */
+    .table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    /* Reduce button size */
+    .btn {
+        padding: 4px 8px;
+        font-size: 12px;
+        margin-bottom: 3px;
+    }
+
+    /* Reduce image size */
+    table img {
+        width: 50px;
+    }
+}
+
+/* Tablet */
+@media (min-width: 769px) and (max-width: 1024px) {
+
+    .container-fluid {
+        padding: 20px;
+    }
+
+    table img {
+        width: 70px;
+    }
+}
+</style>
 <div class="container-fluid">
 
     <h3 class="mb-4">
@@ -15,73 +82,142 @@
         {% endif %}
     </h3>
 
-    <form method="POST">
-        {% csrf_token %}
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
 
-        <!--  SELECT EXISTING CATEGORY -->
-        {% if not edit_category and not edit_sub %}
-        <div class="mb-3">
-            <label>Select Existing Category</label>
-            <select name="category_id" class="form-control">
-                <option value="">-- Select Category --</option>
-                {% for cat in categories %}
-                    <option value="{{ cat.id }}">{{ cat.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
+    <!-- SELECT EXISTING CATEGORY -->
+    {% if not edit_category and not edit_sub %}
+    <div class="mb-3">
+        <label>Select Existing Category</label>
+        <select name="category_id" id="category_select" class="form-control">
+            <option value="">-- Select Category --</option>
+            {% for cat in categories %}
+                <option value="{{ cat.id }}">{{ cat.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    {% endif %}
+
+    <!-- CATEGORY NAME -->
+    <div class="mb-3" id="category_name_field">
+        <label>Category Name</label>
+        <input type="text" name="category_name" class="form-control"
+            value="{% if edit_category %}{{ edit_category.name }}{% elif edit_sub %}{{ edit_sub.category.name }}{% endif %}"
+            placeholder="Enter category">
+    </div>
+
+    <!-- CATEGORY DESCRIPTION -->
+    <div class="mb-3" id="category_desc_field">
+        <label>Category Description</label>
+        <textarea name="category_desc" class="form-control" rows="3"
+            placeholder="Enter description">{% if edit_category %}{{ edit_category.description }}{% endif %}</textarea>
+    </div>
+
+    <!-- CATEGORY IMAGE -->
+    <div class="mb-3" id="category_image_field">
+        <label>Category Image</label>
+        <input type="file" name="category_image" class="form-control">
+
+        {% if edit_category and edit_category.image %}
+            <br>
+            <img src="{{ edit_category.image.url }}" width="120">
         {% endif %}
+    </div>
 
-        <!--  NEW CATEGORY -->
-        <div class="mb-3">
-            <label>Category Name (for new category)</label>
-            <input type="text" name="category_name" class="form-control"
-                value="{% if edit_category %}{{ edit_category.name }}{% elif edit_sub %}{{ edit_sub.category.name }}{% endif %}"
-                placeholder="Enter category">
-        </div>
+    <!-- SUBCATEGORY -->
+    <div class="mb-3">
+        <label>SubCategory Name</label>
+        <input type="text" name="subcategory_name" class="form-control"
+            value="{% if edit_sub %}{{ edit_sub.name }}{% endif %}"
+            placeholder="Enter subcategory">
+    </div>
 
-        <!--  SUBCATEGORY -->
-        <div class="mb-3">
-            <label>SubCategory Name</label>
-            <input type="text" name="subcategory_name" class="form-control"
-                value="{% if edit_sub %}{{ edit_sub.name }}{% endif %}"
-                placeholder="Enter subcategory">
-        </div>
+    <button type="submit" class="btn btn-primary">
+        {% if edit_category or edit_sub %}Update{% else %}Save{% endif %}
+    </button>
 
-        <button type="submit" class="btn btn-primary">
-            {% if edit_category or edit_sub %}Update{% else %}Save{% endif %}
-        </button>
+    {% if edit_category or edit_sub %}
+        <a href="{% url 'add_category' %}" class="btn btn-secondary">Cancel</a>
+    {% endif %}
+</form>
 
-        {% if edit_category or edit_sub %}
-            <a href="{% url 'add_category' %}" class="btn btn-secondary">Cancel</a>
-        {% endif %}
-    </form>
+<hr>
 
-    <hr>
+<!-- TABLE -->
+<h4>Category & SubCategory List</h4>
 
-    <!--  TABLE -->
-    <h4>Category & SubCategory List</h4>
+<table class="table table-bordered">
+    <tr>
+        <th>ID</th>
+        <th>Category</th>
+        <th>Description</th>
+        <th>Image</th>
+        <th>SubCategory</th>
+        <th>Actions</th>
+    </tr>
 
-    <table class="table table-bordered">
-        <tr>
-            <th>ID</th>
-            <th>Category</th>
-            <th>SubCategory</th>
-            <th>Actions</th>
-        </tr>
+    {% for sub in subcategories %}
+    <tr>
+        <td>{{ sub.id }}</td>
+        <td>{{ sub.category.name }}</td>
+        <td>{{ sub.category.description }}</td>
 
-        {% for sub in subcategories %}
-        <tr>
-            <td>{{ sub.id }}</td>
-            <td>{{ sub.category.name }}</td>
-            <td>{{ sub.name }}</td>
-            <td>
-                <a href="{% url 'edit_subcategory' sub.id %}" class="btn btn-warning btn-sm">Edit</a>
-                <a href="{% url 'delete_subcategory' sub.id %}" class="btn btn-danger btn-sm">Delete</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+        <td>
+            {% if sub.category.image %}
+                <img src="{{ sub.category.image.url }}" width="80">
+            {% else %}
+                No Image
+            {% endif %}
+        </td>
+
+        <td>{{ sub.name }}</td>
+
+        <td>
+           <!-- Edit Category -->
+<a href="{% url 'edit_category' sub.category.id %}" class="btn btn-primary btn-sm">
+    Edit Category
+</a>
+
+<!-- Edit SubCategory -->
+<a href="{% url 'edit_subcategory' sub.id %}" class="btn btn-warning btn-sm">
+    Edit Sub
+</a>
+
+            <!-- Delete Category -->
+            <a href="{% url 'delete_category' sub.category.id %}" class="btn btn-dark btn-sm">
+                Delete Category
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
 
 </div>
+
+<!-- ✅ JAVASCRIPT (HIDE / SHOW FIELDS) -->
+<script>
+    const categorySelect = document.getElementById("category_select");
+
+    const nameField = document.getElementById("category_name_field");
+    const descField = document.getElementById("category_desc_field");
+    const imageField = document.getElementById("category_image_field");
+
+    function toggleCategoryFields() {
+        if (categorySelect && categorySelect.value) {
+            nameField.style.display = "none";
+            descField.style.display = "none";
+            imageField.style.display = "none";
+        } else {
+            nameField.style.display = "block";
+            descField.style.display = "block";
+            imageField.style.display = "block";
+        }
+    }
+
+    if (categorySelect) {
+        categorySelect.addEventListener("change", toggleCategoryFields);
+        window.onload = toggleCategoryFields;
+    }
+</script>
 
 {% endblock %}

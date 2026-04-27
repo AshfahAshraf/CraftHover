@@ -4,6 +4,8 @@ from .views import generate_description_api
 urlpatterns = [
     
       path("register",views.index,name='register'),
+      path('signup-send-otp/', views.signup_send_otp, name='signup_send_otp'),
+      path('signup-verify-otp/', views.signup_verify_otp, name='signup_verify_otp'),
       path("send-otp/<str:user_type>/", views.send_otp, name="send_otp"),
       path("verify-otp/", views.verify_otp, name="verify_otp"),        
       path("reset-password/", views.reset_password, name="reset_password"),

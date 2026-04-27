@@ -52,6 +52,87 @@ Artisan Complaint | CraftHover
                 height: 40px;
             }
         }
+
+/* Make table scrollable on small screens */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* Prevent table breaking */
+table {
+    width: 100%;
+    min-width: 800px; /* ensures scroll instead of breaking */
+}
+
+/* Fix text overflow */
+td, th {
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+/* Allow long description to wrap */
+td:nth-child(5) {
+    white-space: normal;
+    max-width: 200px;
+    word-break: break-word;
+}
+
+/* Better image handling */
+img {
+    max-width: 60px;
+    height: auto;
+    border-radius: 6px;
+}
+
+/*  MOBILE IMPROVEMENTS */
+@media (max-width: 768px) {
+
+    .container {
+        padding: 10px;
+    }
+
+    .container-box {
+        padding: 12px;
+    }
+
+    h2 {
+        font-size: 18px;
+    }
+
+    table {
+        font-size: 12px;
+    }
+
+    td, th {
+        padding: 6px;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    img {
+        max-width: 40px;
+    }
+}
+
+/*  EXTRA SMALL DEVICES */
+@media (max-width: 480px) {
+
+    h2 {
+        font-size: 16px;
+    }
+
+    table {
+        font-size: 11px;
+    }
+
+    td:nth-child(5) {
+        max-width: 120px;
+    }
+}
     </style>
 </head>
 
